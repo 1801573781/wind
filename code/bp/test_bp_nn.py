@@ -208,6 +208,8 @@ def test_two_line_without_train():
     # 神经网络层数
     layer_count = 2
 
+    # test github
+
     # 每一层神经元的数量(Neuron Count)
     neuron_count_list = [2, 1]
 
