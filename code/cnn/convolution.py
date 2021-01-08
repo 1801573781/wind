@@ -75,7 +75,7 @@ class Convolution:
     err：错误码
     """
 
-    def convolution_d2(self, w, x, rev=Reversal.REV, con_type=ConvolutionType.Narrow,
+    def convolution_d2(self, w, x, rev=Reversal.NO_REV, con_type=ConvolutionType.Narrow,
                        s=1, padding_row=0, padding_col=0):
         # 1. 合法性校验
         err = self._valid(w, x, s, padding_row, padding_col)
@@ -214,8 +214,8 @@ class Convolution:
         x_col_count = x.shape[1]
 
         # 卷积的 row count 和 col count
-        y_row_count = (x_row_count - self.w_row_count + 1) // self.s  # 向下取整
-        y_col_count = (x_col_count - self.w_col_count + 1) // self.s  # 向下取整
+        y_row_count = (x_row_count - self.w_row_count) // self.s + 1  # 向下取整
+        y_col_count = (x_col_count - self.w_col_count) // self.s + 1  # 向下取整
 
         # 初始化卷积 y
         y = np.zeros([y_row_count, y_col_count])
@@ -231,25 +231,28 @@ class Convolution:
 
 
 """
-test
-
+功能：卷积网络
+参数：NULL 
+返回值：NULL
 """
 
 
 def test_convolution():
+    # 输入信息 x
     x = np.asarray([[1, 1, 1, 1, 1],
                     [-1, 0, -3, 0, 1],
                     [2, 1, 1, -1, 0],
                     [0, -1, 1, 2, 1],
                     [1, 2, 1, 1, 1]])
 
+    # 滤波器 w
     w = np.asarray([[1, 0, 0],
                     [0, 0, 0],
                     [0, 0, -1]])
 
     con = Convolution()
 
-    y, err = con.convolution_d2(w, x)
+    y, err = con.convolution_d2(w, x,Reversal.REV, ConvolutionType.Other, 2, 10, 10)
 
     print("\n")
 
