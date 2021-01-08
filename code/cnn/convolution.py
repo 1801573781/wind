@@ -214,8 +214,8 @@ class Convolution:
         x_col_count = x.shape[1]
 
         # 卷积的 row count 和 col count
-        y_row_count = (x_row_count - self.w_row_count) // self.s  # 向下取整
-        y_col_count = (x_col_count - self.w_col_count) // self.s  # 向下取整
+        y_row_count = (x_row_count - self.w_row_count + 1) // self.s  # 向下取整
+        y_col_count = (x_col_count - self.w_col_count + 1) // self.s  # 向下取整
 
         # 初始化卷积 y
         y = np.zeros([y_row_count, y_col_count])
@@ -228,3 +228,28 @@ class Convolution:
                         y[i, j] += self.w[u, v] * x[(i * self.s + u), (j * self.s + v)]
 
         return y
+
+
+"""
+test
+"""
+
+
+def test_convolution():
+    x = np.asarray([[1, 1, 1, 1, 1],
+                    [-1, 0, -3, 0, 1],
+                    [2, 1, 1, -1, 0],
+                    [0, -1, 1, 2, 1],
+                    [1, 2, 1, 1, 1]])
+
+    w = np.asarray([[1, 0, 0],
+                    [0, 0, 0],
+                    [0, 0, -1]])
+
+    con = Convolution()
+
+    y, err = con.convolution_d2(w, x)
+
+    print("\n")
+
+    print(y)
