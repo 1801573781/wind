@@ -231,13 +231,13 @@ class Convolution:
 
 
 """
-功能：卷积网络
+功能：测试卷积网络
 参数：NULL 
 返回值：NULL
 """
 
 
-def test_convolution():
+def test1():
     # 输入信息 x
     x = np.asarray([[1, 1, 1, 1, 1],
                     [-1, 0, -3, 0, 1],
@@ -252,7 +252,7 @@ def test_convolution():
 
     con = Convolution()
 
-    y, err = con.convolution_d2(w, x,Reversal.REV, ConvolutionType.Other, 2, 10, 10)
+    y, err = con.convolution_d2(w, x, Reversal.REV, ConvolutionType.Other, 2, 10, 10)
 
     print("\n")
 
