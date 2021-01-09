@@ -66,7 +66,7 @@ class MyImage:
         try:
             # my_image 是个三维数组
             image = mpimg.imread(file_name)
-            self.show(image)
+            self.show_data(image)
             return errorcode.SUCCESS
         except BaseException as err_msg:
             print(err_msg)
@@ -79,15 +79,15 @@ class MyImage:
     返回值：NULL
     """
 
-    def show(self, image):
-        shape = image.shape
+    def show_data(self, data):
+        shape = data.shape
 
         # 如果是2维，就显示灰度图像
         if 2 == len(shape):
-            plt.imshow(image, cmap='Greys_r')
+            plt.imshow(data, cmap='Greys_r')
         # 否则，就是3维，正常显示
         else:
-            plt.imshow(image)
+            plt.imshow(data)
 
         plt.axis('off')  # 不显示坐标轴
         plt.show()
@@ -105,4 +105,4 @@ def test():
     image.show_file(file_name)
 
     gray, err = image.gray_image(file_name)
-    image.show(gray)
+    image.show_data(gray)

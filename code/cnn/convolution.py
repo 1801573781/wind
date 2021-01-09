@@ -231,7 +231,7 @@ class Convolution:
 
 
 """
-功能：测试卷积网络
+功能：测试卷积网络-1
 参数：NULL 
 返回值：NULL
 """
@@ -257,3 +257,5 @@ def test1():
     print("\n")
 
     print(y)
+
+
