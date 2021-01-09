@@ -31,6 +31,7 @@ def init_draw(title):
 
     #  fontproperties 设置中文显示，fontsize 设置字体大小
     plt.xlabel("x轴", fontproperties=zh_font)
+
     plt.ylabel("y轴", fontproperties=zh_font)
 
 
