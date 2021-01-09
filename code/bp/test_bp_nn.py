@@ -199,16 +199,20 @@ def test_two_line_without_train():
     # 神经网络对象
     nn = bp_nn.BPNeuralNetwork()
 
+    # 训练样本个数
+    train_sample_count = 1000
+
+    # 训练样本，输入，每个向量元素的最大值
+    train_sx_max = list()
+    train_sx_max.append(1)
+    train_sx_max.append(1)
+
     # title
     title = "BP 神经网络(未训练)"
 
-    # 神经网络输入，向量维度
+    # 神经网络输入/输出，向量维度
     sx_dim = 2
-
-    # 神经网络层数
-    layer_count = 2
-
-    # test github
+    sy_dim = 1
 
     # 每一层神经元的数量(Neuron Count)
     neuron_count_list = [2, 1]
@@ -247,7 +251,8 @@ def test_two_line_without_train():
 
     test = NNTest()
 
-    test.test_stub(sx_dim, layer_count, neuron_count_list, W, B, sample, nn, title,
-                   draw_predict_sample_flag, draw_predict_result_flag)
+    test.test_stub(train_sample_count, train_sx_max, neuron_count_list, W, B, sample, nn, title,
+                   draw_predict_sample_flag, draw_predict_result_flag,
+                   sx_dim, sy_dim)
 
 

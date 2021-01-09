@@ -80,19 +80,22 @@ class NNTest:
     返回值：NULL
     """
 
-    def test_stub(self, sx_dim, layer_count, neuron_count_list, W, B, sample, nn, title,
+    def test_stub(self, train_sample_count, train_sx_max, neuron_count_list, W, B, sample, nn, title,
                   draw_predict_sample_flag=draw.ShowFlag.NO_SHOW,
-                  draw_predict_result_flag=draw.ShowFlag.SHOW):
+                  draw_predict_result_flag=draw.ShowFlag.SHOW,
+                  sx_dim=2, sy_dim=1):
         # 1. 成员变量赋值
         self.sx_dim = sx_dim
+        self.sy_dim = sy_dim
 
         # 2. 参数赋值
-        nn.stub_set_para(sx_dim, layer_count, neuron_count_list, W, B, self.activation)
+        nn.stub_set_para(sx_dim, neuron_count_list, W, B, self.activation)
 
         # 3. 预测
 
         # 3.1 创建预测样本
-        sample.create_sample_stub()
+        # sample.create_sample_stub()
+        sample.create_sample(train_sample_count, train_sx_max, self.sx_dim, self.sy_dim)
 
         if draw_predict_sample_flag.value:
             sample.draw_sample("BP 神经网络，预测样本")

@@ -364,15 +364,15 @@ class NeuralNetwork:
     返回值：NULL
     """
 
-    def stub_set_para(self, sx_dim, layer_count, neuron_count_list, W, B, activation):
+    def stub_set_para(self, sx_dim, neuron_count_list, W, B, activation):
         # 神经网络输入，向量维度
         self.sx_dim = sx_dim
 
-        # 神经网络层数
-        self.layer_count = layer_count
-
         # 每一层神经元的数量(Neuron Count)
         self.neuron_count_list = neuron_count_list
+
+        # 神经网络层数
+        self.layer_count = len(neuron_count_list)
 
         # 每一层 w 参数，w 是个 matrix
         self.W = W
