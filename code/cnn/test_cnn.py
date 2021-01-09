@@ -10,7 +10,7 @@ import os
 from cnn.convolution import Convolution
 from cnn.convolution import Reversal
 from cnn.convolution import ConvolutionType
-from my_image.image import MyImage
+from my_image.image import show_file, gray_file, show_data, ImageDataType
 
 """
 功能：测试卷积网络-1
@@ -24,12 +24,11 @@ def test1():
 
     # 图像数据（灰度）
     file_name = "./../my_image/dog1.bmp"
-    image = MyImage()
 
-    image.show_file(file_name)
+    show_file(file_name)
 
-    gray, err = image.gray_image(file_name)
-    image.show_data(gray)
+    gray, err = gray_file(file_name)
+    show_data(gray, ImageDataType.GRAY)
 
     # 卷积
     con = Convolution()
@@ -44,7 +43,7 @@ def test1():
 
     y, err = con.convolution_d2(w, x, Reversal.REV, ConvolutionType.Narrow)
 
-    image.show_data(y)
+    show_data(y, ImageDataType.GRAY)
 
     # 滤波器 w（提取边缘特征）
     w = np.asarray([[0, 1, 0],
@@ -53,7 +52,7 @@ def test1():
 
     y, err = con.convolution_d2(w, x, Reversal.REV, ConvolutionType.Narrow)
 
-    image.show_data(y)
+    show_data(y, ImageDataType.GRAY)
 
     # 滤波器 w（提取边缘特征）
     w = np.asarray([[0, 1, 1],
@@ -62,4 +61,4 @@ def test1():
 
     y, err = con.convolution_d2(w, x, Reversal.REV, ConvolutionType.Narrow)
 
-    image.show_data(y)
+    show_data(y, ImageDataType.GRAY)
