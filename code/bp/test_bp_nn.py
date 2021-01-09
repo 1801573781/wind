@@ -6,6 +6,7 @@ Date：2021.01.01
 
 
 import numpy as np
+import os
 
 from gl import draw
 from bp import bp_nn
@@ -138,6 +139,8 @@ def test_straight_line():
 
 
 def test_two_line():
+    os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+
     # 训练样本个数
     train_sample_count = 1000
 

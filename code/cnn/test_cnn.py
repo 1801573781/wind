@@ -5,6 +5,7 @@ Date：2021.01.09
 """
 
 import numpy as np
+import os
 
 from cnn.convolution import Convolution
 from cnn.convolution import Reversal
@@ -19,6 +20,8 @@ from my_image.image import MyImage
 
 
 def test1():
+    os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+
     # 图像数据（灰度）
     file_name = "./../my_image/dog1.bmp"
     image = MyImage()
