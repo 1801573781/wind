@@ -75,11 +75,11 @@ class TwoLineSample(ClassifySample):
         # plt.axhline(self.h1, color='blue', linewidth=1.0)
         """
 
-        x = np.arange(-self.sx_max[0], self.sx_max[0] + 0.01)
+        x = np.arange(-(self.sx_max[0]), (self.sx_max[0] + 0.5))
         y = self.a0 * x + self.b0
         plt.plot(x, y, color='blue', linewidth=1.0)
 
-        x = np.arange(-self.sx_max[0], self.sx_max[0] + 0.01)
+        x = np.arange(-(self.sx_max[0]), (self.sx_max[0] + 0.5))
         y = self.a1 * x + self.b1
         plt.plot(x, y, color='blue', linewidth=1.0)
 

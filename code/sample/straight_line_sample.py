@@ -68,6 +68,6 @@ class StraightLineSample(ClassifySample):
 
     def draw_segment(self):
         # 1. 绘制 ax + b 图像
-        x = np.arange(-self.sx_max[0], self.sx_max[0])
+        x = np.arange(-(self.sx_max[0]), (self.sx_max[0] * 1.01))
         y = self.a * x + self.b
         plt.plot(x, y, color='blue', linewidth=1.0)

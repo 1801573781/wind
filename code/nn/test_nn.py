@@ -45,7 +45,7 @@ class NNTest:
         sample.create_sample(train_sample_count, train_sx_max, self.sx_dim, self.sy_dim)
 
         if draw_train_sample_flag.value:
-            sample.draw_sample("BP 神经网络，训练样本")
+            sample.draw_sample(title + ": train sample")
 
         sx_list = sample.get_sx_list()
         sy_list = sample.get_sy_list()
@@ -59,7 +59,7 @@ class NNTest:
         sample.create_sample(predict_sample_count, predict_sx_max, self.sx_dim, self.sy_dim)
 
         if draw_predict_sample_flag.value:
-            sample.draw_sample("BP 神经网络，预测样本")
+            sample.draw_sample(title + ": predict sample")
 
         sx_list = sample.get_sx_list()
         sy_list = sample.get_sy_list()
@@ -69,7 +69,7 @@ class NNTest:
 
         accuracy = common_function.calculate_accuracy(py_list, sy_list)
 
-        title = title + "，预测结果，正确率 = %f" % accuracy
+        title = title + ": predict result, accuracy = %.3f%%" % (accuracy * 100)
 
         if draw_predict_result_flag.value:
             draw.draw_predict(title, sx_list, py_list, sample)
@@ -80,7 +80,7 @@ class NNTest:
     返回值：NULL
     """
 
-    def test_stub(self, train_sample_count, train_sx_max, neuron_count_list, W, B, sample, nn, title,
+    def test_stub(self, predict_sample_count, predict_sx_max, neuron_count_list, W, B, sample, nn, title,
                   draw_predict_sample_flag=draw.ShowFlag.NO_SHOW,
                   draw_predict_result_flag=draw.ShowFlag.SHOW,
                   sx_dim=2, sy_dim=1):
@@ -94,11 +94,10 @@ class NNTest:
         # 3. 预测
 
         # 3.1 创建预测样本
-        # sample.create_sample_stub()
-        sample.create_sample(train_sample_count, train_sx_max, self.sx_dim, self.sy_dim)
+        sample.create_sample(predict_sample_count, predict_sx_max, self.sx_dim, self.sy_dim)
 
         if draw_predict_sample_flag.value:
-            sample.draw_sample("BP 神经网络，预测样本")
+            sample.draw_sample(title + ": predict sample")
 
         sx_list = sample.get_sx_list()
         sy_list = sample.get_sy_list()
@@ -108,7 +107,7 @@ class NNTest:
 
         accuracy = common_function.calculate_accuracy(py_list, sy_list)
 
-        title = title + "，预测结果，正确率 = %f" % accuracy
+        title = title + ": predict result, accuracy = %.3f%%" % (accuracy * 100)
 
         if draw_predict_result_flag.value:
             draw.draw_predict(title, sx_list, py_list, sample)

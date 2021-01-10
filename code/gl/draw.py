@@ -25,6 +25,7 @@ title：图形标题
 
 
 def init_draw(title):
+    """
     zh_font = matplotlib.font_manager.FontProperties(fname="./../font/SourceHanSansSC-Bold.otf")
 
     plt.title(title, fontproperties=zh_font)
@@ -33,6 +34,13 @@ def init_draw(title):
     plt.xlabel("x轴", fontproperties=zh_font)
 
     plt.ylabel("y轴", fontproperties=zh_font)
+    """
+
+    plt.title(title)
+
+    plt.xlabel("x axis")
+
+    plt.ylabel("y axis")
 
 
 """
