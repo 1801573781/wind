@@ -9,6 +9,19 @@ import numpy as np
 from enum import Enum
 from gl import errorcode
 
+
+"""
+class：CVLDim 卷积维度枚举值
+TWO：2维
+THREE：3维
+"""
+
+
+class CVLDim(Enum):
+    TWO = 2
+    THREE = 3
+
+
 """
 class：Reversal 卷积翻转枚举值
 REV：翻转
@@ -43,12 +56,16 @@ class：Convolution 卷积（二维卷积）
 
 
 class Convolution:
+    # 卷积维度（是2维数组的卷积还是3维数组的卷积）
+    cvl_dim = CVLDim.TWO.value
+
     # 卷积核
     w = 0
 
-    # 滤波器 row count，col count
-    w_row_count = 0
-    w_col_count = 0
+    # 卷积核 width, height, depth
+    w_width = 0
+    w_height = 0
+    w_depth = 0
 
     # 卷积翻转标记
     rev = Reversal.REV
@@ -61,10 +78,10 @@ class Convolution:
     padding_col = 0
 
     """
-    功能：计算二维卷积
+    功能：计算卷积
     参数：
-    w：滤波器（一个矩阵）
-    x：输入信息（一个矩阵）
+    w：卷积核
+    x：输入信息
     rev：卷积是否翻转（枚举值）
     con_type：卷积类型
     s：步长
@@ -75,8 +92,8 @@ class Convolution:
     err：错误码
     """
 
-    def convolution_d2(self, w, x, rev=Reversal.NO_REV, con_type=ConvolutionType.Narrow,
-                       s=1, padding_row=0, padding_col=0):
+    def convolution(self, w, x, rev=Reversal.NO_REV, con_type=ConvolutionType.Narrow,
+                    s=1, padding_row=0, padding_col=0):
         # 1. 合法性校验
         err = self._valid(w, x, s, padding_row, padding_col)
 
@@ -87,8 +104,17 @@ class Convolution:
         self.w = w
         self.rev = rev
 
-        self.w_row_count = w.shape[0]
-        self.w_col_count = w.shape[1]
+        self.cvl_dim = len(w.shape)
+
+        self.w_width = w.shape[0]
+        self.w_height = w.shape[1]
+
+        # 如果是3维卷积，则卷积核有 depth
+        if CVLDim.THREE.value == self.cvl_dim:
+            self.w_depth = w.shape[2]
+        # 否则的话，depth = 0
+        else:
+            self.w_depth = 0
 
         # 3. 计算步长和补零长度
         self._cal_step_padding(con_type, s, padding_row, padding_col)
@@ -102,7 +128,7 @@ class Convolution:
             self._reverse_w()
 
         # 6. 计算卷积 y
-        y = self._cal_convolution_d2(x)
+        y = self._cal_convolution(x)
 
         # 7. 返回卷积计算结果和错误码
         err = errorcode.SUCCESS
@@ -131,6 +157,7 @@ class Convolution:
         """
 
         # TODO：待实现
+        self.w = self.w
 
         return errorcode.SUCCESS
 
@@ -152,12 +179,12 @@ class Convolution:
             self.padding_col = 0
         elif ConvolutionType.Wide == con_type:
             self.s = 1
-            self.padding_row = self.w_row_count - 1
-            self.padding_col = self.w_col_count - 1
+            self.padding_row = self.w_width - 1
+            self.padding_col = self.w_height - 1
         elif ConvolutionType.Equal_Width == con_type:
             self.s = 1
-            self.padding_row = (self.w_row_count - 1) // 2  # 这里不管那么多了，向下取整
-            self.padding_col = (self.w_col_count - 1) // 2  # 这里不管那么多了，向下取整
+            self.padding_row = (self.w_width - 1) // 2  # 这里不管那么多了，向下取整
+            self.padding_col = (self.w_height - 1) // 2  # 这里不管那么多了，向下取整
         else:
             self.s = s
             self.padding_row = padding_row
@@ -176,12 +203,19 @@ class Convolution:
         x_col_count = x.shape[1]
 
         # 补零后的 xp，先赋初值为 0
-        xp = np.zeros([(x_row_count + self.padding_row), (x_col_count + self.padding_col)])
+        if CVLDim.THREE.value == self.cvl_dim:
+            xp = np.zeros([(x_row_count + self.padding_row), (x_col_count + self.padding_col), self.w_depth])
+        else:
+            xp = np.zeros([(x_row_count + self.padding_row), (x_col_count + self.padding_col)])
 
         # xp 中间的值，与 x 相同
         for i in range(0, x_row_count):
             for j in range(0, x_col_count):
-                xp[(i + self.padding_row), (j + self.padding_col)] = x[i, j]
+                if CVLDim.THREE.value == self.cvl_dim:
+                    for d in range(0, self.w_depth):
+                        xp[(i + self.padding_row), (j + self.padding_col)] = x[i, j]
+                else:
+                    xp[(i + self.padding_row), (j + self.padding_col)] = x[i, j]
 
         return xp
 
@@ -192,70 +226,77 @@ class Convolution:
     """
 
     def _reverse_w(self):
-        half_w_row_count = self.w_row_count // 2  # 向下取整
-        half_w_col_count = self.w_col_count // 2  # 向下取整
+        half_w_width = self.w_width // 2  # 向下取整
+        half_w_height = self.w_height // 2  # 向下取整
 
-        for i in range(0, half_w_row_count + 1):
-            for j in range(0, half_w_col_count + 1):
-                tmp = self.w[i, j]
-                self.w[i, j] = self.w[(self.w_row_count - 1 - i), (self.w_col_count - 1 - j)]
-                self.w[(self.w_row_count - 1 - i), (self.w_col_count - 1 - j)] = tmp
+        for i in range(0, half_w_width + 1):
+            for j in range(0, half_w_height + 1):
+                if CVLDim.THREE.value == self.cvl_dim:
+                    for d in range(0, self.w_depth):
+                        tmp = self.w[i, j, d]
+                        self.w[i, j, d] = self.w[(self.w_width - 1 - i), (self.w_height - 1 - j), d]
+                        self.w[(self.w_width - 1 - i), (self.w_height - 1 - j), d] = tmp
+                else:
+                    tmp = self.w[i, j]
+                    self.w[i, j] = self.w[(self.w_width - 1 - i), (self.w_height - 1 - j)]
+                    self.w[(self.w_width - 1 - i), (self.w_height - 1 - j)] = tmp
 
     """
-    功能：计算卷积
+    功能：计算2维卷积
     参数：
     x：输入信息（一个矩阵）
     返回值：卷积结果
     """
 
-    def _cal_convolution_d2(self, x):
-        # x 的 row count， col count
-        x_row_count = x.shape[0]
-        x_col_count = x.shape[1]
-
-        # 卷积的 row count 和 col count
-        y_row_count = (x_row_count - self.w_row_count) // self.s + 1  # 向下取整
-        y_col_count = (x_col_count - self.w_col_count) // self.s + 1  # 向下取整
+    def _cal_convolution(self, x):
+        # 卷积的 width，height
+        y_width, y_height = cal_cvl_wh(self.w, x, self.s)
 
         # 初始化卷积 y
-        y = np.zeros([y_row_count, y_col_count])
+
+        # 如果是3维卷积
+        if CVLDim.THREE.value == self.cvl_dim:
+            y = np.zeros([y_width, y_height, self.w_depth])
+        else:
+            y = np.zeros([y_width, y_height])
 
         # 计算卷积 y
-        for i in range(0, y_row_count):
-            for j in range(0, y_col_count):
-                for u in range(0, self.w_row_count):
-                    for v in range(0, self.w_col_count):
-                        y[i, j] += self.w[u, v] * x[(i * self.s + u), (j * self.s + v)]
+        for i in range(0, y_width):
+            for j in range(0, y_height):
+                for u in range(0, self.w_width):
+                    for v in range(0, self.w_height):
+                        # 3维卷积
+                        if CVLDim.THREE.value == self.cvl_dim:
+                            for d in range(0, self.w_depth):
+                                y[i, j, d] += self.w[u, v, d] * x[(i * self.s + u), (j * self.s + v), d]
+                        # 2维卷积
+                        else:
+                            y[i, j] += self.w[u, v] * x[(i * self.s + u), (j * self.s + v)]
 
         return y
 
 
 """
-功能：测试卷积网络-1
-参数：NULL 
+功能：计算卷积结果的矩阵的宽度和高度
+参数：
+w：卷积核（一个矩阵）
+x：输入信息（一个矩阵）
+s：步长
 返回值：NULL
 """
 
 
-def test1():
-    # 输入信息 x
-    x = np.asarray([[1, 1, 1, 1, 1],
-                    [-1, 0, -3, 0, 1],
-                    [2, 1, 1, -1, 0],
-                    [0, -1, 1, 2, 1],
-                    [1, 2, 1, 1, 1]])
+def cal_cvl_wh(w, x, s):
+    # w, x 的 width, height
+    w_width = w.shape[0]
+    w_height = w.shape[1]
+    x_width = x.shape[0]
+    x_height = x.shape[1]
 
-    # 滤波器 w
-    w = np.asarray([[1, 0, 0],
-                    [0, 0, 0],
-                    [0, 0, -1]])
+    # 卷积的 row count 和 col count
+    width = (x_width - w_width) // s + 1  # 向下取整
+    height = (x_height - w_height) // s + 1  # 向下取整
 
-    con = Convolution()
-
-    y, err = con.convolution_d2(w, x, Reversal.REV, ConvolutionType.Other, 2, 10, 10)
-
-    print("\n")
-
-    print(y)
+    return width, height
 
 

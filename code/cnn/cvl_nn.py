@@ -10,6 +10,8 @@ import operator
 from nn.neural_network import NeuralNetwork
 from gl import errorcode
 
+from cnn.convolution import Convolution, ConvolutionType, Reversal, cal_cvl_wh
+
 
 """
 class：CVLNeuralNetwork，卷积神经网络
@@ -40,6 +42,21 @@ class CVLNeuralNetwork(NeuralNetwork):
 
     # 可以理解为颜色深度（颜色维度）
     depth = 1
+
+    # 每一层神经网络的输出（经过激活函数以后的输出），a 是一个三维数组
+    a_list = None
+
+    # 卷积步长
+    s = 1
+
+    # 卷积两端补齐长度
+    padding = 0
+
+    # 卷积类型
+    cvl_type = ConvolutionType.Narrow
+
+    # 是否翻转卷积
+    rev = Reversal.NO_REV
 
     """
     功能：校验样本
@@ -130,22 +147,33 @@ class CVLNeuralNetwork(NeuralNetwork):
         self.height = self.sx_dimsx_dim[1]
         self.depth = self.sx_dimsx_dim[2]
 
-        # 神经网络的层数
-        self.layer_count = len(self.neuron_count_list)
-
         # 神经网络输出，向量维度
         self.sy_dim = self.neuron_count_list[self.layer_count - 1]
 
-        # 第1层 w 参数，w 是一个矩阵
-        w = np.matlib.rand(self.neuron_count_list[0], self.sx_dim)
-        self.W.append(w)
+        #
 
-        # 第2层~第layer-1层 w 参数，w 是一个矩阵
-        for i in range(1, self.layer_count):
-            w = np.matlib.rand(self.neuron_count_list[i], self.neuron_count_list[i - 1])
-            self.W.append(w)
+    """
+    功能：初始化每一层神经网络的输出（经过激活函数以后的输出）
+    参数：NULL
+    返回值：NULL
+    """
 
-        # 第1层 ~ 第layer-1层 b 参数，b 是一个向量
-        for i in range(0, self.layer_count):
-            b = np.zeros([self.neuron_count_list[i], 1])
-            self.B.append(b)
+    def _init_cnn_a(self):
+        # a_list 是一个列表，a 是一个3维数组
+        self.a_list = list()
+
+        # 针对每一层进行初始化
+        x = 0
+        y = 0
+        for layer in range(0, self.layer_count):
+            # 如果是第一层，x 就是样本输入
+            if 0 == layer:
+                x = self.sx_list[0]
+            # 否则的话，x 是上一层的输入
+            else:
+                x = y
+
+            # 每一层的卷积核
+            w = self.W[layer]
+
+            width, height = cal_cvl_wh(w, x, self.s)
