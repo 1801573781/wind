@@ -64,17 +64,27 @@ class NeuralNetwork:
     neuron_count_list：每一层神经元数量
     rate：学习效率    
     activation：激活函数对象
+    layer_count：神经网络层数（除了卷积网络，这个参数没有意义）
+    W：每一层 w 参数（除了卷积网络，这个参数没有意义）
+    B：每一层 b 参数（除了卷积网络，这个参数没有意义）    
     返回值：错误码
     """
 
-    def train(self, sx_list, sy_list, loop_max, neuron_count_list, rate, activation):
+    def train(self, sx_list, sy_list, loop_max, neuron_count_list, rate, activation, layer_count=0, W=None, B=None):
         # 1. 成员变量赋值
         self.sx_list = sx_list
         self.sy_list = sy_list
         self.loop_max = loop_max
-        self.neuron_count_list = neuron_count_list
         self.rate = rate
         self.activation = activation
+
+        # 如果是卷积网络，这个参数没有意义（如果是卷积网络，直接传入0即可）
+        self.neuron_count_list = neuron_count_list
+
+        # 如果不是卷积网络，这3个参数，没有意义（如果不是卷积网络，直接传入默认值即可）
+        self.layer_count = layer_count
+        self.W = W
+        self.B = B
 
         # 2. 校验
         err = self._valid()
@@ -173,7 +183,7 @@ class NeuralNetwork:
         return errorcode.SUCCESS
 
     """
-    功能：初始化参数（W, B 等）
+    功能：初始化其它参数
     参数：NULL   
     返回值：错误码
     """
