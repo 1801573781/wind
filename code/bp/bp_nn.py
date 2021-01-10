@@ -4,11 +4,7 @@ Author：lzb
 Date：2020.12.25
 """
 
-import numpy.matlib
 import numpy as np
-
-from gl import errorcode
-from gl import common_function
 
 from nn.neural_network import NeuralNetwork
 

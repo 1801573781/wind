@@ -29,22 +29,22 @@ class NeuralNetwork:
     layer_count = 0
 
     # 每一层神经元的数量
-    neuron_count_list = list()
+    neuron_count_list = None
 
     # 每一层 w 参数，w 是个 matrix
-    W = list()
+    W = None
 
     # 每一层 b 参数，b 是个 vector
-    B = list()
+    B = None
 
     # 样本数量
     sample_count = 0
 
     # 样本输入列表(Sample X list)，每一个输入样本是一个 vector
-    sx_list = list()
+    sx_list = None
 
     # 样本输出列表(Sample Y list)，每一个输出样本是一个 vector
-    sy_list = list()
+    sy_list = None
 
     # 循环训练的最大次数
     loop_max = 1
@@ -131,18 +131,22 @@ class NeuralNetwork:
         if len1 != len2:
             return errorcode.FAILED
 
-        # 2 样本向量个数，须 >= 1
+        # 2 样本数量，须 >= 1
         sample_count = len(self.sx_list)
         if 1 > sample_count:
             return errorcode.FAILED
 
         # 3. 样本向量维度
-        layer_count = len(self.neuron_count_list)
+
+        # 输入向量维度
         sx_dim = len(self.sx_list[0])
+
+        # 输出向量维度
+        layer_count = len(self.neuron_count_list)
         sy_dim = self.neuron_count_list[layer_count - 1]
 
-        # 3.1 输入样本向量维度 > 1
-        if 1 > sx_dim:
+        # 3.1 输入样本/输出样本，向量维度 > 1
+        if (1 > sx_dim) or (1 > sy_dim):
             return errorcode.FAILED
 
         # 3.2 每一个输入/输出样本的向量维度
