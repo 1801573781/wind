@@ -43,7 +43,7 @@ class：Convolution 卷积（二维卷积）
 
 
 class Convolution:
-    # 滤波器
+    # 卷积核
     w = 0
 
     # 滤波器 row count，col count
