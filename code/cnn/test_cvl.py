@@ -7,9 +7,9 @@ Date：2021.01.09
 import numpy as np
 import os
 
-from cnn.convolution import Convolution
-from cnn.convolution import Reversal
-from cnn.convolution import ConvolutionType
+from cnn.max_pooling import MaxPooling
+from cnn.mean_pooling import MeanPooling
+from cnn.convolution import Convolution, Reversal, ConvolutionType
 from my_image.image import show_file, gray_file, show_data, ImageDataType, get_data
 
 """
@@ -89,7 +89,7 @@ def test_image_2d():
     show_data(gray, ImageDataType.GRAY)
 
     # 卷积
-    con = Convolution()
+    con = MeanPooling()
 
     # 输入信息 x
     x = gray

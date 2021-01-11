@@ -30,15 +30,15 @@ class MaxPooling(Convolution):
         y_width = y.shape[0]
         y_height = y.shape[1]
 
-        # 分配一个临时数组
-        tmp_list = list()
-
         # 计算卷积 y
         for i in range(0, y_width):
             for j in range(0, y_height):
                 # 3维卷积
                 if CVLDim.THREE.value == self.cvl_dim:
                     for d in range(0, self.w_depth):
+                        # 分配一个临时数组
+                        tmp_list = list()
+
                         for u in range(0, self.w_width):
                             for v in range(0, self.w_height):
                                 # 计算每一个值
@@ -50,6 +50,9 @@ class MaxPooling(Convolution):
 
                 # 2维卷积
                 else:
+                    # 分配一个临时数组
+                    tmp_list = list()
+
                     for u in range(0, self.w_width):
                         for v in range(0, self.w_height):
                             # 计算每一个值
