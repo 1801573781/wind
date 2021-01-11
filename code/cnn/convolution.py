@@ -78,7 +78,7 @@ class Convolution:
     padding_col = 0
 
     """
-    功能：计算卷积
+    功能：计算卷积(针对卷积核第3维的深度，每个深度分别计算，然后相加)
     参数：
     w：卷积核
     x：输入信息
@@ -88,14 +88,57 @@ class Convolution:
     padding_row：矩阵的行，补零长度
     padding_col：矩阵的列，补零长度
     返回值：
-    y：卷积结果(一个矩阵)
+    y：卷积结果(一个2维/3维数组)
+    err：错误码
+    """
+
+    def convolution_sum(self, w, x, rev=Reversal.NO_REV, con_type=ConvolutionType.Narrow,
+                        s=1, padding_width=0, padding_height=0):
+        # 针对深度，分别计算
+        y, err = self.convolution(w, x, rev, con_type, s, padding_width, padding_height)
+
+        # 如果计算不成功，则直接 return
+        if errorcode.SUCCESS != err:
+            return y, err
+
+        # 如果是2维卷积，直接 return
+        if CVLDim.TWO.value == self.cvl_dim:
+            return y, err
+
+        # 将所有深度的卷积相加
+        width = y.shape[0]
+        height = y.shape[1]
+        for i in range(0, width):
+            for j in range(0, height):
+                for d in range(1, self.w_depth):
+                    y[i, j, 0] += y[i, j, d]
+
+        # 返回第1深度（因为第1深度现在已经变为各个深度之和）
+        return y[:, :, 0], err
+
+
+
+
+
+    """
+    功能：计算卷积(针对卷积核第3维的深度，每个深度分别计算)
+    参数：
+    w：卷积核
+    x：输入信息
+    rev：卷积是否翻转（枚举值）
+    con_type：卷积类型
+    s：步长
+    padding_row：矩阵的行，补零长度
+    padding_col：矩阵的列，补零长度
+    返回值：
+    y：卷积结果(一个2维/3维数组)
     err：错误码
     """
 
     def convolution(self, w, x, rev=Reversal.NO_REV, con_type=ConvolutionType.Narrow,
-                    s=1, padding_row=0, padding_col=0):
+                    s=1, padding_width=0, padding_height=0):
         # 1. 合法性校验
-        err = self._valid(w, x, s, padding_row, padding_col)
+        err = self._valid(w, x, s, padding_width, padding_height)
 
         if errorcode.SUCCESS != err:
             return 0, err  # 如果错误，卷积结果返回 0
@@ -117,10 +160,10 @@ class Convolution:
             self.w_depth = 0
 
         # 3. 计算步长和补零长度
-        self._cal_step_padding(con_type, s, padding_row, padding_col)
+        self._cal_step_padding(con_type, s, padding_width, padding_height)
 
         # 4. 将 x 扩充（补零）
-        if (padding_row > 0) or (padding_col > 0):
+        if (padding_width > 0) or (padding_height > 0):
             x = self._padding(x)
 
         # 5. 翻转 w（如果需要的话）
