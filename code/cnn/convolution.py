@@ -9,7 +9,6 @@ import numpy as np
 from enum import Enum
 from gl import errorcode
 
-
 """
 class：CVLDim 卷积维度枚举值
 TWO：2维
@@ -51,7 +50,7 @@ class ConvolutionType(Enum):
 
 
 """
-class：Convolution 卷积（二维卷积）
+class：Convolution 卷积
 """
 
 
@@ -92,8 +91,8 @@ class Convolution:
     err：错误码
     """
 
-    def convolution_sum(self, w, x, rev=Reversal.NO_REV, con_type=ConvolutionType.Narrow,
-                        s=1, padding_width=0, padding_height=0):
+    def convolution_sum_depth(self, w, x, rev=Reversal.NO_REV, con_type=ConvolutionType.Narrow,
+                              s=1, padding_width=0, padding_height=0):
         # 针对深度，分别计算
         y, err = self.convolution(w, x, rev, con_type, s, padding_width, padding_height)
 
@@ -115,10 +114,6 @@ class Convolution:
 
         # 返回第1深度（因为第1深度现在已经变为各个深度之和）
         return y[:, :, 0], err
-
-
-
-
 
     """
     功能：计算卷积(针对卷积核第3维的深度，每个深度分别计算)
@@ -285,13 +280,29 @@ class Convolution:
                     self.w[(self.w_width - 1 - i), (self.w_height - 1 - j)] = tmp
 
     """
-    功能：计算2维卷积
+    功能：计算卷积
     参数：
-    x：输入信息（一个矩阵）
+    x：输入信息
     返回值：卷积结果
     """
 
     def _cal_convolution(self, x):
+        # 初始化卷积 y
+        y = self._init_cvl(x)
+
+        # 计算卷积 y
+        self._cal_cvl(x, y)
+
+        return y
+
+    """
+    功能：计算卷积
+    参数：
+    x：输入信息
+    返回值：卷积初始化结果
+    """
+
+    def _init_cvl(self, x):
         # 卷积的 width，height
         y_width, y_height = cal_cvl_wh(self.w, x, self.s)
 
@@ -302,6 +313,21 @@ class Convolution:
             y = np.zeros([y_width, y_height, self.w_depth])
         else:
             y = np.zeros([y_width, y_height])
+
+        return y
+
+    """
+    功能：计算卷积
+    参数：
+    x：输入信息
+    y：待赋值的卷积结果    
+    返回值：NULL
+    """
+
+    def _cal_cvl(self, x, y):
+        # 卷积的 width，height
+        y_width = y.shape[0]
+        y_height = y.shape[1]
 
         # 计算卷积 y
         for i in range(0, y_width):
@@ -315,8 +341,6 @@ class Convolution:
                         # 2维卷积
                         else:
                             y[i, j] += self.w[u, v] * x[(i * self.s + u), (j * self.s + v)]
-
-        return y
 
 
 """
@@ -341,5 +365,3 @@ def cal_cvl_wh(w, x, s):
     height = (x_height - w_height) // s + 1  # 向下取整
 
     return width, height
-
-
