@@ -41,9 +41,7 @@ class MaxPooling(Convolution):
 
                         for u in range(0, self.w_width):
                             for v in range(0, self.w_height):
-                                # 计算每一个值
-                                tmp = self.w[u, v, d] * x[(i * self.s + u), (j * self.s + v), d]
-                                tmp_list.append(tmp)
+                                tmp_list.append(x[(i * self.s + u), (j * self.s + v), d])
 
                         # 等于最大值
                         y[i, j, d] = max(tmp_list)
@@ -55,9 +53,7 @@ class MaxPooling(Convolution):
 
                     for u in range(0, self.w_width):
                         for v in range(0, self.w_height):
-                            # 计算每一个值
-                            tmp = self.w[u, v] * x[(i * self.s + u), (j * self.s + v)]
-                            tmp_list.append(tmp)
+                            tmp_list.append(x[(i * self.s + u), (j * self.s + v)])
 
                     # 等于最大值
                     y[i, j] = max(tmp_list)

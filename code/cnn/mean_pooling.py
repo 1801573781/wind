@@ -26,24 +26,37 @@ class MeanPooling(Convolution):
     """
 
     def _cal_cvl(self, x, y):
-        # 1. 先调用父类的 _cal_cvl
-        super()._cal_cvl(x, y)
-
-        # 2. 再将父类计算结果做一个平均
-
-        # 卷积的 width，height
+        # 1. 卷积的 width，height
         y_width = y.shape[0]
         y_height = y.shape[1]
 
-        # 平均卷积 y
+        # 2. 平均卷积 y
         for i in range(0, y_width):
             for j in range(0, y_height):
                 # 3维卷积
                 if CVLDim.THREE.value == self.cvl_dim:
                     for d in range(0, self.w_depth):
-                        y[i, j, d] = y[i, j, d] / (self.w_width * self.w_height)
+                        # sum 的初值 = 0
+                        tmp = 0
+
+                        for u in range(0, self.w_width):
+                            for v in range(0, self.w_height):
+                                # 求和
+                                tmp += x[(i * self.s + u), (j * self.s + v), d]
+
+                        # 等于平均值
+                        y[i, j, d] = tmp / (self.w_width * self.w_height)
                 # 2维卷积
                 else:
-                    y[i, j] = y[i, j] / (self.w_width * self.w_height)
+                    # sum 的初值 = 0
+                    tmp = 0
+
+                    for u in range(0, self.w_width):
+                        for v in range(0, self.w_height):
+                            # 求和
+                            tmp += x[(i * self.s + u), (j * self.s + v)]
+
+                            # 等于平均值
+                    y[i, j] = tmp / (self.w_width * self.w_height)
 
 

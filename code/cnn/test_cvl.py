@@ -89,6 +89,7 @@ def test_image_2d():
     show_data(gray, ImageDataType.GRAY)
 
     # 卷积
+    # con = Convolution()
     con = MeanPooling()
 
     # 输入信息 x
@@ -99,7 +100,7 @@ def test_image_2d():
                     [1 / 8, 1 / 4, 1 / 8],
                     [1 / 16, 1 / 8, 1 / 16]])
 
-    y, err = con.convolution(w, x, Reversal.REV, ConvolutionType.Narrow)
+    y, err = con.convolution(w, x, Reversal.REV, ConvolutionType.Other, 3, 0, 0)
 
     show_data(y, ImageDataType.GRAY)
 
@@ -108,7 +109,7 @@ def test_image_2d():
                     [1, -4, 1],
                     [0, 1, 0]])
 
-    y, err = con.convolution(w, x, Reversal.REV, ConvolutionType.Narrow)
+    y, err = con.convolution(w, x, Reversal.REV, ConvolutionType.Other, 3, 0, 0)
 
     show_data(y, ImageDataType.GRAY)
 
@@ -117,7 +118,7 @@ def test_image_2d():
                     [-1, 0, 1],
                     [-1, -1, 0]])
 
-    y, err = con.convolution(w, x, Reversal.REV, ConvolutionType.Narrow)
+    y, err = con.convolution(w, x, Reversal.REV, ConvolutionType.Other, 3, 0, 0)
 
     show_data(y, ImageDataType.GRAY)
 
@@ -140,7 +141,8 @@ def test_image_3d():
     data, image_data_type, err = get_data(file_name)
 
     # 卷积
-    con = Convolution()
+    # con = Convolution()
+    con = MeanPooling()
 
     # 输入信息 x
     x = data
@@ -150,7 +152,7 @@ def test_image_3d():
                     [[1 / 8, 1 / 8, 1 / 8], [1 / 4, 1 / 4, 1 / 4], [1 / 8, 1 / 8, 1 / 8]],
                     [[1 / 16, 1 / 16, 1 / 16], [1 / 8, 1 / 8, 1 / 8], [1 / 16, 1 / 16, 1 / 16]]])
 
-    y, err = con.convolution(w, x, Reversal.REV, ConvolutionType.Narrow)
+    y, err = con.convolution(w, x, Reversal.REV, ConvolutionType.Other, 3, 0, 0)
 
     show_data(y, ImageDataType.RGB)
 
@@ -159,7 +161,7 @@ def test_image_3d():
                     [[1, 1, 1], [-4, -4, -4], [1, 1, 1]],
                     [[0, 0, 0], [1, 1, 1], [0, 0, 0]]])
 
-    y, err = con.convolution(w, x, Reversal.REV, ConvolutionType.Narrow)
+    y, err = con.convolution(w, x, Reversal.REV, ConvolutionType.Other, 3, 0, 0)
 
     show_data(y, ImageDataType.RGB)
 
@@ -168,6 +170,122 @@ def test_image_3d():
                     [[-1, -1, -1], [0, 0, 0], [1, 1, 1]],
                     [[-1, -1, -1], [-1, -1, -1], [0, 0, 0]]])
 
-    y, err = con.convolution(w, x, Reversal.REV, ConvolutionType.Narrow)
+    y, err = con.convolution(w, x, Reversal.REV, ConvolutionType.Other, 3, 0, 0)
 
     show_data(y, ImageDataType.GRAY)
+
+
+"""
+功能：测试 max pooling，2维
+参数：NULL 
+返回值：NULL
+"""
+
+
+def test_max_pooling_2d():
+    w, x = _create_w_x_2d()
+
+    con = MaxPooling()
+
+    y, err = con.convolution(w, x, Reversal.REV, ConvolutionType.Other, 2, 0, 0)
+
+    print("\n 3维，max pooling\n")
+
+    print(y)
+
+
+"""
+功能：测试 max pooling，3维
+参数：NULL 
+返回值：NULL
+"""
+
+
+def test_max_pooling_3d():
+    w, x = _create_w_x_3d()
+
+    con = MaxPooling()
+
+    y, err = con.convolution(w, x, Reversal.REV, ConvolutionType.Other, 2, 0, 0)
+
+    print("\n 3维，max pooling\n")
+
+    print(y)
+
+
+"""
+功能：测试 mean pooling，2维
+参数：NULL 
+返回值：NULL
+"""
+
+
+def test_mean_pooling_2d():
+    w, x = _create_w_x_2d()
+
+    con = MeanPooling()
+
+    y, err = con.convolution(w, x, Reversal.REV, ConvolutionType.Other, 2, 0, 0)
+
+    print("\n 2维，mean pooling\n")
+
+    print(y)
+
+
+"""
+功能：测试 mean pooling，3维
+参数：NULL 
+返回值：NULL
+"""
+
+
+def test_mean_pooling_3d():
+    w, x = _create_w_x_3d()
+
+    con = MeanPooling()
+
+    y, err = con.convolution(w, x, Reversal.REV, ConvolutionType.Other, 2, 0, 0)
+
+    print("\n 3维，mean pooling\n")
+
+    print(y)
+
+
+"""
+功能：构建 w, x，2维
+参数：NULL 
+返回值：NULL
+"""
+
+
+def _create_w_x_2d():
+    # 输入信息 x
+    x = np.asarray([[1, 1, 2, 0],
+                    [0, 1, 1, 2],
+                    [0, 0, 1, 3],
+                    [0, 0, 1, 1]])
+
+    # 卷积核
+    w = np.zeros([2, 2])
+
+    return w, x
+
+
+"""
+功能：构建 w, x，3维
+参数：NULL 
+返回值：NULL
+"""
+
+
+def _create_w_x_3d():
+    # 输入信息 x
+    x = np.asarray([[[1], [1], [2], [0]],
+                    [[0], [1], [1], [2]],
+                    [[0], [0], [1], [3]],
+                    [[0], [0], [1], [1]]])
+
+    # 卷积核
+    w = np.zeros([2, 2, 1])
+
+    return w, x
