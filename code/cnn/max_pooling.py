@@ -17,43 +17,29 @@ class：MaxPooling 最大汇聚
 
 class MaxPooling(Convolution):
     """
-    功能：计算卷积
+    功能：计算 x 某一点（i, j）的卷积
     参数：
     x：输入信息
     y：待赋值的卷积结果
-    返回值：NULL
-    说明：重载 _cal_cvl 函数，采用 max 算法
+    i：x 的 width index
+    j：x 的 height index
+    d: x 的 depth index
+    返回值： x 某一点（i, j）的卷积
+
     """
 
-    def _cal_cvl(self, x, y):
-        # 卷积的 width，height
-        y_width = y.shape[0]
-        y_height = y.shape[1]
+    def _cal_cvl_index(self, x, y, i, j, d):
+        # 分配一个临时数组
+        tmp_list = list()
 
-        # 计算卷积 y
-        for i in range(0, y_width):
-            for j in range(0, y_height):
-                # 3维卷积
-                if CVLDim.THREE.value == self.cvl_dim:
-                    for d in range(0, self.w_depth):
-                        # 分配一个临时数组
-                        tmp_list = list()
+        for u in range(0, self.w_width):
+            for v in range(0, self.w_height):
+                tmp_list.append(self._x_value(x, i, j, u, v, d))
 
-                        for u in range(0, self.w_width):
-                            for v in range(0, self.w_height):
-                                tmp_list.append(x[(i * self.s + u), (j * self.s + v), d])
+        # 3维卷积
+        if CVLDim.THREE.value == self.cvl_dim:
+            y[i, j, d] = max(tmp_list)
+        # 2维卷积
+        else:
+            y[i, j] = max(tmp_list)
 
-                        # 等于最大值
-                        y[i, j, d] = max(tmp_list)
-
-                # 2维卷积
-                else:
-                    # 分配一个临时数组
-                    tmp_list = list()
-
-                    for u in range(0, self.w_width):
-                        for v in range(0, self.w_height):
-                            tmp_list.append(x[(i * self.s + u), (j * self.s + v)])
-
-                    # 等于最大值
-                    y[i, j] = max(tmp_list)

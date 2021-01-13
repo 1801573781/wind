@@ -332,15 +332,74 @@ class Convolution:
         # 计算卷积 y
         for i in range(0, y_width):
             for j in range(0, y_height):
-                for u in range(0, self.w_width):
-                    for v in range(0, self.w_height):
-                        # 3维卷积
-                        if CVLDim.THREE.value == self.cvl_dim:
-                            for d in range(0, self.w_depth):
-                                y[i, j, d] += self.w[u, v, d] * x[(i * self.s + u), (j * self.s + v), d]
-                        # 2维卷积
-                        else:
-                            y[i, j] += self.w[u, v] * x[(i * self.s + u), (j * self.s + v)]
+                # 3维卷积
+                if CVLDim.THREE.value == self.cvl_dim:
+                    for d in range(0, self.w_depth):
+                        self._cal_cvl_index(x, y, i, j, d)
+                # 2维卷积
+                else:
+                    self._cal_cvl_index(x, y, i, j, -1)
+
+    """
+    功能：计算 x 某一点（i, j）的卷积
+    参数：
+    x：输入信息
+    y：待赋值的卷积结果
+    i：y 的 width index
+    j：y 的 height index
+    d: y 的 depth index
+    返回值： NULL    
+    """
+
+    def _cal_cvl_index(self, x, y, i, j, d):
+        for u in range(0, self.w_width):
+            for v in range(0, self.w_height):
+                # 3维卷积
+                if CVLDim.THREE.value == self.cvl_dim:
+                    y[i, j, d] += self._w_value(u, v, d) * self._x_value(x, i, j, u, v, d)
+                # 2维卷积
+                else:
+                    y[i, j] += self._w_value(u, v, d) * self._x_value(x, i, j, u, v, d)
+
+    """
+    功能：get w 某一个 index 的值
+    参数：
+    x：输入信息    
+    i：y 的 width index
+    j：y 的 height index    
+    u：w 的 width index
+    v：w 的 height index
+    d：w 的 depth index 
+    返回值：某一个 index 的值
+    """
+
+    def _w_value(self, u, v, d,):
+        # 3维卷积
+        if CVLDim.THREE.value == self.cvl_dim:
+            return self.w[u, v, d]
+        # 2维卷积
+        else:
+            return self.w[u, v]
+
+    """
+    功能：get x 某一个 index 的值
+    参数：
+    x：输入信息    
+    i：y 的 width index
+    j：y 的 height index    
+    u：w 的 width index
+    v：w 的 height index
+    d：w 的 depth index 
+    返回值：某一个 index 的值     
+    """
+
+    def _x_value(self, x, i, j, u, v, d):
+        # 3维卷积
+        if CVLDim.THREE.value == self.cvl_dim:
+            return x[(i * self.s + u), (j * self.s + v), d]
+        # 2维卷积
+        else:
+            return x[(i * self.s + u), (j * self.s + v)]
 
 
 """
@@ -360,7 +419,7 @@ def cal_cvl_wh(w, x, s):
     x_width = x.shape[0]
     x_height = x.shape[1]
 
-    # 卷积的 row count 和 col count
+    # 卷积的 width 和 height
     width = (x_width - w_width) // s + 1  # 向下取整
     height = (x_height - w_height) // s + 1  # 向下取整
 

@@ -34,7 +34,7 @@ def test_cvl_2d():
 
     con = Convolution()
 
-    y, err = con.convolution(w, x, Reversal.REV, ConvolutionType.Other, 2, 10, 10)
+    y, err = con.convolution(w, x, Reversal.REV, ConvolutionType.Narrow, 2, 10, 10)
 
     print("\n")
 
@@ -63,7 +63,7 @@ def test_cvl_3d():
 
     con = Convolution()
 
-    y, err = con.convolution(w, x, Reversal.REV, ConvolutionType.Other, 2, 10, 10)
+    y, err = con.convolution(w, x, Reversal.REV, ConvolutionType.Narrow, 2, 10, 10)
 
     print("\n")
 
@@ -142,7 +142,7 @@ def test_image_3d():
 
     # 卷积
     # con = Convolution()
-    con = MeanPooling()
+    con = MaxPooling()
 
     # 输入信息 x
     x = data
