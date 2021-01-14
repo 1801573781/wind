@@ -31,10 +31,10 @@ class NeuralNetwork:
     # 每一层神经元的数量
     neuron_count_list = None
 
-    # 每一层 w 参数，w 是个 matrix
+    # 每一层 w 参数，w 是个 matrix（BP 网络） or 3维数组（卷积网络）
     W = None
 
-    # 每一层 b 参数，b 是个 vector
+    # 每一层 b 参数，b 是个 vector（BP 网络） or 2维数组（卷积网络）
     B = None
 
     # 样本数量
@@ -61,16 +61,14 @@ class NeuralNetwork:
     sx_list：训练样本输入列表
     sy_list：训练样本输出列表
     loop_max：循环训练的最大次数    
-    neuron_count_list：每一层神经元数量
+    neuron_count_list：每一层神经元数量(对于卷积网络，这个参数没有意义)
     rate：学习效率    
-    activation：激活函数对象
-    layer_count：神经网络层数（除了卷积网络，这个参数没有意义）
-    W：每一层 w 参数（除了卷积网络，这个参数没有意义）
-    B：每一层 b 参数（除了卷积网络，这个参数没有意义）    
+    activation：激活函数对象    
+    W：每一层 w 参数（除了卷积网络，这个参数没有意义）       
     返回值：错误码
     """
 
-    def train(self, sx_list, sy_list, loop_max, neuron_count_list, rate, activation, layer_count=0, W=None, B=None):
+    def train(self, sx_list, sy_list, loop_max, neuron_count_list, rate, activation, W=None):
         # 1. 成员变量赋值
         self.sx_list = sx_list
         self.sy_list = sy_list
@@ -81,10 +79,8 @@ class NeuralNetwork:
         # 如果是卷积网络，这个参数没有意义（如果是卷积网络，直接传入0即可）
         self.neuron_count_list = neuron_count_list
 
-        # 如果不是卷积网络，这3个参数，没有意义（如果不是卷积网络，直接传入默认值即可）
-        self.layer_count = layer_count
+        # 如果不是卷积网络，这个参数，没有意义（如果不是卷积网络，直接传入默认值即可）
         self.W = W
-        self.B = B
 
         # 2. 校验
         err = self._valid()
@@ -258,7 +254,7 @@ class NeuralNetwork:
     def _calc_nn(self, sx):
         x = sx
         y = 0
-        nn_y_list = []
+        nn_y_list = list()
 
         # 逐层计算
         for layer in range(0, self.layer_count):

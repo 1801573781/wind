@@ -247,7 +247,6 @@ def rgb_component_file(file_name, rgb_component):
         return errorcode.FAILED
 
     # 2. 获取 RGB 分量
-
     if ImageDataType.GRAY == image_data_type:
         return 0, errorcode.FAILED
     else:
@@ -333,17 +332,6 @@ def show_data(data, image_data_type):
         cmap = None
 
     plt.imshow(data, cmap)
-
-    """
-    # 如果灰度图像，就灰度显示
-    if ImageDataType.GRAY == image_data_type:
-        # plt.imshow(data, cmap='Greys_r')
-        # plt.imshow(data, cmap="Blues")
-        plt.imshow(data, cmap="Reds")
-    # 否则，就正常显示
-    else:
-        plt.imshow(data)
-    """
 
     plt.axis('off')  # 不显示坐标轴
     plt.show()

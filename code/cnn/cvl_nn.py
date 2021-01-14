@@ -12,7 +12,6 @@ from gl import errorcode
 
 from cnn.convolution import Convolution, ConvolutionType, Reversal, cal_cvl_wh
 
-
 """
 class：CVLNeuralNetwork，卷积神经网络
 说明：
@@ -73,7 +72,7 @@ class CVLNeuralNetwork(NeuralNetwork):
         if len1 != len2:
             return errorcode.FAILED
 
-        # 2 样本数量，须 >= 1（equal with parent class）
+        # 2 样本数量，须 >= 1（same as parent class）
         sample_count = len(self.sx_list)
         if 1 > sample_count:
             return errorcode.FAILED
@@ -143,14 +142,17 @@ class CVLNeuralNetwork(NeuralNetwork):
         self.sx_dim = self.sx_list[0].shape
 
         # 图像宽度，高度，深度
-        self.width = self.sx_dimsx_dim[0]
-        self.height = self.sx_dimsx_dim[1]
-        self.depth = self.sx_dimsx_dim[2]
+        self.width = self.sx_dim[0]
+        self.height = self.sx_dim[1]
+        self.depth = self.sx_dim[2]
 
         # 神经网络输出，向量维度
         self.sy_dim = self.neuron_count_list[self.layer_count - 1]
 
-        #
+        # 初始化每一层神经网络的输出
+        # self._init_cnn_a()
+
+        # 初始化 self.layer_count, self.B
 
     """
     功能：初始化每一层神经网络的输出（经过激活函数以后的输出）
@@ -158,6 +160,7 @@ class CVLNeuralNetwork(NeuralNetwork):
     返回值：NULL
     """
 
+    """
     def _init_cnn_a(self):
         # a_list 是一个列表，a 是一个3维数组
         self.a_list = list()
@@ -177,3 +180,56 @@ class CVLNeuralNetwork(NeuralNetwork):
             w = self.W[layer]
 
             width, height = cal_cvl_wh(w, x, self.s)
+
+            # 每一层的输出，都是 [width, height, 1] 3维数组
+            a = np.zeros([width, height, 1])
+
+            self.a_list.append(a)
+    """
+
+    """
+    功能：计算某一层神经网络的输出
+    参数：
+    x：该层神经网络的输入，x 是一个3维数组
+    w: 该层神经网络的 w 参数, w 是一个3维数组
+    b：该层神经网络的 b 参数，b 是一个2维数组
+    返回值：y，该层神经网络的输出（sigmoid(cvl(w, x) + b)）， y 是一个3维数字
+    """
+
+    def _calc_layer(self, x, layer):
+        # 1、获取该层的参数：w, b
+        w = self.W[layer]
+        b = self.B[layer]
+
+        # 2、构建卷积对象
+        cvl = Convolution()
+
+        # 3、计算卷积结果
+        y = cvl.convolution_sum_depth(w, x)
+
+        # 4. y = y + b
+        y_width = y.shape[0]
+        y_height = y.shape[1]
+
+        for i in range(0, y_width):
+            for j in range(0, y_height):
+                y[i, j, 0] = b[i, j]  # y 的 depth 肯定是1
+
+        # 针对每一个元素，调用激活函数
+        for i in range(0, y_width):
+            for j in range(0, y_height):
+                y[i, j, 0] = self.activation.active(y[i, j, 0])  # y 的 depth 肯定是1
+
+        return y
+
+    """
+    功能：修正 W，B
+    参数：
+    nn_y_list：神经网路计算的每一层结果，nn_y 是一个向量
+    sx：训练样本的输入，sx 是一个向量
+    sy：训练样本的输出，sy 是一个向量 
+    返回值：NULL
+    """
+
+    def _modify_wb(self, nn_y_list, sx, sy):
+        pass
