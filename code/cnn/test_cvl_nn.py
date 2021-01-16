@@ -13,7 +13,7 @@ from cnn.max_pooling import MaxPooling
 from cnn.mean_pooling import MeanPooling
 from cnn.convolution import Convolution, Reversal, ConvolutionType
 from cnn.cvl_nn import CVLNeuralNetwork
-from my_image.image import show_file, gray_file, show_data, ImageDataType, get_data
+from my_image.my_image import show_file, gray_file, show_data, ImageDataType, get_data
 
 """
 功能：测试卷积神经网络
@@ -24,7 +24,7 @@ from my_image.image import show_file, gray_file, show_data, ImageDataType, get_d
 
 def test_cvl_nn():
     # 图像数据
-    file_name = "./../my_image/dog1.bmp"
+    file_name = "../picture/base_test/dog1.bmp"
 
     show_file(file_name)
 

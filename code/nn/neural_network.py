@@ -37,6 +37,9 @@ class NeuralNetwork:
     # 每一层 b 参数，b 是个 vector（BP 网络） or 2维数组（卷积网络）
     B = None
 
+    # 每一层 w 参数的 shape list（除了卷积网络，这个参数没有意义）
+    w_shape_list = None
+
     # 样本数量
     sample_count = 0
 
@@ -64,11 +67,11 @@ class NeuralNetwork:
     neuron_count_list：每一层神经元数量(对于卷积网络，这个参数没有意义)
     rate：学习效率    
     activation：激活函数对象    
-    W：每一层 w 参数（除了卷积网络，这个参数没有意义）       
+    w_shape_list：每一层 w 参数的 shape list（除了卷积网络，这个参数没有意义）       
     返回值：错误码
     """
 
-    def train(self, sx_list, sy_list, loop_max, neuron_count_list, rate, activation, W=None):
+    def train(self, sx_list, sy_list, loop_max, neuron_count_list, rate, activation, w_shape_list=None):
         # 1. 成员变量赋值
         self.sx_list = sx_list
         self.sy_list = sy_list
@@ -76,11 +79,11 @@ class NeuralNetwork:
         self.rate = rate
         self.activation = activation
 
-        # 如果是卷积网络，这个参数没有意义（如果是卷积网络，直接传入0即可）
+        # 如果是卷积网络，这个参数没有意义（如果是卷积网络，直接传入 None 即可）
         self.neuron_count_list = neuron_count_list
 
         # 如果不是卷积网络，这个参数，没有意义（如果不是卷积网络，直接传入默认值即可）
-        self.W = W
+        self.w_shape_list = w_shape_list
 
         # 2. 校验
         err = self._valid()
@@ -117,7 +120,7 @@ class NeuralNetwork:
         if errorcode.SUCCESS != err:
             return err
 
-            # 4. 最大循环训练次数，须 >= 1
+        # 4. 最大循环训练次数，须 >= 1
         if 1 > self.loop_max:
             return errorcode.FAILED
 

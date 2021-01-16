@@ -58,6 +58,38 @@ class CVLNeuralNetwork(NeuralNetwork):
     rev = Reversal.NO_REV
 
     """
+    功能：参数校验
+    参数：NULL    
+    返回值：错误码    
+    """
+
+    def _valid(self):
+        # 调用父类的 _valid
+        err = super()._valid()
+
+        if errorcode.SUCCESS != err:
+            return err
+
+        # 校验 w_shape_list
+
+        if self.w_shape_list is None:
+            return errorcode.FAILED
+
+        if 0 >= len(self.w_shape_list):
+            return errorcode
+
+        # 这里只处理3维数组
+        shape = self.w_shape_list[0]
+
+        if 3 != len(shape):
+            return errorcode.FAILED
+
+        if (0 >= shape[0]) or (0 >= shape[1]) or (0 >= shape[1]):
+            return errorcode.FAILED
+
+        return errorcode.SUCCESS
+
+    """
     功能：校验样本
     参数：NULL    
     返回值：错误码
@@ -149,10 +181,55 @@ class CVLNeuralNetwork(NeuralNetwork):
         # 神经网络输出，向量维度
         self.sy_dim = self.neuron_count_list[self.layer_count - 1]
 
-        # 初始化每一层神经网络的输出
-        # self._init_cnn_a()
+        # 初始化 self.layer_count
+        self.layer_count = len(self.w_shape_list)
 
-        # 初始化 self.layer_count, self.B
+        # 初始化 W, B
+        self._init_w_b()
+
+    """
+    功能：初始化 W, B
+    参数：NULL
+    返回值：NULL
+    
+    特别说明，这里就假设 w 是 3维数组
+    """
+
+    def _init_w_b(self):
+        # 1. W，B 是 list
+        self.W = list()
+        self.B = list()
+
+        # 2. 针对每一层进行初始化
+        x = 0
+        b = 0
+        for layer in range(0, self.layer_count):
+            # 2.1 每一层的卷积核
+            width = self.w_shape_list[layer][0]
+            height = self.w_shape_list[layer][1]
+            depth = self.w_shape_list[layer][2]
+            w = np.zeros([width, height, depth])
+            self.W.append(w)
+
+            # 2.2 每一层的 b
+
+            # 如果是第一层，x 就是样本输入
+            if 0 == layer:
+                x = self.sx_list[0]
+            # 否则的话，x 是上一层的输出
+            # 上一层的输出的 width，height 等同于 b
+            else:
+                x = b
+
+            width, height = cal_cvl_wh(w, x, self.s)
+
+            # 每一层的b，都是 [width, height, 1] 3维数组
+            b = np.zeros([width, height, 1])
+
+            self.B.append(b)
+
+
+
 
     """
     功能：初始化每一层神经网络的输出（经过激活函数以后的输出）

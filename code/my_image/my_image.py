@@ -12,6 +12,17 @@ from enum import Enum
 
 from gl import errorcode
 
+
+"""
+class：ArrayDim，数组维度枚举值
+"""
+
+
+class ArrayDim(Enum):
+    TWO = 2
+    THREE = 3
+
+
 """
 class：ImageDataType，图像数据类型枚举值
 """
@@ -38,6 +49,17 @@ class RGBComponent(Enum):
     G = 1
     B = 2
 
+
+"""
+class：NormalizationType，图像数据归一化类型
+NORMAL：将图像数据归一化到 0~1
+UN_NORMAL：将图像数据反归一化到 0~255
+"""
+
+
+class NormalizationType(Enum):
+    NORMAL = 1
+    UN_NORMAL = 2
 
 """
 功能：读取一个图像文件的图像数据
@@ -91,14 +113,16 @@ def get_data(file_name):
 
 """
 功能：将一个 RGB 图像转为灰度图像
-参数：NULL    
+参数：
+file_name：图像文件名
+dim：指明返回值是2维数组还是3维数组
 返回值：
 gray：图像的灰度数组（是一个2维数组）
 err：错误码
 """
 
 
-def gray_file(file_name):
+def gray_file(file_name, dim=ArrayDim.TWO):
     # 1. 读取图像
     data, image_data_type, err = get_data(file_name)
 
@@ -113,7 +137,7 @@ def gray_file(file_name):
     if ImageDataType.GRAY == image_data_type:
         return data, errorcode.SUCCESS
     else:
-        return gray_data(data), errorcode.SUCCESS
+        return gray_data(data, dim), errorcode.SUCCESS
 
 
 """
@@ -121,18 +145,23 @@ def gray_file(file_name):
 参数：
 rgb_data：一个图像的 rgb 数据（3维数组）    
 返回值：
-gray：图像的灰度数组（是一个2维数组）
+gray：图像的灰度数组（是一个2维数组 or 3维数组）
+dim：指明返回值是2维数组还是3维数组
 特别说明：这里忽略 RGBA or ARGB（以后再补上）
 """
 
 
-def gray_data(rgb_data):
+def gray_data(rgb_data, dim=ArrayDim.TWO):
     # 图像宽度和高度
     width = rgb_data.shape[0]
     height = rgb_data.shape[1]
 
     # 构建灰度图像2维数组
-    gray = np.zeros([width, height])
+    if ArrayDim.TWO == dim:
+        gray = np.zeros([width, height])
+    # 构建灰度图像3维数组
+    else:
+        gray = np.zeros([width, height, 1])
 
     # 转换成灰度
     for i in range(0, width):
@@ -141,9 +170,16 @@ def gray_data(rgb_data):
             rgb = rgb_data[i, j]
 
             # 灰度转换公式为：0.299 * R + 0.587 * G + 0.114 * B
-            gray[i, j] = 0.299 * rgb[RGBComponent.R.value] + \
-                         0.587 * rgb[RGBComponent.G.value] + \
-                         0.114 * rgb[RGBComponent.B.value]
+            # 灰度图像2维数组
+            if ArrayDim.TWO == dim:
+                gray[i, j] = 0.299 * rgb[RGBComponent.R.value] + \
+                             0.587 * rgb[RGBComponent.G.value] + \
+                             0.114 * rgb[RGBComponent.B.value]
+            # 灰度图像3维数组
+            else:
+                gray[i, j, 0] = 0.299 * rgb[RGBComponent.R.value] + \
+                             0.587 * rgb[RGBComponent.G.value] + \
+                             0.114 * rgb[RGBComponent.B.value]
 
     return gray
 
@@ -152,91 +188,98 @@ def gray_data(rgb_data):
 功能：获取一个 RGB 图像的 R 分量
 参数：
 rgb_data：一个图像的 rgb 数据（3维数组）    
-返回值：图像的 R 分量数组（是一个2维数组）
+dim：指明返回值是2维数组还是3维数组
+返回值：图像的 R 分量数组（是一个2维数组 or 3维数组）
 """
 
 
-def r_data(rgb_data):
-    return _rgb_component_data(rgb_data, RGBComponent.R)
+def r_data(rgb_data, dim=ArrayDim.TWO):
+    return _rgb_component_data(rgb_data, RGBComponent.R, dim)
 
 
 """
 功能：获取一个 RGB 图像的 G 分量
 参数：
-rgb_data：一个图像的 rgb 数据（3维数组）    
-返回值：图像的 R 分量数组（是一个2维数组）
+rgb_data：一个图像的 rgb 数据（3维数组）
+dim：指明返回值是2维数组还是3维数组    
+返回值：图像的 R 分量数组（是一个2维数组 or 3维数组）
 """
 
 
-def g_data(rgb_data):
-    return _rgb_component_data(rgb_data, RGBComponent.G)
+def g_data(rgb_data, dim=ArrayDim.TWO):
+    return _rgb_component_data(rgb_data, RGBComponent.G, dim)
 
 
 """
 功能：获取一个 RGB 图像的 B 分量
 参数：
 rgb_data：一个图像的 rgb 数据（3维数组）    
-返回值：图像的 B 分量数组（是一个2维数组）
+dim：指明返回值是2维数组还是3维数组
+返回值：图像的 B 分量数组（是一个2维数组 or 3维数组）
 """
 
 
-def b_data(rgb_data):
-    return _rgb_component_data(rgb_data, RGBComponent.B)
+def b_data(rgb_data, dim=ArrayDim.TWO):
+    return _rgb_component_data(rgb_data, RGBComponent.B, dim)
 
 
 """
 功能：获取一个 RGB 图像的 R 分量
 参数：
 file_name：图像名称    
+dim：指明返回值是2维数组还是3维数组
 返回值：
-data：图像的 R 分量数组（是一个2维数组）
+data：图像的 R 分量数组（是一个2维数组 or 3维数组）
 err：错误码
 """
 
 
-def r_component_file(file_name):
-    return rgb_component_file(file_name, RGBComponent.R)
+def r_component_file(file_name, dim=ArrayDim.TWO):
+    return rgb_component_file(file_name, RGBComponent.R, dim)
 
 
 """
 功能：获取一个 RGB 图像的 G 分量
 参数：
 file_name：图像名称    
+dim：指明返回值是2维数组还是3维数组
 返回值：
-data：图像的 G 分量数组（是一个2维数组）
+data：图像的 G 分量数组（是一个2维数组 or 3维数组）
 err：错误码
 """
 
 
-def g_component_file(file_name):
-    return rgb_component_file(file_name, RGBComponent.G)
+def g_component_file(file_name, dim=ArrayDim.TWO):
+    return rgb_component_file(file_name, RGBComponent.G, dim)
 
 
 """
 功能：获取一个 RGB 图像的 B 分量
 参数：
 file_name：图像名称    
+dim：指明返回值是2维数组还是3维数组
 返回值：
-data：图像的 B 分量数组（是一个2维数组）
+data：图像的 B 分量数组（是一个2维数组 or 3维数组）
 err：错误码
 """
 
 
-def b_component_file(file_name):
-    return rgb_component_file(file_name, RGBComponent.B)
+def b_component_file(file_name, dim=ArrayDim.TWO):
+    return rgb_component_file(file_name, RGBComponent.B, dim)
 
 
 """
 功能：获取一个 RGB 图像的 RGB 分量
 参数：
 file_name：图像名称    
+dim：指明返回值是2维数组还是3维数组
 返回值：
-data：图像的 RGB 分量数组（是一个2维数组）
+data：图像的 RGB 分量数组（是一个2维数组 or 3维数组）
 err：错误码
 """
 
 
-def rgb_component_file(file_name, rgb_component):
+def rgb_component_file(file_name, rgb_component, dim=ArrayDim.TWO):
     # 1. 读取图像
     data, image_data_type, err = get_data(file_name)
 
@@ -250,25 +293,30 @@ def rgb_component_file(file_name, rgb_component):
     if ImageDataType.GRAY == image_data_type:
         return 0, errorcode.FAILED
     else:
-        return _rgb_component_data(data, rgb_component), errorcode.SUCCESS
+        return _rgb_component_data(data, rgb_component, dim), errorcode.SUCCESS
 
 
 """
 功能：获取一个 RGB 图像的 RGB 分量
 参数：
-rgb_data：一个图像的 rgb 数据（3维数组）    
-返回值：图像的 RGB 分量数组（是一个2维数组）
+rgb_data：一个图像的 rgb 数据（3维数组）
+dim：指明返回值是2维数组还是3维数组    
+返回值：图像的 RGB 分量数组（是一个2维数组 or 3维数组）
 特别说明：这里忽略 RGBA or ARGB（以后再补上）
 """
 
 
-def _rgb_component_data(rgb_data, rgb_component):
+def _rgb_component_data(rgb_data, rgb_component, dim=ArrayDim.TWO):
     # 图像宽度和高度
     width = rgb_data.shape[0]
     height = rgb_data.shape[1]
 
     # 构建分量图像2维数组
-    data = np.zeros([width, height])
+    if ArrayDim.TWO == dim:
+        data = np.zeros([width, height])
+    # 构建分量图像3维数组
+    else:
+        data = np.zeros([width, height, 1])
 
     # 提取分量
     for i in range(0, width):
@@ -277,7 +325,12 @@ def _rgb_component_data(rgb_data, rgb_component):
             rgb = rgb_data[i, j]
 
             # 提取 RGB 分量
-            data[i, j] = rgb[rgb_component.value]
+            # 2维数组
+            if ArrayDim.TWO == dim:
+                data[i, j] = rgb[rgb_component.value]
+            # 3维数组
+            else:
+                data[i, j, 0] = rgb[rgb_component.value]
 
     return data
 
@@ -285,7 +338,7 @@ def _rgb_component_data(rgb_data, rgb_component):
 """
 功能：显示一个图像（文件名）
 参数：
-file_name：图像文件名    
+file_name：图像文件名   
 返回值：错误码
 """
 
@@ -302,6 +355,58 @@ def show_file(file_name):
 
     # 显示图像
     show_data(data, image_data_type)
+
+
+"""
+功能：将图像数据归一化（归一为 0~1） or 反归一化（反归一化为 0~255）
+参数：
+data：图像数据   
+type：归一化类型
+返回值：图像数据归一化/反归一化的结果
+"""
+
+
+def normalize(data, normalize_type=NormalizationType.NORMAL):
+    # 数组维度
+    shape = data.shape
+
+    # 数组 width, height, depth
+    width = shape[0]
+    height = shape[1]
+
+    if ArrayDim.TWO.value == len(shape):
+        dim = ArrayDim.TWO
+        depth = -1
+        y = np.zeros([width, height])
+    else:
+        dim = ArrayDim.THREE
+        depth = shape[2]
+        y = np.zeros([width, height, depth])
+
+    # 归一化 or 反归一化
+    for i in range(0, width):
+        for j in range(0, height):
+            # 2维数组
+            if ArrayDim.TWO == dim:
+                # 归一化
+                if NormalizationType.NORMAL == normalize_type:
+                    y[i, j] = data[i, j] / 255
+                # 反归一化
+                else:
+                    y[i, j] = data[i, j] * 255
+
+            # 3维数组
+            for k in range(0, depth):
+                # 归一化
+                if NormalizationType.NORMAL == normalize_type:
+                    y[i, j, k] = data[i, j, k] / 255
+                # 反归一化
+                else:
+                    y[i, j, k] = data[i, j, k] * 255
+
+    return y
+
+
 
 
 """
@@ -343,7 +448,7 @@ test
 
 
 def test():
-    file_name = "./dog1.bmp"
+    file_name = "../picture/base_test/dog1.bmp"
 
     show_file(file_name)
 

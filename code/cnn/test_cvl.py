@@ -10,7 +10,7 @@ import os
 from cnn.max_pooling import MaxPooling
 from cnn.mean_pooling import MeanPooling
 from cnn.convolution import Convolution, Reversal, ConvolutionType
-from my_image.image import show_file, gray_file, show_data, ImageDataType, get_data
+from my_image.my_image import show_file, gray_file, show_data, ImageDataType, get_data
 
 """
 功能：测试卷积网络-2维
@@ -81,7 +81,7 @@ def test_image_2d():
     os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
     # 图像数据（灰度）
-    file_name = "./../my_image/dog1.bmp"
+    file_name = "../picture/base_test/dog1.bmp"
 
     show_file(file_name)
 
@@ -134,7 +134,7 @@ def test_image_3d():
     os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
     # 图像数据
-    file_name = "./../my_image/dog1.bmp"
+    file_name = "../picture/base_test/dog1.bmp"
 
     show_file(file_name)
 
