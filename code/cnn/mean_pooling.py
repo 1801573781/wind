@@ -28,7 +28,7 @@ class MeanPooling(Convolution):
 
     """
 
-    def _cal_cvl_index(self, x, y, i, j, d):
+    def _cal_cvl_on_index(self, x, y, i, j, d):
         # sum 的初值 = 0
         tmp = 0
 

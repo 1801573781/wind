@@ -11,16 +11,7 @@ import numpy as np
 from enum import Enum
 
 from gl import errorcode
-
-
-"""
-class：ArrayDim，数组维度枚举值
-"""
-
-
-class ArrayDim(Enum):
-    TWO = 2
-    THREE = 3
+from gl.common_enum import ArrayDim
 
 
 """
@@ -60,6 +51,7 @@ UN_NORMAL：将图像数据反归一化到 0~255
 class NormalizationType(Enum):
     NORMAL = 1
     UN_NORMAL = 2
+
 
 """
 功能：读取一个图像文件的图像数据
@@ -178,8 +170,8 @@ def gray_data(rgb_data, dim=ArrayDim.TWO):
             # 灰度图像3维数组
             else:
                 gray[i, j, 0] = 0.299 * rgb[RGBComponent.R.value] + \
-                             0.587 * rgb[RGBComponent.G.value] + \
-                             0.114 * rgb[RGBComponent.B.value]
+                                0.587 * rgb[RGBComponent.G.value] + \
+                                0.114 * rgb[RGBComponent.B.value]
 
     return gray
 
@@ -390,23 +382,21 @@ def normalize(data, normalize_type=NormalizationType.NORMAL):
             if ArrayDim.TWO == dim:
                 # 归一化
                 if NormalizationType.NORMAL == normalize_type:
-                    y[i, j] = data[i, j] / 255
+                    y[i, j] = min(data[i, j] / 255, 1)
                 # 反归一化
                 else:
-                    y[i, j] = data[i, j] * 255
+                    y[i, j] = min(data[i, j] * 255, 255)
 
             # 3维数组
             for k in range(0, depth):
                 # 归一化
                 if NormalizationType.NORMAL == normalize_type:
-                    y[i, j, k] = data[i, j, k] / 255
+                    y[i, j, k] = min(data[i, j, k] / 255, 1)
                 # 反归一化
                 else:
-                    y[i, j, k] = data[i, j, k] * 255
+                    y[i, j, k] = min(data[i, j, k] * 255, 255)
 
     return y
-
-
 
 
 """

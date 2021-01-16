@@ -103,8 +103,29 @@ class NeuralNetwork:
     """
 
     def _valid(self):
+        # 1. 校验每层神经元
+        self._valid_layer_neuron()
+
+        # 2. 输入样本与输出样本
+        err = self._valid_sample()
+        if errorcode.SUCCESS != err:
+            return err
+
+        # 3. 最大循环训练次数，须 >= 1
+        if 1 > self.loop_max:
+            return errorcode.FAILED
+
+        return errorcode.SUCCESS
+
+    """
+    功能：校验每层神经元
+    参数：NULL    
+    返回值：错误码    
+    """
+    def _valid_layer_neuron(self):
         # 1. 神经网络层数，须 >= 1
         layer_count = len(self.neuron_count_list)
+
         if 1 > layer_count:
             return errorcode.FAILED
 
@@ -114,17 +135,6 @@ class NeuralNetwork:
 
             if 1 > count:
                 return errorcode.FAILED
-
-        # 3. 输入样本与输出样本
-        err = self._valid_sample()
-        if errorcode.SUCCESS != err:
-            return err
-
-        # 4. 最大循环训练次数，须 >= 1
-        if 1 > self.loop_max:
-            return errorcode.FAILED
-
-        return errorcode.SUCCESS
 
     """
     功能：校验样本
@@ -213,6 +223,8 @@ class NeuralNetwork:
         for i in range(0, self.layer_count):
             b = np.zeros([self.neuron_count_list[i], 1])
             self.B.append(b)
+
+        return errorcode.SUCCESS
 
     """
     功能：训练（protected 函数）
@@ -313,7 +325,7 @@ class NeuralNetwork:
     功能：预测
     参数：
     sx_list：待预测的样本列表，其中 sx 是向量 
-    返回值：NULL
+    返回值：预测结果
     """
 
     def predict(self, sx_list, sy_list):
@@ -328,9 +340,7 @@ class NeuralNetwork:
             nn_y = nn_y_list[len(nn_y_list) - 1]
 
             # 修正一下
-            y_dim = self.neuron_count_list[self.layer_count - 1]
-
-            for j in range(0, y_dim):
+            for j in range(0, self.y_dim):
                 nn_y[j, 0] = self.activation.revise(nn_y[j, 0])
 
             # 然后再添加到预测列表

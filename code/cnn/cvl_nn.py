@@ -5,10 +5,12 @@ Date：2021.01.10
 """
 
 import numpy as np
+import numpy.matlib
 import operator
 
 from nn.neural_network import NeuralNetwork
 from gl import errorcode
+from gl.common_enum import ArrayDim
 
 from cnn.convolution import Convolution, ConvolutionType, Reversal, cal_cvl_wh
 
@@ -90,6 +92,15 @@ class CVLNeuralNetwork(NeuralNetwork):
         return errorcode.SUCCESS
 
     """
+    功能：校验每层神经元
+    参数：NULL    
+    返回值：错误码
+    说明：对于卷积神经网络来说，这里不需要校验
+    """
+    def _valid_layer_neuron(self):
+        return errorcode.SUCCESS
+
+    """
     功能：校验样本
     参数：NULL    
     返回值：错误码
@@ -109,13 +120,13 @@ class CVLNeuralNetwork(NeuralNetwork):
         if 1 > sample_count:
             return errorcode.FAILED
 
-        # 3. 样本向量维度（different with parent class）
+        # 3. 样本数组维度（different with parent class）
 
-        # 3.1 输入向量维度
+        # 3.1 输入数组维度
         sx_dim = self.sx_list[0].shape
 
-        # 输入向量必须是3维矩阵：图像的宽度、高度，颜色的深度
-        if 3 != sx_dim:
+        # 输入样本必须是3维样本：图像的宽度、高度，颜色的深度
+        if ArrayDim.THREE.value != len(sx_dim):
             return errorcode.FAILED
 
         width = sx_dim[0]
@@ -130,12 +141,12 @@ class CVLNeuralNetwork(NeuralNetwork):
         if (3 < depth) or (1 > depth):
             return errorcode.FAILED
 
-        # 3.2 输出向量
-        sy_dim = len(self.sy_list[0])
+        # 3.2 输出数组维度
+        # sy_dim = self.sy_list[0].shape
 
         # 输出样本向量维度 > 1
-        if 1 > sy_dim:
-            return errorcode.FAILED
+        # if 1 > sy_dim:
+        #    return errorcode.FAILED
 
         # 3.2 每一个输入/输出样本的维度
         for i in range(0, sample_count):
@@ -150,6 +161,7 @@ class CVLNeuralNetwork(NeuralNetwork):
             if (shape_in[0] != width) or (shape_in[1] != height) or (shape_in[2] != depth):
                 return errorcode.FAILED
 
+            """
             # 输出样本的向量维度
             if shape_out[0] != sy_dim:
                 return errorcode.FAILED
@@ -157,6 +169,7 @@ class CVLNeuralNetwork(NeuralNetwork):
             # 输出样本只能有1列（因为是个向量）
             if shape_out[1] != 1:
                 return errorcode.FAILED
+            """
 
         return errorcode.SUCCESS
 
@@ -179,13 +192,15 @@ class CVLNeuralNetwork(NeuralNetwork):
         self.depth = self.sx_dim[2]
 
         # 神经网络输出，向量维度
-        self.sy_dim = self.neuron_count_list[self.layer_count - 1]
+        # self.sy_dim = self.neuron_count_list[self.layer_count - 1]
 
         # 初始化 self.layer_count
         self.layer_count = len(self.w_shape_list)
 
         # 初始化 W, B
         self._init_w_b()
+
+        return errorcode.SUCCESS
 
     """
     功能：初始化 W, B
@@ -224,12 +239,9 @@ class CVLNeuralNetwork(NeuralNetwork):
             width, height = cal_cvl_wh(w, x, self.s)
 
             # 每一层的b，都是 [width, height, 1] 3维数组
-            b = np.zeros([width, height, 1])
+            b = np.zeros([width, height, depth])
 
             self.B.append(b)
-
-
-
 
     """
     功能：初始化每一层神经网络的输出（经过激活函数以后的输出）
@@ -282,20 +294,24 @@ class CVLNeuralNetwork(NeuralNetwork):
         cvl = Convolution()
 
         # 3、计算卷积结果
-        y = cvl.convolution_sum_depth(w, x)
+        # y = cvl.convolution_sum_depth(w, x)
+        y, err = cvl.convolution(w, x)
 
         # 4. y = y + b
         y_width = y.shape[0]
         y_height = y.shape[1]
+        y_depth = y.shape[2]
 
         for i in range(0, y_width):
             for j in range(0, y_height):
-                y[i, j, 0] = b[i, j]  # y 的 depth 肯定是1
+                for k in range(0, y_depth):
+                    y[i, j, k] += b[i, j, k]
 
         # 针对每一个元素，调用激活函数
         for i in range(0, y_width):
             for j in range(0, y_height):
-                y[i, j, 0] = self.activation.active(y[i, j, 0])  # y 的 depth 肯定是1
+                for k in range(0, y_depth):
+                    y[i, j, k] = self.activation.active(y[i, j, k])
 
         return y
 
@@ -310,3 +326,26 @@ class CVLNeuralNetwork(NeuralNetwork):
 
     def _modify_wb(self, nn_y_list, sx, sy):
         pass
+
+    """
+    功能：预测
+    参数：
+    sx_list：待预测的样本列表，其中 sx 是向量 
+    返回值：预测结果
+    """
+
+    def predict(self, sx_list, sy_list):
+        count = len(sx_list)
+        py_list = list()
+
+        for i in range(0, count):
+            sx = sx_list[i]
+            nn_y_list = self._calc_nn(sx)
+
+            # 最后一层的 nn_y，才是神经网络的最终输出
+            nn_y = nn_y_list[len(nn_y_list) - 1]
+
+            # 然后再添加到预测列表
+            py_list.append(nn_y)
+
+        return py_list

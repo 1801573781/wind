@@ -335,10 +335,10 @@ class Convolution:
                 # 3维卷积
                 if CVLDim.THREE.value == self.cvl_dim:
                     for d in range(0, self.w_depth):
-                        self._cal_cvl_index(x, y, i, j, d)
+                        self._cal_cvl_on_index(x, y, i, j, d)
                 # 2维卷积
                 else:
-                    self._cal_cvl_index(x, y, i, j, -1)
+                    self._cal_cvl_on_index(x, y, i, j, -1)
 
     """
     功能：计算 x 某一点（i, j）的卷积
@@ -351,7 +351,7 @@ class Convolution:
     返回值： NULL    
     """
 
-    def _cal_cvl_index(self, x, y, i, j, d):
+    def _cal_cvl_on_index(self, x, y, i, j, d):
         for u in range(0, self.w_width):
             for v in range(0, self.w_height):
                 # 3维卷积

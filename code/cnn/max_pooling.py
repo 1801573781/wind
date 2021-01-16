@@ -28,7 +28,7 @@ class MaxPooling(Convolution):
 
     """
 
-    def _cal_cvl_index(self, x, y, i, j, d):
+    def _cal_cvl_on_index(self, x, y, i, j, d):
         # 分配一个临时数组
         tmp_list = list()
 
