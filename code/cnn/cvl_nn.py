@@ -44,6 +44,9 @@ class CVLNeuralNetwork(NeuralNetwork):
     # 可以理解为颜色深度（颜色维度）
     depth = 1
 
+    # 卷积对象
+    cvl = None
+
     # 每一层神经网络的输出（经过激活函数以后的输出），a 是一个三维数组
     a_list = None
 
@@ -58,6 +61,16 @@ class CVLNeuralNetwork(NeuralNetwork):
 
     # 是否翻转卷积
     rev = Reversal.NO_REV
+
+    """
+    功能：构造函数
+    参数：
+    cvl：卷积对象
+    返回值：NULL
+    """
+
+    def __init__(self, cvl):
+        self.cvl = cvl
 
     """
     功能：参数校验
@@ -141,13 +154,6 @@ class CVLNeuralNetwork(NeuralNetwork):
         if (3 < depth) or (1 > depth):
             return errorcode.FAILED
 
-        # 3.2 输出数组维度
-        # sy_dim = self.sy_list[0].shape
-
-        # 输出样本向量维度 > 1
-        # if 1 > sy_dim:
-        #    return errorcode.FAILED
-
         # 3.2 每一个输入/输出样本的维度
         for i in range(0, sample_count):
             shape_in = self.sx_list[i].shape
@@ -216,7 +222,6 @@ class CVLNeuralNetwork(NeuralNetwork):
         self.B = list()
 
         # 2. 针对每一层进行初始化
-        x = 0
         b = 0
         for layer in range(0, self.layer_count):
             # 2.1 每一层的卷积核
@@ -267,14 +272,11 @@ class CVLNeuralNetwork(NeuralNetwork):
         w = self.W[layer]
         b = self.B[layer]
 
-        # 2、构建卷积对象
-        cvl = Convolution()
-
-        # 3、计算卷积结果
-        y, err = cvl.convolution_sum_depth(w, x)
+        # 2、计算卷积结果
+        y, err = self.cvl.convolution_sum_depth(w, x)
         # y, err = cvl.convolution(w, x)
 
-        # 4. y = y + b
+        # 3. y = y + b
         y_width = y.shape[0]
         y_height = y.shape[1]
         y_depth = y.shape[2]
@@ -303,6 +305,100 @@ class CVLNeuralNetwork(NeuralNetwork):
 
     def _modify_wb(self, nn_y_list, sx, sy):
         pass
+
+    """
+    功能：后向传播，计算 ksi_list
+    参数：
+    nn_y_list：神经网路计算的每一层结果，nn_y 是一个3维数组    
+    sy：训练样本的输出，sy 是一个3维数组
+    返回值：ksi_list
+    说明：
+    1、ksi(代表希腊字母，音：科赛)，是一个3维数组，每层都有，代表目标函数 E 对每一层中间输出的偏导
+    2、ksi_list 记录每一层的 ksi
+    """
+
+    def __bp(self, nn_y_list, sy):
+        # 1. 初始化 ksi_list
+        ksi_list = [0] * self.layer_count
+
+        # 2. 计算最后一层 ksi
+
+        # 2.1 计算误差(err)：最后一层的计算结果与样本输出结果的比较（计算结果 - 训练样本的输出）
+        nn_y_last = nn_y_list[self.layer_count - 1]
+        err = np.subtract(nn_y_last, sy)  # 不知道3维数组是否可以这样相减
+
+        # 2.2 计算最后一层 ksi
+
+        # 最后一层 ksi：ksi_last，ksi_last 是个[width, height, 1] 3维数组
+        width = nn_y_last.shape[0]
+        height = nn_y_last.shape[1]
+        depth = nn_y_last.shape[2]  # 实际的值，depth = 1
+
+        ksi_last = np.zeros([width, height, depth])
+
+        # 计算 ksi_last 每一个元素
+        for k in range(0, depth):
+            for i in range(0, width):
+                for j in range(0, height):
+                    ksi_last[i, j, k] = err[i, j, k] * self.activation(nn_y_last[i, j, k])
+
+        # 将 ksi_last 放置入 ksi_list
+        ksi_list[self.layer_count - 1] = ksi_last
+
+        # 3. 反向传播，计算：倒数第2层 ~ 第1层的 ksi
+        for layer in range(self.layer_count - 2, -1, -1):
+            # 当前层神经网络的计算结果
+            nn_y_cur = nn_y_list[layer]
+
+            # 下一层的 ksi
+            ksi_next = ksi_list[layer + 1]
+
+            # 下一层的 w
+            w = self.W[layer + 1]
+
+            # 当前层的 ksi
+            ksi_cur = self.cvl.convolution(w, nn_y_cur, Reversal.REV, ConvolutionType.Wide)
+
+            # 将当前层计算出的 ksi 放置到 ksiList
+            ksi_list[layer] = ksi_cur
+
+        # return 计算结果
+        return ksi_list
+
+    """
+    功能：修正 W，B
+    参数： 
+    ksi_list：每一层的 ksi 的列表，ksi 是一个3维数组
+    sx：输入样本，sx 是一个3维数组
+    nn_y_list：神经网络的每一层的计算结果列表，nn_y 是一个3维数组    
+    返回值：NULL  
+    """
+
+    def __modify_wb_by_ksi_list(self, ksi_list, sx, nn_y_list):
+        # 逐层修正
+        for layer in range(0, self.layer_count):
+            # 当前层 w, b, ksi
+            w = self.W[layer]
+            b = self.B[layer]
+            ksi = ksi_list[layer]
+
+            # 上一层的输入
+            if 0 == layer:
+                v = sx
+            else:
+                v = nn_y_list[layer - 1]
+
+            # 损失函数针对当前层的 w 的偏导(partial derivative)，w_pd 是1个3维数组
+            w_pd = self.cvl.convolution(ksi, v)
+
+            # 修正当前层的 w
+            self.W[layer] = np.subtract(w, w_pd)  # 不知道3维数组是否可以这样相减
+
+            # 损失函数针对当前层的 b 的偏导(partial derivative)，b_pd 等于 ksi
+            b_pd = ksi
+
+            # 修正当前层的 b
+            self.B[layer] = np.subtract(b, b_pd)  # 不知道3维数组是否可以这样相减
 
     """
     功能：预测

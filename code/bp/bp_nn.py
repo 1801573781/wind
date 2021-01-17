@@ -33,7 +33,7 @@ class BPNeuralNetwork(NeuralNetwork):
 
     def _modify_wb(self, nn_y_list, sx, sy):
         # 1. 后向传播，计算 ksi_list
-        ksi_list = self.__bp(nn_y_list, sx, sy)
+        ksi_list = self.__bp(nn_y_list, sy)
 
         # 2. 通过 ksi_list，修正 W，B
         self.__modify_wb_by_ksi_list(ksi_list, sx, nn_y_list)
@@ -41,8 +41,7 @@ class BPNeuralNetwork(NeuralNetwork):
     """
     功能：后向传播，计算 ksi_list
     参数：
-    nn_y_list：神经网路计算的每一层结果，nn_y 是一个向量
-    sx：训练样本的输入，sx 是一个向量
+    nn_y_list：神经网路计算的每一层结果，nn_y 是一个向量    
     sy：训练样本的输出，sy 是一个向量 
     返回值：ksi_list
     说明：
@@ -50,7 +49,7 @@ class BPNeuralNetwork(NeuralNetwork):
     2、ksi_list 记录每一层的 ksi
     """
 
-    def __bp(self, nn_y_list, sx, sy):
+    def __bp(self, nn_y_list, sy):
         # 1. 初始化 ksi_list
         ksi_list = [0] * self.layer_count
 

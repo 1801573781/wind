@@ -104,7 +104,7 @@ class Convolution:
         if CVLDim.TWO.value == self.cvl_dim:
             return y, err
 
-        # 将所有深度的卷积相加
+        # 剩下的就是3维卷积：将所有深度的卷积相加
         width = y.shape[0]
         height = y.shape[1]
 
