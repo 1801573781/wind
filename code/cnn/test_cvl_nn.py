@@ -13,8 +13,14 @@ from cnn.max_pooling import MaxPooling
 from cnn.mean_pooling import MeanPooling
 from cnn.convolution import Convolution, Reversal, ConvolutionType
 from cnn.cvl_nn import CVLNeuralNetwork
+from my_image import my_image
 from my_image.my_image import show_file, gray_file, show_data, ImageDataType, get_data
 from activation.active import Sigmoid
+from activation.active import ReLU
+
+import os
+
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 """
 功能：测试卷积神经网络
@@ -25,11 +31,15 @@ from activation.active import Sigmoid
 
 def test_cvl_nn():
     # 图像数据
-    file_name = "../picture/base_test/dog1.bmp"
+    file_name = "../picture/number/9.bmp"
+    # file_name = "../picture/base_test/dog1.png"
 
     show_file(file_name)
 
     data, image_data_type, err = get_data(file_name)
+
+    # 归一化
+    data = my_image.normalize(data, my_image.NormalizationType.NORMAL)
 
     # 训练输入样本
     sx_list = list()
@@ -60,7 +70,8 @@ def test_cvl_nn():
     w_shape_list.append(w2_shape)
 
     # 激活函数
-    activation = Sigmoid()
+    # activation = Sigmoid()
+    activation = ReLU()
 
     # 构建卷积神经网络对象
     cnn = CVLNeuralNetwork()
@@ -73,4 +84,7 @@ def test_cvl_nn():
 
     # 将预测结果显示如初
     py = py_list[0]
+
+    py = my_image.normalize(py, my_image.NormalizationType.REV_NORMAL)
+
     show_data(py, ImageDataType.RGB)

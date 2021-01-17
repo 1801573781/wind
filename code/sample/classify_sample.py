@@ -5,8 +5,6 @@ Date：2021.01.01
 """
 
 import numpy as np
-from matplotlib import pyplot as plt
-import matplotlib
 import random
 
 from gl import draw

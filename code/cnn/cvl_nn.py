@@ -5,12 +5,12 @@ Date：2021.01.10
 """
 
 import numpy as np
-import numpy.matlib
 import operator
 
 from nn.neural_network import NeuralNetwork
 from gl import errorcode
 from gl.common_enum import ArrayDim
+from gl.common_function import rand_array
 
 from cnn.convolution import Convolution, ConvolutionType, Reversal, cal_cvl_wh
 
@@ -223,7 +223,7 @@ class CVLNeuralNetwork(NeuralNetwork):
             width = self.w_shape_list[layer][0]
             height = self.w_shape_list[layer][1]
             depth = self.w_shape_list[layer][2]
-            w = np.zeros([width, height, depth])
+            w = rand_array(width, height, depth)
             self.W.append(w)
 
             # 2.2 每一层的 b
@@ -238,43 +238,12 @@ class CVLNeuralNetwork(NeuralNetwork):
 
             width, height = cal_cvl_wh(w, x, self.s)
 
-            # 每一层的b，都是 [width, height, 1] 3维数组
-            b = np.zeros([width, height, depth])
+            # 每一层的b，都是 [width, height, depth] 3维数组
+            b = rand_array(width, height, depth)
 
             self.B.append(b)
 
-    """
-    功能：初始化每一层神经网络的输出（经过激活函数以后的输出）
-    参数：NULL
-    返回值：NULL
-    """
 
-    """
-    def _init_cnn_a(self):
-        # a_list 是一个列表，a 是一个3维数组
-        self.a_list = list()
-
-        # 针对每一层进行初始化
-        x = 0
-        y = 0
-        for layer in range(0, self.layer_count):
-            # 如果是第一层，x 就是样本输入
-            if 0 == layer:
-                x = self.sx_list[0]
-            # 否则的话，x 是上一层的输入
-            else:
-                x = y
-
-            # 每一层的卷积核
-            w = self.W[layer]
-
-            width, height = cal_cvl_wh(w, x, self.s)
-
-            # 每一层的输出，都是 [width, height, 1] 3维数组
-            a = np.zeros([width, height, 1])
-
-            self.a_list.append(a)
-    """
 
     """
     功能：计算某一层神经网络的输出

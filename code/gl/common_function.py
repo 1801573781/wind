@@ -4,6 +4,8 @@ Author：lzb
 Date：2021.01.01
 """
 
+import numpy as np
+import random
 
 """
 功能：计算正确率
@@ -37,3 +39,21 @@ def calculate_accuracy(py_list, sy_list):
             pass
 
     return accuracy / count
+
+
+"""
+功能：随机化3维数组
+参数：NULL
+返回值：NULL
+"""
+
+
+def rand_array(width, height, depth):
+    array = np.zeros([width, height, depth])
+
+    for i in range(0, width):
+        for j in range(0, height):
+            for k in range(0, depth):
+                array[i, j, k] = random.random() - 0.5
+
+    return array

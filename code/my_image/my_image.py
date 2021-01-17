@@ -13,7 +13,6 @@ from enum import Enum
 from gl import errorcode
 from gl.common_enum import ArrayDim
 
-
 """
 class：ImageDataType，图像数据类型枚举值
 """
@@ -50,7 +49,7 @@ UN_NORMAL：将图像数据反归一化到 0~255
 
 class NormalizationType(Enum):
     NORMAL = 1
-    UN_NORMAL = 2
+    REV_NORMAL = 2
 
 
 """
@@ -375,28 +374,90 @@ def normalize(data, normalize_type=NormalizationType.NORMAL):
         depth = shape[2]
         y = np.zeros([width, height, depth])
 
-    # 归一化 or 反归一化
-    for i in range(0, width):
-        for j in range(0, height):
-            # 2维数组
-            if ArrayDim.TWO == dim:
-                # 归一化
-                if NormalizationType.NORMAL == normalize_type:
-                    y[i, j] = min(data[i, j] / 255, 1)
-                # 反归一化
-                else:
-                    y[i, j] = min(data[i, j] * 255, 255)
-
-            # 3维数组
-            for k in range(0, depth):
-                # 归一化
-                if NormalizationType.NORMAL == normalize_type:
-                    y[i, j, k] = min(data[i, j, k] / 255, 1)
-                # 反归一化
-                else:
-                    y[i, j, k] = min(data[i, j, k] * 255, 255)
+    # 归一化
+    if NormalizationType.NORMAL == normalize_type:
+        _normalize(y, data, width, height, depth, dim)
+    # 反归一化
+    else:
+        _rev_normalize(y, data, width, height, depth, dim)
 
     return y
+
+
+"""
+功能：将图像数据归一化（从 0~255 归一为 0~1）
+参数：
+y: 图像数据归一化的结果
+data：图像数据   
+width：图像 width
+height：图像 height
+depth：图像 depth
+dim：图像数据维度（2维 or 3维数组）
+返回值：NULL
+"""
+
+
+def _normalize(y, data, width, height, depth, dim):
+    # 2维数组
+    if ArrayDim.TWO == dim:
+        for i in range(0, width):
+            for j in range(0, height):
+                y[i, j] = min(data[i, j] / 255, 1)
+    # 3维数组
+    else:
+        for k in range(0, depth):
+            for i in range(0, width):
+                for j in range(0, height):
+                    y[i, j, k] = min(data[i, j, k] / 255, 1)
+
+
+"""
+功能：将图像数据反归一化（从 0~1 反归一为 0~255）
+参数：
+y: 图像数据归一化的结果
+data：图像数据   
+width：图像 width
+height：图像 height
+depth：图像 depth
+dim：图像数据维度（2维 or 3维数组）
+返回值：NULL
+"""
+
+
+def _rev_normalize(y, data, width, height, depth, dim):
+    # 1. 先求最大值
+    tmp_list = list()
+
+    # 2维数组
+    if ArrayDim.TWO == dim:
+        for i in range(0, width):
+            for j in range(0, height):
+                tmp_list.append(data[i, j])
+    # 3维数组
+    else:
+        for k in range(0, depth):
+            for i in range(0, width):
+                for j in range(0, height):
+                    tmp_list.append(data[i, j, k])
+
+    # 最大值
+    tmp_max = max(tmp_list)
+
+    # 2. 反归一化
+
+    # 2维数组
+    if ArrayDim.TWO == dim:
+        for i in range(0, width):
+            for j in range(0, height):
+                y[i, j] = data[i, j] / tmp_max * 255
+    # 3维数组
+    else:
+        for k in range(0, depth):
+            for i in range(0, width):
+                for j in range(0, height):
+                    y[i, j, k] = data[i, j, k] / tmp_max * 255
+
+
 
 
 """
