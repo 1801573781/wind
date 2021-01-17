@@ -48,17 +48,17 @@ class Sigmoid(Activation):
 
         return y
 
+    # 求导
+    def derivative(self, x):
+        y = x * (1 - x)
+        return y
+
     # 校正函数
     def revise(self, x):
         if x > 0.5:
             return label.Color.RED.value
         else:
             return label.Color.GREEN.value
-
-    # 求导
-    def derivative(self, x):
-        y = x * (1 - x)
-        return y
 
 
 """
@@ -72,13 +72,6 @@ class ReLU(Activation):
     def active(self, x):
         return max(x, 0)
 
-    # 校正函数
-    def revise(self, x):
-        if x > 0:
-            return label.Color.RED.value
-        else:
-            return label.Color.GREEN.value
-
     # 求导
     def derivative(self, x):
         if x > 0:
@@ -86,4 +79,9 @@ class ReLU(Activation):
         else:
             return 0
 
-
+    # 校正函数
+    def revise(self, x):
+        if x > 0:
+            return label.Color.RED.value
+        else:
+            return label.Color.GREEN.value

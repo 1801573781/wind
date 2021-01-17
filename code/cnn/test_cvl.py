@@ -89,8 +89,8 @@ def test_image_2d():
     show_data(gray, ImageDataType.GRAY)
 
     # 卷积
-    # con = Convolution()
-    con = MeanPooling()
+    con = Convolution()
+    # con = MeanPooling()
 
     # 输入信息 x
     x = gray
@@ -141,8 +141,8 @@ def test_image_3d():
     data, image_data_type, err = get_data(file_name)
 
     # 卷积
-    # con = Convolution()
-    con = MaxPooling()
+    con = Convolution()
+    # con = MaxPooling()
 
     # 输入信息 x
     x = data

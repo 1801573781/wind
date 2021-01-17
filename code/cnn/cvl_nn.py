@@ -110,6 +110,7 @@ class CVLNeuralNetwork(NeuralNetwork):
     返回值：错误码
     说明：对于卷积神经网络来说，这里不需要校验
     """
+
     def _valid_layer_neuron(self):
         return errorcode.SUCCESS
 
@@ -256,8 +257,6 @@ class CVLNeuralNetwork(NeuralNetwork):
 
             self.B.append(b)
 
-
-
     """
     功能：计算某一层神经网络的输出
     参数：
@@ -344,16 +343,13 @@ class CVLNeuralNetwork(NeuralNetwork):
         for k in range(0, depth):
             for i in range(0, width):
                 for j in range(0, height):
-                    ksi_last[i, j, k] = err[i, j, k] * self.activation(nn_y_last[i, j, k])
+                    ksi_last[i, j, k] = err[i, j, k] * self.activation.derivative(nn_y_last[i, j, k])
 
         # 将 ksi_last 放置入 ksi_list
         ksi_list[self.layer_count - 1] = ksi_last
 
         # 3. 反向传播，计算：倒数第2层 ~ 第1层的 ksi
         for layer in range(self.layer_count - 2, -1, -1):
-            # 当前层神经网络的计算结果
-            nn_y_cur = nn_y_list[layer]
-
             # 下一层的 ksi
             ksi_next = ksi_list[layer + 1]
 
@@ -361,7 +357,7 @@ class CVLNeuralNetwork(NeuralNetwork):
             w = self.W[layer + 1]
 
             # 当前层的 ksi
-            ksi_cur = self.cvl.convolution(w, nn_y_cur, Reversal.REV, ConvolutionType.Wide)
+            ksi_cur = self.cvl.convolution(w, ksi_next, Reversal.REV, ConvolutionType.Wide)
 
             # 将当前层计算出的 ksi 放置到 ksiList
             ksi_list[layer] = ksi_cur
@@ -393,7 +389,7 @@ class CVLNeuralNetwork(NeuralNetwork):
                 v = nn_y_list[layer - 1]
 
             # 损失函数针对当前层的 w 的偏导(partial derivative)，w_pd 是1个3维数组
-            w_pd = self.cvl.convolution(ksi, v)
+            w_pd, err = self.cvl.convolution(ksi, v)
 
             # 修正当前层的 w
             self.W[layer] = np.subtract(w, w_pd)  # 不知道3维数组是否可以这样相减

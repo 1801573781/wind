@@ -241,7 +241,7 @@ class NeuralNetwork:
                 break
 
             # 1. 打印每一轮的参数
-            self._print_w_b_loop(loop)
+            # self._print_w_b_loop(loop)
 
             loop = loop + 1
 
