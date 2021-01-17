@@ -304,7 +304,11 @@ class CVLNeuralNetwork(NeuralNetwork):
     """
 
     def _modify_wb(self, nn_y_list, sx, sy):
-        pass
+        # 1. 后向传播，计算 ksi_list
+        ksi_list = self.__bp(nn_y_list, sy)
+
+        # 2. 通过 ksi_list，修正 W，B
+        self.__modify_wb_by_ksi_list(ksi_list, sx, nn_y_list)
 
     """
     功能：后向传播，计算 ksi_list
