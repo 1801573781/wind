@@ -222,7 +222,14 @@ class CVLNeuralNetwork(NeuralNetwork):
             # 2.1 每一层的卷积核
             width = self.w_shape_list[layer][0]
             height = self.w_shape_list[layer][1]
-            depth = self.w_shape_list[layer][2]
+
+            # 如果是第一层，depth = 输入层的 depth
+            if 0 == layer:
+                depth = self.w_shape_list[layer][2]
+            # 否则的话，depth = 1
+            else:
+                depth = 1
+
             w = rand_array(width, height, depth)
             self.W.append(w)
 
@@ -239,6 +246,7 @@ class CVLNeuralNetwork(NeuralNetwork):
             width, height = cal_cvl_wh(w, x, self.s)
 
             # 每一层的b，都是 [width, height, depth] 3维数组
+            depth = 1  # b 的 depth = 1
             b = rand_array(width, height, depth)
 
             self.B.append(b)
@@ -263,8 +271,8 @@ class CVLNeuralNetwork(NeuralNetwork):
         cvl = Convolution()
 
         # 3、计算卷积结果
-        # y = cvl.convolution_sum_depth(w, x)
-        y, err = cvl.convolution(w, x)
+        y, err = cvl.convolution_sum_depth(w, x)
+        # y, err = cvl.convolution(w, x)
 
         # 4. y = y + b
         y_width = y.shape[0]

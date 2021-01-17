@@ -31,7 +31,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 def test_cvl_nn():
     # 图像数据
-    file_name = "../picture/number/9.bmp"
+    file_name = "../picture/number/0.bmp"
     # file_name = "../picture/base_test/dog1.png"
 
     show_file(file_name)
@@ -87,4 +87,6 @@ def test_cvl_nn():
 
     py = my_image.normalize(py, my_image.NormalizationType.REV_NORMAL)
 
-    show_data(py, ImageDataType.RGB)
+    py = my_image.array_3_2(py)
+
+    show_data(py, ImageDataType.GRAY)

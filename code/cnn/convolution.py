@@ -107,13 +107,16 @@ class Convolution:
         # 将所有深度的卷积相加
         width = y.shape[0]
         height = y.shape[1]
+
+        sum_depth = np.zeros([width, height, 1])
+
         for i in range(0, width):
             for j in range(0, height):
-                for d in range(1, self.w_depth):
-                    y[i, j, 0] += y[i, j, d]
+                for d in range(0, self.w_depth):
+                    sum_depth[i, j, 0] += y[i, j, d]
 
         # 返回第1深度（因为第1深度现在已经变为各个深度之和）
-        return y[:, :, 0], err
+        return sum_depth, err
 
     """
     功能：计算卷积(针对卷积核第3维的深度，每个深度分别计算)

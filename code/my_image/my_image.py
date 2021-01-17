@@ -458,6 +458,28 @@ def _rev_normalize(y, data, width, height, depth, dim):
                     y[i, j, k] = data[i, j, k] / tmp_max * 255
 
 
+"""
+功能：将3维数组转换成2维数组
+参数：
+data：图像数据，3维数组   
+返回值：图像数据，2维数组
+"""
+
+
+def array_3_2(data):
+    # 受不了了，不判断那么多了
+    shape = data.shape
+
+    width = shape[0]
+    height = shape[1]
+
+    z = np.zeros([width, height])
+
+    for i in range(0, width):
+        for j in range(0, height):
+            z[i, j] = data[i, j, 0]
+
+    return z
 
 
 """
