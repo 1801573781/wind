@@ -89,10 +89,10 @@ def test_cvl_nn():
     neuron_count_list = None
 
     # 最大循环训练次数
-    loop_max = 2
+    loop_max = 100
 
     # 学习效率
-    rate = 0.1
+    rate = 0.001
 
     # 卷积核数组大小
     w_shape_list = list()

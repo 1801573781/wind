@@ -237,6 +237,7 @@ class CVLNeuralNetwork(NeuralNetwork):
                 depth = 1
 
             w = rand_array(width, height, depth)
+            # w = np.zeros([width, height, depth])
             self.W.append(w)
 
             # 2.2 每一层的 b
@@ -254,6 +255,7 @@ class CVLNeuralNetwork(NeuralNetwork):
             # 每一层的b，都是 [width, height, depth] 3维数组
             depth = 1  # b 的 depth = 1
             b = rand_array(width, height, depth)
+            # b = np.zeros([width, height, depth])
 
             self.B.append(b)
 
@@ -392,13 +394,13 @@ class CVLNeuralNetwork(NeuralNetwork):
             w_pd, err = self.cvl.convolution(ksi, v)
 
             # 修正当前层的 w
-            self.W[layer] = np.subtract(w, w_pd)  # 不知道3维数组是否可以这样相减
+            self.W[layer] = np.subtract(w, self.rate * w_pd)  # 不知道3维数组是否可以这样相减
 
             # 损失函数针对当前层的 b 的偏导(partial derivative)，b_pd 等于 ksi
             b_pd = ksi
 
             # 修正当前层的 b
-            self.B[layer] = np.subtract(b, b_pd)  # 不知道3维数组是否可以这样相减
+            self.B[layer] = np.subtract(b, self.rate * b_pd)  # 不知道3维数组是否可以这样相减
 
     """
     功能：预测
