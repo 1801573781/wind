@@ -73,8 +73,8 @@ class Convolution:
     s = 1
 
     # 补齐长度
-    padding_row = 0
-    padding_col = 0
+    padding_width = 0
+    padding_height = 0
 
     """
     功能：计算卷积(针对卷积核第3维的深度，每个深度分别计算，然后相加)
@@ -161,7 +161,7 @@ class Convolution:
         self._cal_step_padding(con_type, s, padding_width, padding_height)
 
         # 4. 将 x 扩充（补零）
-        if (padding_width > 0) or (padding_height > 0):
+        if (self.padding_width > 0) or (self.padding_height > 0):
             x = self._padding(x)
 
         # 5. 翻转 w（如果需要的话）
@@ -181,12 +181,12 @@ class Convolution:
     w：滤波器（一个矩阵）
     x：输入信息（一个矩阵）    
     s：步长
-    padding_row：矩阵的行，补零长度
-    padding_col：矩阵的列，补零长度
+    padding_width：矩阵的 width，补零长度
+    padding_height：矩阵的 height，补零长度
     返回值：错误码
     """
 
-    def _valid(self, w, x, s, padding_row, padding_col):
+    def _valid(self, w, x, s, padding_width, padding_height):
         """
         # 因为 w, x 必须是 matrix，s 必须是 int
         # 所以，参数类型合法性校验，是个比较烦人的事情
@@ -212,24 +212,24 @@ class Convolution:
     返回值：错误码
     """
 
-    def _cal_step_padding(self, con_type, s, padding_row, padding_col):
+    def _cal_step_padding(self, con_type, s, padding_width, padding_height):
         # python 竟然没有 switch/case
         if ConvolutionType.Narrow == con_type:
             self.s = 1
-            self.padding_row = 0
-            self.padding_col = 0
+            self.padding_width = 0
+            self.padding_height = 0
         elif ConvolutionType.Wide == con_type:
             self.s = 1
-            self.padding_row = self.w_width - 1
-            self.padding_col = self.w_height - 1
+            self.padding_width = self.w_width - 1
+            self.padding_height = self.w_height - 1
         elif ConvolutionType.Equal_Width == con_type:
             self.s = 1
-            self.padding_row = (self.w_width - 1) // 2  # 这里不管那么多了，向下取整
-            self.padding_col = (self.w_height - 1) // 2  # 这里不管那么多了，向下取整
+            self.padding_width = (self.w_width - 1) // 2  # 这里不管那么多了，向下取整
+            self.padding_height = (self.w_height - 1) // 2  # 这里不管那么多了，向下取整
         else:
             self.s = s
-            self.padding_row = padding_row
-            self.padding_col = padding_col
+            self.padding_width = padding_width
+            self.padding_height = padding_height
 
     """
     功能：扩充（补零） x
@@ -240,23 +240,23 @@ class Convolution:
 
     def _padding(self, x):
         # x 的 row count， col count
-        x_row_count = x.shape[0]
-        x_col_count = x.shape[1]
+        x_width = x.shape[0]
+        x_height = x.shape[1]
 
         # 补零后的 xp，先赋初值为 0
         if CVLDim.THREE.value == self.cvl_dim:
-            xp = np.zeros([(x_row_count + self.padding_row), (x_col_count + self.padding_col), self.w_depth])
+            xp = np.zeros([(x_width + 2 * self.padding_width), (x_height + 2 * self.padding_height), self.w_depth])
         else:
-            xp = np.zeros([(x_row_count + self.padding_row), (x_col_count + self.padding_col)])
+            xp = np.zeros([(x_width + 2 * self.padding_width), (x_height + 2 * self.padding_height)])
 
         # xp 中间的值，与 x 相同
-        for i in range(0, x_row_count):
-            for j in range(0, x_col_count):
+        for i in range(0, x_width):
+            for j in range(0, x_height):
                 if CVLDim.THREE.value == self.cvl_dim:
                     for d in range(0, self.w_depth):
-                        xp[(i + self.padding_row), (j + self.padding_col)] = x[i, j]
+                        xp[(i + self.padding_width), (j + self.padding_height)] = x[i, j]
                 else:
-                    xp[(i + self.padding_row), (j + self.padding_col)] = x[i, j]
+                    xp[(i + self.padding_width), (j + self.padding_height)] = x[i, j]
 
         return xp
 
