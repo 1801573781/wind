@@ -13,6 +13,10 @@ from enum import Enum
 from gl import errorcode
 from gl.common_enum import ArrayDim
 
+
+# 定义一个极小值
+TINY = 0.001
+
 """
 class：ImageDataType，图像数据类型枚举值
 """
@@ -480,6 +484,48 @@ def array_3_2(data):
             z[i, j] = data[i, j, 0]
 
     return z
+
+
+"""
+功能：将数组中的 0，转化为极小值
+参数：
+data：图像数据，2维 or 3维数组   
+返回值：NULL
+
+说明：对于图像数据而言，如果像素点是黑色，其 value = 0 （or [0, 0, 0]），
+这造成有些运算中，会出现分母为0的情况。所以，这里把 0 转换为一个极小的值
+
+"""
+
+
+def array_0_tiny(data):
+    shape = data.shape
+
+    if ArrayDim.THREE.value == len(shape):
+        dim = ArrayDim.THREE
+        depth = shape[2]
+    else:
+        dim = ArrayDim.TWO
+        depth = -1
+
+    width = shape[0]
+    height = shape[1]
+
+    # 3维数组
+    if ArrayDim.THREE == dim:
+        for k in range(0, depth):
+            for i in range(0, width):
+                for j in range(0, height):
+                    # 由于是 float 类型，不能直接用 "== 0" 来判断，小于1个极小的数，就认为是0
+                    if data[i, j, k] < TINY:
+                        data[i, j, k] = TINY
+    # 2维数组
+    else:
+        for i in range(0, width):
+            for j in range(0, height):
+                # 由于是 float 类型，不能直接用 "== 0" 来判断，小于1个极小的数，就认为是0
+                if data[i, j] < TINY:
+                    data[i, j] = TINY
 
 
 """

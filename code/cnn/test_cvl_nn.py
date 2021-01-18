@@ -39,6 +39,9 @@ def test_cvl_nn():
     # 取灰度值
     data, err = gray_file(file_name, ArrayDim.THREE)
 
+    # 将图像数据中的0转换为极小值
+    my_image.array_0_tiny(data)
+
     # 显示灰度图像
     gray = my_image.array_3_2(data)
     show_data(gray, ImageDataType.GRAY)
@@ -57,10 +60,13 @@ def test_cvl_nn():
     # 2. 构建训练输出样本
 
     # 图像数据
-    file_name = "../picture/number/9_sy.bmp"
+    file_name = "../picture/number/9_sy_2.bmp"
 
     # 取灰度值
     data, err = gray_file(file_name, ArrayDim.THREE)
+
+    # 将图像数据中的0转换为极小值
+    my_image.array_0_tiny(data)
 
     # 显示灰度图像
     gray = my_image.array_3_2(data)
@@ -83,7 +89,7 @@ def test_cvl_nn():
     neuron_count_list = None
 
     # 最大循环训练次数
-    loop_max = 1000
+    loop_max = 2
 
     # 学习效率
     rate = 0.1
@@ -92,10 +98,10 @@ def test_cvl_nn():
     w_shape_list = list()
 
     w1_shape = [3, 3, 1]
-    # w2_shape = [3, 3, 1]
+    w2_shape = [3, 3, 1]
 
     w_shape_list.append(w1_shape)
-    # w_shape_list.append(w2_shape)
+    w_shape_list.append(w2_shape)
 
     # 激活函数
     # activation = Sigmoid()

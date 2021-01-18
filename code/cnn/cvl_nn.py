@@ -357,7 +357,7 @@ class CVLNeuralNetwork(NeuralNetwork):
             w = self.W[layer + 1]
 
             # 当前层的 ksi
-            ksi_cur = self.cvl.convolution(w, ksi_next, Reversal.REV, ConvolutionType.Wide)
+            ksi_cur, err = self.cvl.convolution(w, ksi_next, Reversal.REV, ConvolutionType.Wide)
 
             # 将当前层计算出的 ksi 放置到 ksiList
             ksi_list[layer] = ksi_cur

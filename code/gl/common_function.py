@@ -43,8 +43,13 @@ def calculate_accuracy(py_list, sy_list):
 
 """
 功能：随机化3维数组
-参数：NULL
-返回值：NULL
+参数：
+width：3维数组的 width
+height：3维数组的 height
+depth：3维数组的 depth
+返回值：随机数，数组
+说明：因为 random.random() 的范围是 0~1 之间，所以 减去 0.5，使得范围变成 -0.5~0.5 之间
+
 """
 
 
