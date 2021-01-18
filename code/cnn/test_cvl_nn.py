@@ -92,7 +92,7 @@ def test_cvl_nn():
     loop_max = 10000
 
     # 学习效率
-    rate = 0.001
+    rate = 0.01
 
     # 卷积核数组大小
     w_shape_list = list()

@@ -10,6 +10,8 @@ import numpy as np
 from gl import errorcode
 from gl import common_function
 
+import time
+
 """
 class：NeuralNetwork 神经网络(base class)
 
@@ -236,9 +238,19 @@ class NeuralNetwork:
         # 循环训练次数
         loop = 0
 
+        # 打印开始时间
+        localtime = time.asctime(time.localtime(time.time()))
+        print("\nbegin time = " + localtime + "\n")
+
         while 1:
             if loop >= self.loop_max:
-                self._print_w_b_loop(loop - 1)
+                # 打印结束时间
+                localtime = time.asctime(time.localtime(time.time()))
+                print("\nend time = " + localtime + "\n")
+
+                # 打印参数
+                self._print_w_b_loop(loop)
+
                 break
 
             # 1. 打印每一轮的参数
