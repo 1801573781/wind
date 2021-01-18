@@ -89,7 +89,7 @@ def test_cvl_nn():
     neuron_count_list = None
 
     # 最大循环训练次数
-    loop_max = 100
+    loop_max = 10000
 
     # 学习效率
     rate = 0.001
@@ -104,8 +104,8 @@ def test_cvl_nn():
     w_shape_list.append(w2_shape)
 
     # 激活函数
-    # activation = Sigmoid()
-    activation = ReLU()
+    activation = Sigmoid()
+    # activation = ReLU()
 
     # 构建卷积对象
     cvl = Convolution()

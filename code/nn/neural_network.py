@@ -238,6 +238,7 @@ class NeuralNetwork:
 
         while 1:
             if loop >= self.loop_max:
+                self._print_w_b_loop(loop - 1)
                 break
 
             # 1. 打印每一轮的参数
