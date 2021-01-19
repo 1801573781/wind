@@ -369,8 +369,8 @@ class NeuralNetwork:
     """
     功能：打印 W, B, loop
     参数：
-    s：神经网络的输入    
-    返回值：整个神经网络，每一层的输出
+    loop：神经网络的训练次数
+    返回值：NULL       
     """
 
     def _print_w_b_loop(self, loop):

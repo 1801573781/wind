@@ -10,7 +10,7 @@ import operator
 from nn.neural_network import NeuralNetwork
 from gl import errorcode
 from gl.common_enum import ArrayDim
-from gl.common_function import rand_array
+from gl.common_function import rand_array_3
 
 from cnn.convolution import Convolution, ConvolutionType, Reversal, cal_cvl_wh
 
@@ -236,7 +236,7 @@ class CVLNeuralNetwork(NeuralNetwork):
             else:
                 depth = 1
 
-            w = rand_array(width, height, depth)
+            w = rand_array_3(width, height, depth)
             # w = np.zeros([width, height, depth])
             self.W.append(w)
 
@@ -254,7 +254,7 @@ class CVLNeuralNetwork(NeuralNetwork):
 
             # 每一层的b，都是 [width, height, depth] 3维数组
             depth = 1  # b 的 depth = 1
-            b = rand_array(width, height, depth)
+            b = rand_array_3(width, height, depth)
             # b = np.zeros([width, height, depth])
 
             self.B.append(b)

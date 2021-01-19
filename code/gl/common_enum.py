@@ -12,5 +12,6 @@ class：ArrayDim，数组维度枚举值
 
 
 class ArrayDim(Enum):
+    ONE = 1
     TWO = 2
     THREE = 3
