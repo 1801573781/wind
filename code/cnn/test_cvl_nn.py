@@ -49,7 +49,6 @@ def test():
     print(array_string(arr3))
 
 
-
 """
 功能：测试卷积神经网络
 参数：NULL 

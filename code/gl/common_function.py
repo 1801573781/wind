@@ -141,7 +141,7 @@ def array_2_string(arr):
     # 字符串起始为 "["
     arr_str = "["
 
-    # 一直构建到倒数第2个
+    # 逐行构建
     for i in range(0, width):
         # 每一行的起始为"["
         arr_str += "["
@@ -191,7 +191,7 @@ def array_3_string(arr):
     # 字符串起始为 "["
     arr_str = "["
 
-    # 一直构建到倒数第2个
+    # 逐行构建
     for i in range(0, width):
         # 每一行的起始为"["
         arr_str += "["
@@ -213,12 +213,12 @@ def array_3_string(arr):
             # 每一 depth 的终止为 "]"
             arr_str += "]"
 
-            # 每一列后面需要加上 ", \n"，除了最后一行
+            # 每一列后面需要加上 ", "，除了最后一列
             if j < (height - 1):
-                arr_str += "], "
-            # 最后一行终止没有 ", \n"
+                arr_str += ", "
+            # 最后一列的终止为 "]"
             else:
-                pass
+                arr_str += "]"
 
         # 每一行后面需要加上 ", \n"，除了最后一行
         if i < (width - 1):
