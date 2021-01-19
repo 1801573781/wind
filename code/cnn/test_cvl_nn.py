@@ -14,6 +14,7 @@ from cnn.max_pooling import MaxPooling
 from cnn.mean_pooling import MeanPooling
 from cnn.convolution import Convolution, Reversal, ConvolutionType
 from cnn.cvl_nn import CVLNeuralNetwork
+from gl.array_string import array_2_string
 from gl.common_enum import ArrayDim
 from gl.common_function import *
 from my_image import my_image
@@ -32,21 +33,24 @@ def test():
 
     print("\narr1:\n")
 
-    print(array_string(arr1))
+    # print(array_string(arr1))
+    print(array_2_string(arr1))
 
     # arr2
     arr2 = np.matlib.rand(3, 3)
 
     print("\narr2:\n")
 
-    print(array_string(arr2))
+    # print(array_string(arr2))
+    print(array_2_string(arr2))
 
     # arr3
     arr3 = rand_array_3(3, 3, 3)
 
     print("\narr3:\n")
 
-    print(array_string(arr3))
+    # print(array_string(arr3))
+    print(array_2_string(arr3))
 
 
 """
