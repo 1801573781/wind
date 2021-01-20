@@ -12,6 +12,8 @@ from gl import common_function
 
 import time
 
+from gl.array_string import array_2_string
+
 """
 class：NeuralNetwork 神经网络(base class)
 
@@ -381,10 +383,12 @@ class NeuralNetwork:
             print("层数 ＝ %d" % layer)
 
             print("W:")
-            print(self.W[layer])
+            # print(self.W[layer])
+            print(array_2_string(self.W[layer]))
 
             print("\nB:")
-            print(self.B[layer])
+            # print(self.B[layer])
+            print(array_2_string(self.B[layer]))
 
             if layer < self.layer_count - 1:
                 print("\n")
@@ -408,7 +412,7 @@ class NeuralNetwork:
         self.neuron_count_list = neuron_count_list
 
         # 神经网络层数
-        self.layer_count = len(neuron_count_list)
+        self.layer_count = len(W)
 
         # 每一层 w 参数，w 是个 matrix
         self.W = W
