@@ -173,7 +173,7 @@ def test_cvl_nn_without_train():
     # 1. 构建训练输入样本
 
     # 图像文件名
-    file_name = "../picture/number/0_sx.bmp"
+    file_name = "../picture/number/9_sx.bmp"
 
     # 取灰度值
     data, err = gray_file(file_name, ArrayDim.THREE)
@@ -183,7 +183,7 @@ def test_cvl_nn_without_train():
 
     # 显示灰度图像
     gray = my_image.array_3_2(data)
-    show_data(gray, ImageDataType.GRAY)
+    # show_data(gray, ImageDataType.GRAY)
 
     # 归一化
     sx = my_image.normalize(data, my_image.NormalizationType.NORMAL)
@@ -216,7 +216,7 @@ def test_cvl_nn_without_train():
 
     # 显示归一化灰度图像
     gray = my_image.array_3_2(sy)
-    # show_data(gray, ImageDataType.GRAY)
+    show_data(gray, ImageDataType.GRAY)
 
     # 训练输出样本
     sy_list = list()
