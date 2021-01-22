@@ -127,7 +127,7 @@ def test_cvl_nn():
     neuron_count_list = None
 
     # 最大循环训练次数
-    loop_max = 30000
+    loop_max = 40000
 
     # 学习效率
     rate = 0.01
