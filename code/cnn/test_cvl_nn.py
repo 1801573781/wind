@@ -127,7 +127,7 @@ def test_cvl_nn():
     neuron_count_list = None
 
     # 最大循环训练次数
-    loop_max = 40000
+    loop_max = 1
 
     # 学习效率
     rate = 0.01
@@ -191,7 +191,7 @@ def test_cvl_nn_without_train():
 
     # 显示灰度图像
     gray = my_image.array_3_2(data)
-    # show_data(gray, ImageDataType.GRAY)
+    show_data(gray, ImageDataType.GRAY)
 
     # 归一化
     sx = my_image.normalize(data, my_image.NormalizationType.NORMAL)
