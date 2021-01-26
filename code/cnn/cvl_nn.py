@@ -324,8 +324,8 @@ class CVLNeuralNetwork(NeuralNetwork):
     参数：
     x：该层神经网络的输入，x 是一个3维数组
     w: 该层神经网络的 w 参数, w 是一个3维数组
-    b：该层神经网络的 b 参数，b 是一个2维数组
-    返回值：y，该层神经网络的输出（sigmoid(cvl(w, x) + b)）， y 是一个3维数字
+    b：该层神经网络的 b 参数，b 是一个3维数组
+    返回值：y，该层神经网络的输出（sigmoid(cvl(w, x) + b)）， y 是一个3维数组
     """
 
     def _calc_layer(self, x, layer):
