@@ -218,7 +218,8 @@ class CVLNeuralNetwork(NeuralNetwork):
     """
 
     def _init_w_b(self):
-        # 每一层 w、B 参数，w 是个 matrix，b 是个 vector（数据类型也是一个 matrix）
+        """
+        # 每一层 w、B 参数，w 是个3维数组，b 是个3维数组
         self.W = list()
         self.B = list()
 
@@ -277,11 +278,12 @@ class CVLNeuralNetwork(NeuralNetwork):
         self.B.append(b1)
 
         """
-        # 1. W，B 是 list
+
+        # 每一层 w、B 参数，w 是个3维数组，b 是个3维数组
         self.W = list()
         self.B = list()
 
-        # 2. 针对每一层进行初始化
+        # 针对每一层进行初始化
         b = 0
         for layer in range(0, self.layer_count):
             # 2.1 每一层的卷积核
@@ -317,7 +319,6 @@ class CVLNeuralNetwork(NeuralNetwork):
             # b = np.zeros([width, height, depth])
 
             self.B.append(b)
-        """
 
     """
     功能：计算某一层神经网络的输出

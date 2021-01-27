@@ -558,6 +558,7 @@ def show_data(data, image_data_type):
     plt.imshow(data, cmap)
 
     plt.axis('off')  # 不显示坐标轴
+
     plt.show()
 
 

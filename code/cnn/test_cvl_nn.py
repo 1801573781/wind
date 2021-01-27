@@ -28,33 +28,6 @@ import os
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
-
-def test():
-    # arr1
-    arr1 = np.random.random(3)
-
-    print("\narr1:\n")
-
-    # print(array_string(arr1))
-    print(array_2_string(arr1))
-
-    # arr2
-    arr2 = np.matlib.rand(3, 3)
-
-    print("\narr2:\n")
-
-    # print(array_string(arr2))
-    print(array_2_string(arr2))
-
-    # arr3
-    arr3 = rand_array_3(3, 3, 3)
-
-    print("\narr3:\n")
-
-    # print(array_string(arr3))
-    print(array_2_string(arr3))
-
-
 """
 功能：测试卷积神经网络
 参数：NULL 
@@ -162,6 +135,138 @@ def test_cvl_nn():
 
     for i in range(0, count):
         py = py_list[i]
+
+        py = my_image.normalize(py, my_image.NormalizationType.REV_NORMAL)
+
+        py = my_image.array_3_2(py)
+
+        show_data(py, ImageDataType.GRAY)
+
+
+"""
+功能：测试卷积神经网络
+参数：NULL 
+返回值：NULL
+"""
+
+
+def test_cvl_nn_2():
+    # 1. 构建训练输入样本/输出样本
+
+    train_sx_list = list()  # 训练样本列表（输入）
+    train_sy_list = list()  # 训练样本列表（输出）
+
+    test_sx_list = list()  # 测试样本列表（输入）
+    test_sy_list = list()  # 测试样本列表（输入）
+
+    max_count = 1000
+
+    image_path = "../picture/number2/"
+
+    for number in range(0, 10):
+        # 1.1 输入样本
+
+        # 图像路径
+        path = image_path + "/" + str(number)
+
+        for count in range(0, max_count):
+            # 文件名
+            sx_file_name = path + "/" + "sx_" + str(number) + "_" + str(count) + ".bmp"
+
+            # 取灰度值
+            data, err = gray_file(sx_file_name, ArrayDim.THREE)
+
+            # 将图像数据中的0转换为极小值
+            my_image.array_0_tiny(data)
+
+            # 显示灰度图像
+            # gray = my_image.array_3_2(data)
+            # show_data(gray, ImageDataType.GRAY)
+
+            # 归一化
+            sx = my_image.normalize(data, my_image.NormalizationType.NORMAL)
+
+            # 显示归一化灰度图像
+            # gray = my_image.array_3_2(sx)
+            # show_data(gray, ImageDataType.GRAY)
+
+            # 加入训练样本列表（输入）
+            if count < (max_count - 1):
+                train_sx_list.append(sx)
+            # 加入测试样本列表（输入）
+            else:
+                test_sx_list.append(sx)
+
+            # 1.2 输出样本
+
+            # sy 文件名
+            sy_file_name = path + "/" + "sy_" + str(number) + ".bmp"
+
+            # 取灰度值
+            data, err = gray_file(sy_file_name, ArrayDim.THREE)
+
+            # 将图像数据中的0转换为极小值
+            my_image.array_0_tiny(data)
+
+            # 显示灰度图像
+            # gray = my_image.array_3_2(data)
+            # show_data(gray, ImageDataType.GRAY)
+
+            # 归一化
+            sy = my_image.normalize(data, my_image.NormalizationType.NORMAL)
+
+            # 显示归一化灰度图像
+            # gray = my_image.array_3_2(sy)
+            # show_data(gray, ImageDataType.GRAY)
+
+            # 加入训练样本列表（输出）
+            if count < (max_count - 1):
+                train_sy_list.append(sy)
+            # 加入训练样本列表（输出）
+            else:
+                test_sy_list.append(sy)
+
+    # 2. 卷积神经网络的基本参数
+
+    # 每一层网络的神经元个数(这个参数，对于卷积网络而言，没意义)
+    neuron_count_list = None
+
+    # 最大循环训练次数
+    loop_max = 1
+
+    # 学习效率
+    rate = 0.01
+
+    # 卷积核数组大小
+    w_shape_list = list()
+
+    w1_shape = [3, 3, 1]
+    w2_shape = [3, 3, 1]
+
+    w_shape_list.append(w1_shape)
+    w_shape_list.append(w2_shape)
+
+    # 激活函数
+    # activation = Sigmoid()
+    activation = ReLU()
+
+    # 构建卷积对象
+    cvl = Convolution()
+
+    # 构建卷积神经网络对象
+    cnn = CVLNeuralNetwork(cvl)
+
+    # 3. 训练
+    cnn.train(train_sx_list, train_sy_list, loop_max, neuron_count_list, rate, activation, w_shape_list)
+
+    # 4. 预测
+    py_list = cnn.predict(test_sx_list, test_sy_list)
+
+    # 将预测结果显示如初
+    count = len(py_list)
+
+    for number in range(0, count):
+        py = py_list[number]
 
         py = my_image.normalize(py, my_image.NormalizationType.REV_NORMAL)
 
