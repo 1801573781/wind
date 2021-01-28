@@ -185,8 +185,10 @@ class NumberImageSample:
         sx_img = Image.open(sx_file_name)
 
         # sy image(裁剪 sx image)
-        left = (self.sx_width - self.sy_width) / 2
-        top = (self.sx_height - self.sy_height) / 2
+        # left = (self.sx_width - self.sy_width) / 2
+        left = 0
+        # top = (self.sx_height - self.sy_height) / 2
+        top = 0
         right = left + self.sy_width
         bottom = top + self.sy_height
 
@@ -271,15 +273,6 @@ class NumberImageSample:
         for root, dirs, files in os.walk(self.image_path, topdown=False):
             for name in files:
                 os.remove(os.path.join(root, name))
-
-        """
-        for i in range(self.min_number, self.max_number + 1):
-            # 图像路径
-            path = self.image_path + "/" + str(i)
-
-            # 删除路径
-            os.removedirs(path)
-        """
 
 
 """

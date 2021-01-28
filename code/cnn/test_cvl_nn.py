@@ -163,13 +163,13 @@ def test_cvl_nn_2():
 
     image_path = "../picture/number2/"
 
-    for number in range(0, 10):
-        # 1.1 输入样本
+    for count in range(0, max_count):
+        for number in range(0, 10):
+            # 1.1 输入样本
 
-        # 图像路径
-        path = image_path + "/" + str(number)
+            # 图像路径
+            path = image_path + "/" + str(number)
 
-        for count in range(0, max_count):
             # 文件名
             sx_file_name = path + "/" + "sx_" + str(number) + "_" + str(count) + ".bmp"
 
@@ -247,8 +247,8 @@ def test_cvl_nn_2():
     w_shape_list.append(w2_shape)
 
     # 激活函数
-    # activation = Sigmoid()
-    activation = ReLU()
+    activation = Sigmoid()
+    # activation = ReLU()
 
     # 构建卷积对象
     cvl = Convolution()
