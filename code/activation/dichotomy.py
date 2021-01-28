@@ -7,6 +7,6 @@ Date：2021.01.01
 from enum import Enum
 
 
-class Color(Enum):
-    RED = 1
-    GREEN = 0
+class Dichotomy(Enum):
+    C1 = 1
+    C2 = 0

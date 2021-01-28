@@ -202,6 +202,10 @@ class NeuralNetwork:
     """
 
     def _init_other_para(self):
+        # 每一层 w、B 参数，w 是个2维数组，b 是个2维数组
+        self.W = list()
+        self.B = list()
+
         # 样本数量
         self.sample_count = len(self.sx_list)
 
@@ -216,11 +220,13 @@ class NeuralNetwork:
 
         # 第1层 w 参数，w 是一个矩阵
         w = np.matlib.rand(self.neuron_count_list[0], self.sx_dim)
+        # w = np.random.random((self.neuron_count_list[0], self.sx_dim))
         self.W.append(w)
 
         # 第2层~第layer-1层 w 参数，w 是一个矩阵
         for i in range(1, self.layer_count):
             w = np.matlib.rand(self.neuron_count_list[i], self.neuron_count_list[i - 1])
+            # w = np.random.random((self.neuron_count_list[i], self.neuron_count_list[i - 1]))
             self.W.append(w)
 
         # 第1层 ~ 第layer-1层 b 参数，b 是一个向量
@@ -355,7 +361,7 @@ class NeuralNetwork:
             nn_y = nn_y_list[len(nn_y_list) - 1]
 
             # 修正一下
-            for j in range(0, self.y_dim):
+            for j in range(0, self.sy_dim):
                 nn_y[j, 0] = self.activation.revise(nn_y[j, 0])
 
             # 然后再添加到预测列表

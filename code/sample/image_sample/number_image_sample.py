@@ -7,6 +7,8 @@ Date：2021.01.27
 from PIL import Image
 import random
 
+import os
+
 from PIL import ImageDraw
 from PIL import ImageFont
 
@@ -72,7 +74,7 @@ class NumberImageSample:
         self.sy_height = sy_height
 
     """
-    功能：生成数字图像
+    功能：生成数字图像(文件)
     参数：TODO 补充
     返回值：NULL
     """
@@ -95,6 +97,23 @@ class NumberImageSample:
 
             # 2.3 生成 sy 图像
             self._create_sy_image(i)
+
+    """
+    功能：生成数字图像（文件）目录
+    参数：TODO 补充
+    返回值：NULL
+    """
+
+    def _create_image_path(self, number):
+        # 图像路径
+        path = self.image_path + "/" + str(number)
+
+        # 判断路径是否存在
+        if os.path.exists(path):
+            return
+        # 如果不存在，则创建路径
+        else:
+            os.makedirs(path)
 
     """
     功能：生成数字 sx 原始图像
@@ -242,15 +261,48 @@ class NumberImageSample:
 
         return noise, noise, noise
 
+    """
+    功能：删除数字图像（文件）
+    参数：TODO 补充
+    返回值：NULL
+    """
+
+    def del_image(self):
+        for root, dirs, files in os.walk(self.image_path, topdown=False):
+            for name in files:
+                os.remove(os.path.join(root, name))
+
+        """
+        for i in range(self.min_number, self.max_number + 1):
+            # 图像路径
+            path = self.image_path + "/" + str(i)
+
+            # 删除路径
+            os.removedirs(path)
+        """
+
 
 """
-功能：测试 NumberImageSample
+功能：测试 NumberImageSample，创建 image（文件）
 参数：NULL 
 返回值：NULL
 """
 
 
-def test():
+def test_create_image():
     nis = NumberImageSample(20, 20, 16, 16)
 
     nis.create_image(None, 1000)
+
+
+"""
+功能：删除 image（文件）
+参数：NULL 
+返回值：NULL
+"""
+
+
+def test_del_image():
+    nis = NumberImageSample(20, 20, 16, 16)
+
+    nis.del_image()

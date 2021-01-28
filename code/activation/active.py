@@ -5,7 +5,7 @@ Date：2020.12.22
 """
 
 import math
-from activation import label
+from activation import dichotomy
 
 
 """
@@ -56,9 +56,9 @@ class Sigmoid(Activation):
     # 校正函数
     def revise(self, x):
         if x > 0.5:
-            return label.Color.RED.value
+            return dichotomy.Dichotomy.C1.value
         else:
-            return label.Color.GREEN.value
+            return dichotomy.Dichotomy.C2.value
 
 
 """
@@ -82,6 +82,6 @@ class ReLU(Activation):
     # 校正函数
     def revise(self, x):
         if x > 0:
-            return label.Color.RED.value
+            return dichotomy.Dichotomy.C1.value
         else:
-            return label.Color.GREEN.value
+            return dichotomy.Dichotomy.C2.value

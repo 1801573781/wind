@@ -7,7 +7,7 @@ Date：2021.01.01
 import numpy as np
 from matplotlib import pyplot as plt
 
-from activation import label
+from activation import dichotomy
 from sample.classify_sample import ClassifySample
 
 """
@@ -54,9 +54,9 @@ class StraightLineSample(ClassifySample):
 
             # 比较
             if x1 >= sl_x0:
-                sy[0][0] = label.Color.RED.value
+                sy[0][0] = dichotomy.Dichotomy.C1.value
             else:
-                sy[0][0] = label.Color.GREEN.value
+                sy[0][0] = dichotomy.Dichotomy.C2.value
 
             self.sy_list.append(sy)
 

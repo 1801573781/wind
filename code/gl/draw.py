@@ -8,7 +8,7 @@ from matplotlib import pyplot as plt
 import matplotlib
 from enum import Enum
 
-from activation import label
+from activation import dichotomy
 
 
 class ShowFlag(Enum):
@@ -69,7 +69,7 @@ def draw_points(point_list, c_list):
         严格来说，这段代码有问题，我们暂时先这样
         暂时先假设一共只有2类
         """
-        if classify == label.Color.RED.value:
+        if classify == dichotomy.Dichotomy.C1.value:
             color = "r"
         else:
             color = "g"
