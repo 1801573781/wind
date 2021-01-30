@@ -19,8 +19,8 @@ from gl.common_enum import ArrayDim
 from gl.common_function import *
 from my_image import my_image
 from my_image.my_image import show_file, gray_file, show_data, ImageDataType, get_data
-from activation.active import Sigmoid
-from activation.active import ReLU
+from activation.normal_activation import Sigmoid
+from activation.normal_activation import ReLU
 
 from tkinter import messagebox
 

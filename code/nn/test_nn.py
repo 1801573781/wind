@@ -6,7 +6,7 @@ Date：2021.01.07
 
 from gl import draw
 from gl import common_function
-from activation import active
+from activation import normal_activation
 
 
 """
@@ -22,7 +22,7 @@ class NNTest:
     sy_dim = 1
 
     # 激活函数对象
-    activation = active.Sigmoid()
+    activation = normal_activation.Sigmoid()
 
     """
     功能：测试神经网络

@@ -9,12 +9,12 @@ from activation import dichotomy
 
 
 """
-class：Activation
+class：NormalActivation
 说明：激活函数
 """
 
 
-class Activation:
+class NormalActivation:
     # 激活函数，虚函数，待子类继承
     def active(self, x):
         pass
@@ -24,7 +24,7 @@ class Activation:
         pass
 
     # 求导
-    def derivative(self):
+    def derivative(self, x):
         pass
 
 
@@ -34,7 +34,7 @@ class：Sigmoid
 """
 
 
-class Sigmoid(Activation):
+class Sigmoid(NormalActivation):
     # 激活函数
     def active(self, x):
         if x <= -10:
@@ -67,7 +67,7 @@ class：ReLU
 """
 
 
-class ReLU(Activation):
+class ReLU(NormalActivation):
     # 激活函数
     def active(self, x):
         return max(x, 0)
