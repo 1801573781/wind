@@ -3,9 +3,10 @@ Function：最后一跳激活函数
 Author：lzb
 Date：2021.01.30
 """
+
 import math
 
-from activation.dichotomy import Dichotomy
+from activation.dichotomy import dichotomy_revise
 from gl.handle_array import handle_arr, sum_arr
 
 
@@ -74,8 +75,7 @@ class DichotomyLHA(LastHopActivation):
         """
 
         # 预测试，最后一跳需要修正，修正为二分类中的某一类
-        dichotomy = Dichotomy()
-        handle_arr(nn_y, dichotomy.reviese)
+        handle_arr(nn_y, dichotomy_revise)
 
 
 ''''''
@@ -121,7 +121,7 @@ def _soft_max(arr):
     返回值：NULL\n
     """
     # 1. 先将 arr 的每个元素 a，变为 a = exp(a)
-    handle_arr(arr, math.exp)
+    handle_arr(arr, _exp)
 
     # 2. 求 arr 各元素之和
     s = [0]
@@ -131,12 +131,28 @@ def _soft_max(arr):
     handle_arr(arr, _probability, s[0])
 
 
-def _probability(a, s):
+def _exp(*args):
+    """
+    功能：求解 e^x
+    参数：\n
+    args：args[0][0] 为 x
+    返回值：e^x
+    """
+
+    x = args[0][0]
+    return math.exp(x)
+
+
+def _probability(*args):
     """
     功能：求解概率，P = a / s
     参数：\n
-    a：数组 arr 中的某一个元素\n
-    s：数组所有元素之和
+    args[0][0]：a，数组 arr 中的某一个元素\n
+    args[0][0]：s，数组所有元素之和
     返回值：a / s\n
     """
+
+    a = args[0][0]
+    s = args[0][1]
+
     return a / s

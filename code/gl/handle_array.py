@@ -25,13 +25,15 @@ def handle_arr(arr, f, *args):
     # 如果是1维，则开始处理
     if 1 == dim:
         for i in range(0, count):
-            arr[i] = f(arr[i], args)
+            # 将 arr[i] 放在 args 的第一个位置
+            args2 = (arr[i],) + args
+            arr[i] = f(args2)
     # 如果不是1维，则需要递归：
     else:
         for i in range(0, count):
             a = arr[i]
 
-            handle_arr(a)
+            handle_arr(a, f, *args)
 
 
 def sum_arr(arr, s, f=None, *args):
@@ -60,10 +62,11 @@ def sum_arr(arr, s, f=None, *args):
                 s[0] += arr[i]
             # 否则，先处理以后，再求和
             else:
-                arr[i] = f(arr[i], args)
+                args2 = (arr[i],) + args
+                s[0] += f(args2)
     # 如果不是1维，则需要递归：
     else:
         for i in range(0, count):
             a = arr[i]
 
-            handle_arr(a)
+            sum_arr(a, s, f, args)
