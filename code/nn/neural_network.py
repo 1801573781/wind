@@ -7,12 +7,13 @@ Date：2021.01.07
 import numpy.matlib
 import numpy as np
 
-from gl import errorcode
-from gl import common_function
-
 import time
 
+from gl import errorcode
+from gl import common_function
 from gl.array_string import array_2_string
+
+from activation.last_hop_activation import LastHopActivation, DichotomyLHA, SoftMaxLHA
 
 """
 class：NeuralNetwork 神经网络(base class)
@@ -60,7 +61,10 @@ class NeuralNetwork:
     rate = 0
 
     # 激活函数对象（class Activation 的实例）
-    activation = 0
+    activation = None
+
+    # 最后一跳激活函数对象（class LastHopActivation 的实例）
+    last_hop_activation = DichotomyLHA()
 
     """
     功能：训练（public 函数）
@@ -75,13 +79,17 @@ class NeuralNetwork:
     返回值：错误码
     """
 
-    def train(self, sx_list, sy_list, loop_max, neuron_count_list, rate, activation, w_shape_list=None):
+    def train(self, sx_list, sy_list, loop_max, neuron_count_list, rate,
+              activation, last_hop_activation=None, w_shape_list=None):
         # 1. 成员变量赋值
         self.sx_list = sx_list
         self.sy_list = sy_list
         self.loop_max = loop_max
         self.rate = rate
         self.activation = activation
+
+        if last_hop_activation is not None:
+            self.last_hop_activation = last_hop_activation
 
         # 如果是卷积网络，这个参数没有意义（如果是卷积网络，直接传入 None 即可）
         self.neuron_count_list = neuron_count_list
@@ -275,7 +283,11 @@ class NeuralNetwork:
                 # 2.1 第 m 个训练样本，经过（多层）神经网络的计算
                 nn_y_list = self._calc_nn(sx)
 
-                # 2.2 根据计算结果，修正参数 W，B
+                # 2.2 最后一跳修正
+                nn_y = nn_y_list[len(nn_y_list) - 1]
+                self.last_hop_activation.train_activation(nn_y)
+
+                # 2.3 根据计算结果，修正参数 W，B
                 self._modify_wb(nn_y_list, sx, sy)
 
         return errorcode.SUCCESS
@@ -361,8 +373,11 @@ class NeuralNetwork:
             nn_y = nn_y_list[len(nn_y_list) - 1]
 
             # 修正一下
+            self.last_hop_activation.predict_activation(nn_y)
+            """
             for j in range(0, self.sy_dim):
                 nn_y[j, 0] = self.activation.revise(nn_y[j, 0])
+            """
 
             # 然后再添加到预测列表
             py_list.append(nn_y)

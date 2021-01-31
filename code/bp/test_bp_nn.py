@@ -44,7 +44,7 @@ def test_straight_line():
     neuron_count_list = [2, 1]
 
     # 最大循环训练次数
-    loop_max = 1000
+    loop_max = 10
 
     # 学习效率
     rate = 0.1
