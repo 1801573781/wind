@@ -68,7 +68,7 @@ class BPNeuralNetwork(NeuralNetwork):
         for i in range(0, row_last):
             # 计算ksi_last 的每个元素
             ksi_item = err[i] * self.activation.derivative(nn_y_last[i])
-            ksi_last.append(ksi_item[0, 0])  # ksi_item 是一个[1, 1]的矩阵，取其元素，而不是取其矩阵本身
+            ksi_last.append(ksi_item[0])
 
         ksi_list[self.layer_count - 1] = ksi_last
 
@@ -100,11 +100,10 @@ class BPNeuralNetwork(NeuralNetwork):
                     s = s + w[j, i] * ksi_next[j]
 
                 # ksi_item 的计算公式为：ksi_item = sum(w[j][i] * ksi_next[j]) * f'(y)
-                # ksi_item = s * nn_y_cur[i] * (1 - nn_y_cur[i])
                 ksi_item = s * self.activation.derivative(nn_y_cur[i])
 
                 # 将 ksi_item 加入向量
-                ksi_cur.append(ksi_item[0, 0])
+                ksi_cur.append(ksi_item[0])
 
             # 将本层计算出的 ksi 加入到 ksiList
             ksi_list[layer] = ksi_cur

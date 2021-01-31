@@ -226,15 +226,13 @@ class NeuralNetwork:
         # 神经网络输出，向量维度
         self.sy_dim = self.neuron_count_list[self.layer_count - 1]
 
-        # 第1层 w 参数，w 是一个矩阵
-        w = np.matlib.rand(self.neuron_count_list[0], self.sx_dim)
-        # w = np.random.random((self.neuron_count_list[0], self.sx_dim))
+        # 第1层 w 参数，w 是一个2维数组
+        w = np.random.random((self.neuron_count_list[0], self.sx_dim))
         self.W.append(w)
 
-        # 第2层~第layer-1层 w 参数，w 是一个矩阵
+        # 第2层~第layer-1层 w 参数，w 是一个2维数组
         for i in range(1, self.layer_count):
-            w = np.matlib.rand(self.neuron_count_list[i], self.neuron_count_list[i - 1])
-            # w = np.random.random((self.neuron_count_list[i], self.neuron_count_list[i - 1]))
+            w = np.random.random((self.neuron_count_list[i], self.neuron_count_list[i - 1]))
             self.W.append(w)
 
         # 第1层 ~ 第layer-1层 b 参数，b 是一个向量
