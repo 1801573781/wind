@@ -57,7 +57,8 @@ class BPNeuralNetwork(NeuralNetwork):
 
         # 2.1 计算误差(err)：最后一层的计算结果与样本输出结果的比较（计算结果 - 训练样本的输出）
         nn_y_last = nn_y_list[self.layer_count - 1]
-        err = np.subtract(nn_y_last, sy)
+        # dy = np.subtract(nn_y_last, sy)
+        dy = self.loss.derivative(nn_y_last, sy)
 
         # 2.2 计算最后一层 ksi
 
@@ -67,7 +68,7 @@ class BPNeuralNetwork(NeuralNetwork):
 
         for i in range(0, row_last):
             # 计算ksi_last 的每个元素
-            ksi_item = err[i] * self.activation.derivative(nn_y_last[i])
+            ksi_item = dy[i] * self.activation.derivative(nn_y_last[i])
             ksi_last.append(ksi_item[0])
 
         ksi_list[self.layer_count - 1] = ksi_last

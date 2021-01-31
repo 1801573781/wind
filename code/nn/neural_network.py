@@ -13,7 +13,8 @@ from gl import errorcode
 from gl import common_function
 from gl.array_string import array_2_string
 
-from activation.last_hop_activation import LastHopActivation, DichotomyLHA, SoftMaxLHA
+from activation.last_hop_activation import DichotomyLHA
+from loss.loss import MSELoss
 
 """
 class：NeuralNetwork 神经网络(base class)
@@ -66,21 +67,26 @@ class NeuralNetwork:
     # 最后一跳激活函数对象（class LastHopActivation 的实例）
     last_hop_activation = DichotomyLHA()
 
-    """
-    功能：训练（public 函数）
-    参数：
-    sx_list：训练样本输入列表
-    sy_list：训练样本输出列表
-    loop_max：循环训练的最大次数    
-    neuron_count_list：每一层神经元数量(对于卷积网络，这个参数没有意义)
-    rate：学习效率    
-    activation：激活函数对象    
-    w_shape_list：每一层 w 参数的 shape list（除了卷积网络，这个参数没有意义）       
-    返回值：错误码
-    """
+    # 损失函数
+    loss = MSELoss()
 
     def train(self, sx_list, sy_list, loop_max, neuron_count_list, rate,
-              activation, last_hop_activation=None, w_shape_list=None):
+              activation, last_hop_activation=None, loss=None, w_shape_list=None):
+        """
+        功能：神经网络训练\n
+        参数：\n
+        sx_list：训练样本输入列表\n
+        sy_list：训练样本输出列表\n
+        loop_max：循环训练的最大次数 \n
+        neuron_count_list：每一层神经元数量(对于卷积网络，这个参数没有意义)\n
+        rate：学习效率 \n
+        activation：激活函数对象\n
+        last_hop_activation：最后一跳激活函数对象\n
+        loss：损失函数对象\n
+        w_shape_list：每一层 w 参数的 shape list（除了卷积网络，这个参数没有意义）\n
+        返回值：错误码\n
+        """
+
         # 1. 成员变量赋值
         self.sx_list = sx_list
         self.sy_list = sy_list
@@ -91,6 +97,9 @@ class NeuralNetwork:
         if last_hop_activation is not None:
             self.last_hop_activation = last_hop_activation
 
+        if loss is not None:
+            self.loss = loss
+
         # 如果是卷积网络，这个参数没有意义（如果是卷积网络，直接传入 None 即可）
         self.neuron_count_list = neuron_count_list
 
@@ -100,6 +109,7 @@ class NeuralNetwork:
         # 2. 校验
         err = self._valid()
         if errorcode.SUCCESS != err:
+            print("\nvalid error, errcode = %d\n" % err)
             return err
 
         # 3. 初始化 W, B，及其他参数
@@ -316,16 +326,18 @@ class NeuralNetwork:
         # 返回逐层计算的结果
         return nn_y_list
 
-    """
-    功能：计算某一层神经网络的输出
-    参数：
-    x：该层神经网络的输入，x 是一个向量
-    w: 该层神经网络的 w 参数, w 是一个矩阵
-    b：该层神经网络的 b 参数，b 是一个向量
-    返回值：y，该层神经网络的输出（sigmoid(w * x + b)）， y 是一个向量
-    """
+    ''''''
 
     def _calc_layer(self, x, layer):
+        """
+        功能：计算某一层神经网络的输出
+        参数：
+        x：该层神经网络的输入，x 是一个向量
+        w: 该层神经网络的 w 参数, w 是一个矩阵
+        b：该层神经网络的 b 参数，b 是一个向量
+        返回值：y，该层神经网络的输出（sigmoid(w * x + b)）， y 是一个向量
+        """
+
         # 获取该层的参数：w, b
         w = self.W[layer]
         b = self.B[layer]
@@ -340,26 +352,29 @@ class NeuralNetwork:
 
         return y
 
-    """
-    功能：修正 W，B
-    参数：
-    nn_y_list：神经网路计算的每一层结果，nn_y 是一个向量
-    sx：训练样本的输入，sx 是一个向量
-    sy：训练样本的输出，sy 是一个向量 
-    返回值：NULL
-    """
+    ''''''
 
     def _modify_wb(self, nn_y_list, sx, sy):
+        """
+        功能：修正 W，B
+        参数：
+        nn_y_list：神经网路计算的每一层结果，nn_y 是一个向量
+        sx：训练样本的输入，sx 是一个向量
+        sy：训练样本的输出，sy 是一个向量
+        返回值：NULL
+        """
         pass
 
-    """
-    功能：预测
-    参数：
-    sx_list：待预测的样本列表，其中 sx 是向量 
-    返回值：预测结果
-    """
+    ''''''
 
     def predict(self, sx_list, sy_list):
+        """
+        功能：预测
+        参数：
+        sx_list：待预测的样本列表，其中 sx 是向量
+        返回值：预测结果
+        """
+
         count = len(sx_list)
         py_list = list()
 
@@ -372,18 +387,9 @@ class NeuralNetwork:
 
             # 修正一下
             self.last_hop_activation.predict_activation(nn_y)
-            """
-            for j in range(0, self.sy_dim):
-                nn_y[j, 0] = self.activation.revise(nn_y[j, 0])
-            """
 
             # 然后再添加到预测列表
             py_list.append(nn_y)
-
-        accuracy = common_function.calculate_accuracy(py_list, sy_list)
-
-        print("\n")
-        print("accuracy = %f\n" % accuracy)
 
         return py_list
 

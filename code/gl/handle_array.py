@@ -70,3 +70,26 @@ def sum_arr(arr, s, f=None, *args):
             a = arr[i]
 
             sum_arr(a, s, f, args)
+
+
+''''''
+
+
+def get_arr_item(arr, index):
+    """
+    功能：求数组的某个索引的值
+    参数：
+    arr：n维数组
+    index：n维数组的索引,1维数组，比如 [2, 3, 4]，表示 arr[2][3][4]
+    返回值：数组的某个索引的值， arr[index]
+    """
+
+    # 索引所包含元素的个数
+    count = len(index)
+
+    # 用递归方法，获取 arr[index]
+    a = arr[index[0]]
+    for i in range(1, count):
+        a = a[index[i]]
+
+    return a

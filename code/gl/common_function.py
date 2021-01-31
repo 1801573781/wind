@@ -18,7 +18,7 @@ sy_list：样本结果列表
 
 
 def calculate_accuracy(py_list, sy_list):
-    # 1. 合法性校验
+    # 合法性校验
     c_py = len(py_list)
     c_sy = len(sy_list)
 

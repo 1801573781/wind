@@ -22,6 +22,9 @@ from my_image.my_image import show_file, gray_file, show_data, ImageDataType, ge
 from activation.normal_activation import Sigmoid
 from activation.normal_activation import ReLU
 
+from activation.last_hop_activation import LastHopActivation
+from loss.loss import MSELoss
+
 from tkinter import messagebox
 
 import os
@@ -118,6 +121,12 @@ def test_cvl_nn():
     activation = Sigmoid()
     # activation = ReLU()
 
+    # 最后一跳激活函数
+    last_hop_activation = LastHopActivation()
+
+    # 损失函数
+    loss = MSELoss()
+
     # 构建卷积对象
     cvl = Convolution()
 
@@ -125,7 +134,8 @@ def test_cvl_nn():
     cnn = CVLNeuralNetwork(cvl)
 
     # 3. 训练
-    cnn.train(sx_list, sy_list, loop_max, neuron_count_list, rate, activation, w_shape_list)
+    cnn.train(sx_list, sy_list, loop_max, neuron_count_list, rate,
+              activation, last_hop_activation, loss, w_shape_list)
 
     # 4. 预测
     py_list = cnn.predict(sx_list, sy_list)
@@ -159,7 +169,7 @@ def test_cvl_nn_2():
     test_sx_list = list()  # 测试样本列表（输入）
     test_sy_list = list()  # 测试样本列表（输入）
 
-    max_count = 1000
+    max_count = 2
 
     image_path = "../picture/number2/"
 
@@ -250,6 +260,12 @@ def test_cvl_nn_2():
     activation = Sigmoid()
     # activation = ReLU()
 
+    # 最后一跳激活函数
+    last_hop_activation = LastHopActivation()
+
+    # 损失函数
+    loss = MSELoss()
+
     # 构建卷积对象
     cvl = Convolution()
 
@@ -257,7 +273,8 @@ def test_cvl_nn_2():
     cnn = CVLNeuralNetwork(cvl)
 
     # 3. 训练
-    cnn.train(train_sx_list, train_sy_list, loop_max, neuron_count_list, rate, activation, w_shape_list)
+    cnn.train(train_sx_list, train_sy_list, loop_max, neuron_count_list, rate,
+              activation, last_hop_activation, loss, w_shape_list)
 
     # 4. 预测
     py_list = cnn.predict(test_sx_list, test_sy_list)
@@ -286,7 +303,7 @@ def test_cvl_nn_without_train():
     # 1. 构建训练输入样本
 
     # 图像文件名
-    file_name = "../picture/number/9_sx.bmp"
+    file_name = "../picture/number/1_sx.bmp"
 
     # 取灰度值
     data, err = gray_file(file_name, ArrayDim.THREE)
@@ -312,7 +329,7 @@ def test_cvl_nn_without_train():
     # 2. 构建训练输出样本
 
     # 图像数据
-    file_name = "../picture/number/9_sy_2.bmp"
+    file_name = "../picture/number/8_sy_2.bmp"
 
     # 取灰度值
     data, err = gray_file(file_name, ArrayDim.THREE)

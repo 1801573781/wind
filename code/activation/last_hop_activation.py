@@ -24,7 +24,7 @@ class LastHopActivation:
         nn_y：神经网络训练的输出，是一个n维数组，或者是一个数值\n
         返回值：最后一跳激活的结果（是一个n维数组，或者是一个数值）\n
         """
-        pass
+        return
 
     # 功能：预测时，最后一跳激活
     def predict_activation(self, nn_y):
@@ -34,7 +34,7 @@ class LastHopActivation:
         nn_y：神经网络训练的输出，是一个n维数组，或者是一个数值\n
         返回值：最后一跳激活的结果（是一个n维数组，或者是一个数值）\n
         """
-        pass
+        return
 
     # 功能：最后一跳激活函数的导数
     def derivative(self, nn_y):

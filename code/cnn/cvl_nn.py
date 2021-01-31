@@ -391,7 +391,8 @@ class CVLNeuralNetwork(NeuralNetwork):
 
         # 2.1 计算误差(err)：最后一层的计算结果与样本输出结果的比较（计算结果 - 训练样本的输出）
         nn_y_last = nn_y_list[self.layer_count - 1]
-        err = np.subtract(nn_y_last, sy)  # 不知道3维数组是否可以这样相减
+        # dy = np.subtract(nn_y_last, sy)  # 不知道3维数组是否可以这样相减
+        dy = self.loss.derivative(nn_y_last, sy)
 
         # 2.2 计算最后一层 ksi
 
@@ -406,7 +407,7 @@ class CVLNeuralNetwork(NeuralNetwork):
         for k in range(0, depth):
             for i in range(0, width):
                 for j in range(0, height):
-                    ksi_last[i, j, k] = err[i, j, k] * self.activation.derivative(nn_y_last[i, j, k])
+                    ksi_last[i, j, k] = dy[i, j, k] * self.activation.derivative(nn_y_last[i, j, k])
 
         # 将 ksi_last 放置入 ksi_list
         ksi_list[self.layer_count - 1] = ksi_last
@@ -420,7 +421,7 @@ class CVLNeuralNetwork(NeuralNetwork):
             w = self.W[layer + 1]
 
             # 当前层的 ksi
-            ksi_cur, err = self.cvl.convolution(w, ksi_next, Reversal.REV, ConvolutionType.Wide)
+            ksi_cur, dy = self.cvl.convolution(w, ksi_next, Reversal.REV, ConvolutionType.Wide)
 
             # 将当前层计算出的 ksi 放置到 ksiList
             ksi_list[layer] = ksi_cur
@@ -428,16 +429,18 @@ class CVLNeuralNetwork(NeuralNetwork):
         # return 计算结果
         return ksi_list
 
-    """
-    功能：修正 W，B
-    参数： 
-    ksi_list：每一层的 ksi 的列表，ksi 是一个3维数组
-    sx：输入样本，sx 是一个3维数组
-    nn_y_list：神经网络的每一层的计算结果列表，nn_y 是一个3维数组    
-    返回值：NULL  
-    """
+    ''''''
 
     def __modify_wb_by_ksi_list(self, ksi_list, sx, nn_y_list):
+        """
+        功能：修正 W，B
+        参数：
+        ksi_list：每一层的 ksi 的列表，ksi 是一个3维数组
+        sx：输入样本，sx 是一个3维数组
+        nn_y_list：神经网络的每一层的计算结果列表，nn_y 是一个3维数组
+        返回值：NULL
+        """
+
         # 逐层修正
         for layer in range(0, self.layer_count):
             # 当前层 w, b, ksi
@@ -462,26 +465,3 @@ class CVLNeuralNetwork(NeuralNetwork):
 
             # 修正当前层的 b
             self.B[layer] = np.subtract(b, self.rate * b_pd)  # 不知道3维数组是否可以这样相减
-
-    """
-    功能：预测
-    参数：
-    sx_list：待预测的样本列表，其中 sx 是向量 
-    返回值：预测结果
-    """
-
-    def predict(self, sx_list, sy_list):
-        count = len(sx_list)
-        py_list = list()
-
-        for i in range(0, count):
-            sx = sx_list[i]
-            nn_y_list = self._calc_nn(sx)
-
-            # 最后一层的 nn_y，才是神经网络的最终输出
-            nn_y = nn_y_list[len(nn_y_list) - 1]
-
-            # 然后再添加到预测列表
-            py_list.append(nn_y)
-
-        return py_list
