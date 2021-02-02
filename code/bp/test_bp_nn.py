@@ -7,6 +7,7 @@ Date：2021.01.01
 import numpy as np
 import os
 
+from activation import normal_activation
 from gl import draw
 from bp import bp_nn
 from sample import sin_sample
@@ -37,8 +38,11 @@ def test_straight_line():
     # ax + b 分割的样本对象
     sample = straight_line_sample.StraightLineSample()
 
+    # 激活函数对象
+    activation = normal_activation.Sigmoid()
+
     # 神经网络对象
-    nn = bp_nn.BPNeuralNetwork()
+    nn = bp_nn.BPNeuralNetwork(activation)
 
     # 每一层网络的神经元个数
     neuron_count_list = [2, 1]
@@ -94,8 +98,11 @@ def test_two_line():
     # 两根直线 分割的样本对象
     sample = two_line_sample.TwoLineSample()
 
+    # 激活函数对象
+    activation = normal_activation.Sigmoid()
+
     # 神经网络对象
-    nn = bp_nn.BPNeuralNetwork()
+    nn = bp_nn.BPNeuralNetwork(activation)
 
     # 每一层网络的神经元个数
     neuron_count_list = [2, 1]
@@ -149,8 +156,11 @@ def test_sin():
     # sin(x) 分割的样本对象
     sample = sin_sample.SinSample()
 
+    # 激活函数对象
+    activation = normal_activation.Sigmoid()
+
     # 神经网络对象
-    nn = bp_nn.BPNeuralNetwork()
+    nn = bp_nn.BPNeuralNetwork(activation)
 
     # 每一层网络的神经元个数
     neuron_count_list = [5, 1]
@@ -193,8 +203,11 @@ def test_sin():
 
 
 def test_straight_line_without_train():
+    # 激活函数对象
+    activation = normal_activation.Sigmoid()
+
     # 神经网络对象
-    nn = bp_nn.BPNeuralNetwork()
+    nn = bp_nn.BPNeuralNetwork(activation)
 
     # 预测样本个数
     predict_sample_count = 500
@@ -256,8 +269,11 @@ def test_straight_line_without_train():
 
 
 def test_two_line_without_train():
+    # 激活函数对象
+    activation = normal_activation.Sigmoid()
+
     # 神经网络对象
-    nn = bp_nn.BPNeuralNetwork()
+    nn = bp_nn.BPNeuralNetwork(activation)
 
     # 预测样本个数
     predict_sample_count = 1000
@@ -319,8 +335,11 @@ def test_two_line_without_train():
 
 
 def test_sin_without_train():
+    # 激活函数对象
+    activation = normal_activation.Sigmoid()
+
     # 神经网络对象
-    nn = bp_nn.BPNeuralNetwork()
+    nn = bp_nn.BPNeuralNetwork(activation)
 
     # 预测样本个数
     predict_sample_count = 1000

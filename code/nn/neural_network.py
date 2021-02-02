@@ -70,8 +70,25 @@ class NeuralNetwork:
     # 损失函数
     loss = MSELoss()
 
-    def train(self, sx_list, sy_list, loop_max, neuron_count_list, rate,
-              activation, last_hop_activation=None, loss=None, w_shape_list=None):
+    def __init__(self, activation, last_hop_activation=None, loss=None):
+        """
+        构造函数
+        :param activation: 激活函数对象
+        :param last_hop_activation: 后一跳激活函数对象
+        :param loss: 损失函数对象
+        """
+
+        self.activation = activation
+
+        if last_hop_activation is not None:
+            self.last_hop_activation = last_hop_activation
+
+        if loss is not None:
+            self.loss = loss
+
+    ''''''
+
+    def train(self, sx_list, sy_list, loop_max, neuron_count_list, rate, w_shape_list=None):
         """
         功能：神经网络训练\n
         参数：\n
@@ -92,13 +109,6 @@ class NeuralNetwork:
         self.sy_list = sy_list
         self.loop_max = loop_max
         self.rate = rate
-        self.activation = activation
-
-        if last_hop_activation is not None:
-            self.last_hop_activation = last_hop_activation
-
-        if loss is not None:
-            self.loss = loss
 
         # 如果是卷积网络，这个参数没有意义（如果是卷积网络，直接传入 None 即可）
         self.neuron_count_list = neuron_count_list
@@ -144,6 +154,7 @@ class NeuralNetwork:
     参数：NULL    
     返回值：错误码    
     """
+
     def _valid_layer_neuron(self):
         # 1. 神经网络层数，须 >= 1
         layer_count = len(self.neuron_count_list)
@@ -447,5 +458,3 @@ class NeuralNetwork:
 
         # 激活函数对象
         self.activation = activation
-
-

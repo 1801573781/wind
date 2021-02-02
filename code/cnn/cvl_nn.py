@@ -62,15 +62,24 @@ class CVLNeuralNetwork(NeuralNetwork):
     # 是否翻转卷积
     rev = Reversal.NO_REV
 
-    """
-    功能：构造函数
-    参数：
-    cvl：卷积对象
-    返回值：NULL
-    """
+    def __init__(self, cvl, activation, last_hop_activation=None, loss=None):
+        """
+        构造函数
+        :param cvl: 卷积对象
+        :param activation: 激活函数对象
+        :param last_hop_activation: 最后一跳激活函数对象
+        :param loss: 损失函数对象
+        """
 
-    def __init__(self, cvl):
         self.cvl = cvl
+
+        self.activation = activation
+
+        if last_hop_activation is not None:
+            self.last_hop_activation = last_hop_activation
+
+        if loss is not None:
+            self.loss = loss
 
     """
     功能：参数校验

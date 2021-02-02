@@ -56,7 +56,8 @@ class ImageSoftMaxSample(FullConnectedSample):
 
     ''''''
 
-    def _create_sx(self, image_file_name):
+    @staticmethod
+    def _create_sx(image_file_name):
         """
         功能：将一个图像文件转换为训练样本的输入 \n
         参数：\n
@@ -80,12 +81,12 @@ class ImageSoftMaxSample(FullConnectedSample):
 
     ''''''
 
-    def _create_sy(self, image_file_name):
+    @staticmethod
+    def _create_sy(image_file_name):
         """
-        功能：通过解析图像文件名，构建为训练样本的输出 \n
-        参数：\n
-        image_file_name：图像文件名 \n
-        返回值：sy \n
+        通过解析图像文件名，构建为训练样本的输出
+        :param image_file_name: 图像文件名
+        :return: 训练样本的输出
         """
 
         # sy 是一个 10 维向量

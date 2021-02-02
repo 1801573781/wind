@@ -131,11 +131,10 @@ def test_cvl_nn():
     cvl = Convolution()
 
     # 构建卷积神经网络对象
-    cnn = CVLNeuralNetwork(cvl)
+    cnn = CVLNeuralNetwork(cvl, activation, last_hop_activation, loss)
 
     # 3. 训练
-    cnn.train(sx_list, sy_list, loop_max, neuron_count_list, rate,
-              activation, last_hop_activation, loss, w_shape_list)
+    cnn.train(sx_list, sy_list, loop_max, neuron_count_list, rate, w_shape_list)
 
     # 4. 预测
     py_list = cnn.predict(sx_list, sy_list)
@@ -270,11 +269,10 @@ def test_cvl_nn_2():
     cvl = Convolution()
 
     # 构建卷积神经网络对象
-    cnn = CVLNeuralNetwork(cvl)
+    cnn = CVLNeuralNetwork(cvl, activation, last_hop_activation, loss)
 
     # 3. 训练
-    cnn.train(train_sx_list, train_sy_list, loop_max, neuron_count_list, rate,
-              activation, last_hop_activation, loss, w_shape_list)
+    cnn.train(train_sx_list, train_sy_list, loop_max, neuron_count_list, rate, w_shape_list)
 
     # 4. 预测
     py_list = cnn.predict(test_sx_list, test_sy_list)
@@ -472,11 +470,17 @@ def test_cvl_nn_without_train():
     activation = Sigmoid()
     # activation = ReLU()
 
+    # 最后一跳激活函数
+    last_hop_activation = LastHopActivation()
+
+    # 损失函数
+    loss = MSELoss()
+
     # 构建卷积对象
     cvl = Convolution()
 
     # 构建卷积神经网络对象
-    cnn = CVLNeuralNetwork(cvl)
+    cnn = CVLNeuralNetwork(cvl, activation, last_hop_activation, loss)
 
     # 参数赋值
     cnn.stub_set_para(0, None, W, B, activation)
