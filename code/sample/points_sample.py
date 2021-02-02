@@ -9,12 +9,17 @@ import random
 
 from gl import draw
 
-"""
-class：ClassifySample，base class
-"""
+from sample.fully_connected_sample import FullConnectedSample
 
 
-class ClassifySample:
+class PointsSample(FullConnectedSample):
+    """
+    1、点训练样本，base class
+    1、训练输入样本是一系列的点（坐标值）
+    2、训练输出样本可以是分类，也可以是其他
+    """
+
+    """
     # 样本个数
     sample_count = 0
 
@@ -24,44 +29,31 @@ class ClassifySample:
     # 样本，输出向量维度
     sy_dim = 0
 
-    # 样本，输入向量，每个元素的最大值
-    sx_max = 0
-
     # 样本列表，输入，sx 是向量
     sx_list = 0
 
     # 样本列表，输出，sy 是向量
     sy_list = 0
-
-    """
-    功能：获取样本，输入
-    参数：NULL    
-    返回值：self.sx_list
     """
 
-    def get_sx_list(self):
-        return self.sx_list
+    # 样本，输入向量，每个元素的最大值
+    sx_max = 0
 
-    """
-    功能：获取样本，输出
-    参数：NULL    
-    返回值：self.sy_list
-    """
 
-    def get_sy_list(self):
-        return self.sy_list
 
-    """
-    功能：创建样本
-    参数：
-    sample_count：样本数量    
-    sx_max：样本，输入向量，每个元素的最大值
-    sx_dim：样本，输入向量的维度
-    sy_dim：样本，输出向量的维度
-    返回值：NULL
-    """
+    ''''''
 
     def create_sample(self, sample_count, sx_max, sx_dim, sy_dim):
+        """
+        功能：创建样本\n
+        参数：\n
+        sample_count：样本数量\n
+        sx_max：样本，输入向量，每个元素的最大值\n
+        sx_dim：样本，输入向量的维度\n
+        sy_dim：样本，输出向量的维度\n
+        返回值：NULL\n
+        """
+
         # 1. 初始化
         self.sample_count = sample_count
         self.sx_max = sx_max

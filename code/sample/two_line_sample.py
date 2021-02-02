@@ -8,7 +8,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 from activation import dichotomy
-from sample.classify_sample import ClassifySample
+from sample.points_sample import PointsSample
 
 """
 class：StraightLineSample
@@ -19,7 +19,7 @@ class：StraightLineSample
 """
 
 
-class TwoLineSample(ClassifySample):
+class TwoLineSample(PointsSample):
     # a0, b0
     a0 = 1
     b0 = 0.5

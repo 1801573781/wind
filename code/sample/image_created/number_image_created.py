@@ -12,16 +12,14 @@ import os
 from PIL import ImageDraw
 from PIL import ImageFont
 
-"""
-class：NumberImageSample，生成数字图像文件样本（0~9）
-说明：
-1、暂时只生成 0~9 图像
-2、图像是 RGB，字体颜色是黑色，底色是灰度
-3、生成图像的目录，暂时写死
-"""
 
+class NumberImageCreated:
+    """
+    1、暂时只生成 0~9 图像\n
+    2、图像是 RGB，字体颜色是黑色，底色是灰度\n
+    3、生成图像的目录，暂时写死\n
+    """
 
-class NumberImageSample:
     # sx image width
     sx_width = 0
 
@@ -283,7 +281,7 @@ class NumberImageSample:
 
 
 def test_create_image():
-    nis = NumberImageSample(20, 20, 16, 16)
+    nis = NumberImageCreated(20, 20, 16, 16)
 
     nis.create_image(None, 1000)
 
@@ -296,6 +294,6 @@ def test_create_image():
 
 
 def test_del_image():
-    nis = NumberImageSample(20, 20, 16, 16)
+    nis = NumberImageCreated(20, 20, 16, 16)
 
     nis.del_image()

@@ -8,7 +8,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 from activation import dichotomy
-from sample.classify_sample import ClassifySample
+from sample.points_sample import PointsSample
 
 """
 class：SinSample
@@ -19,7 +19,7 @@ class：SinSample
 """
 
 
-class SinSample(ClassifySample):
+class SinSample(PointsSample):
     # 欧米咖：sin(wx)
     omega = 2 * np.pi
 
