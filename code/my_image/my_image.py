@@ -480,11 +480,15 @@ def array_3_1(data):
     width = shape[0]
     height = shape[1]
 
-    z = list()
+    # z = list()
+
+    z = np.zeros([width * height, 1])
 
     for i in range(0, width):
         for j in range(0, height):
-            z.append(data[i, j, 0])
+            index = i * width + j
+            z[index][0] = data[i, j, 0]
+            # z.append(data[i, j, 0])
 
     return z
 

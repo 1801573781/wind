@@ -93,3 +93,57 @@ def get_arr_item(arr, index):
         a = a[index[i]]
 
     return a
+
+
+''''''
+
+
+def handle_arr_ex(arr_list, arr_out, f, *args):
+    """
+    递归处理数组
+    :param arr_list: 待处理的数组列表，arr 是n维数组
+    :param arr_out: 处理后的结果，arr_out 是n维数组
+    :param f: 处理函数
+    :param args: 变参
+    :return: NULL
+    """
+
+    # 不做参数合法性判断
+
+    # 数组的维度
+    arr_len = len(arr_list)
+    arr = arr_list[0]
+    shape = arr.shape
+    dim = len(shape)
+
+    # 第1维元素的个数
+    count = shape[0]
+
+    # 如果是1维，则开始处理
+    if 1 == dim:
+        for i in range(0, count):
+            a_list = list()
+
+            for j in range(0, arr_len):
+                arr = arr_list[j]
+                a = arr[i]
+                a_list.append(a)
+
+            a_list.append(args)
+
+            args2 = tuple(a_list)
+
+            f(arr_out, i, args2)
+
+    # 如果不是1维，则需要递归：
+    else:
+        for i in range(0, count):
+            a_out = arr_out[i]
+            a_list = list()
+
+            for j in range(0, arr_len):
+                arr = arr_list[j]
+                a = arr[i]
+                a_list.append(a)
+
+            handle_arr_ex(a_list, a_out, f, *args)

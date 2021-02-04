@@ -97,7 +97,7 @@ class SoftMaxLHA(LastHopActivation):
         """
 
         # 训练时，最后一跳做 soft max 处理
-        _soft_max(nn_y)
+        SoftMaxLHA._soft_max(nn_y)
 
     ''''''
 
@@ -110,49 +110,49 @@ class SoftMaxLHA(LastHopActivation):
         """
 
         # 预测时，最后一跳做 soft max 处理
-        _soft_max(nn_y)
+        SoftMaxLHA._soft_max(nn_y)
 
+    @staticmethod
+    def _soft_max(arr):
+        """
+        功能：将 arr 的每个元素，求解 soft max\n
+        参数：\n
+        arr：多维数组\n
+        返回值：NULL\n
+        """
+        # 1. 先将 arr 的每个元素 a，变为 a = exp(a)
+        handle_arr(arr, SoftMaxLHA._exp)
 
-def _soft_max(arr):
-    """
-    功能：将 arr 的每个元素，求解 soft max\n
-    参数：\n
-    arr：多维数组\n
-    返回值：NULL\n
-    """
-    # 1. 先将 arr 的每个元素 a，变为 a = exp(a)
-    handle_arr(arr, _exp)
+        # 2. 求 arr 各元素之和
+        s = [0]
+        sum_arr(arr, s)
 
-    # 2. 求 arr 各元素之和
-    s = [0]
-    sum_arr(arr, s)
+        # 3. 求解概率：将 arr 各元素 a，变为 a = a / s[0]
+        handle_arr(arr, SoftMaxLHA._probability, s[0])
 
-    # 3. 求解概率：将 arr 各元素 a，变为 a = a / s[0]
-    handle_arr(arr, _probability, s[0])
+    @staticmethod
+    def _exp(*args):
+        """
+        功能：求解 e^x
+        参数：\n
+        args：args[0][0] 为 x
+        返回值：e^x
+        """
 
+        x = args[0][0]
+        return math.exp(x)
 
-def _exp(*args):
-    """
-    功能：求解 e^x
-    参数：\n
-    args：args[0][0] 为 x
-    返回值：e^x
-    """
+    @staticmethod
+    def _probability(*args):
+        """
+        功能：求解概率，P = a / s
+        参数：\n
+        args[0][0]：a，数组 arr 中的某一个元素\n
+        args[0][0]：s，数组所有元素之和
+        返回值：a / s\n
+        """
 
-    x = args[0][0]
-    return math.exp(x)
+        a = args[0][0]
+        s = args[0][1]
 
-
-def _probability(*args):
-    """
-    功能：求解概率，P = a / s
-    参数：\n
-    args[0][0]：a，数组 arr 中的某一个元素\n
-    args[0][0]：s，数组所有元素之和
-    返回值：a / s\n
-    """
-
-    a = args[0][0]
-    s = args[0][1]
-
-    return a / s
+        return a / s

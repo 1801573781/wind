@@ -7,7 +7,7 @@ Date：2021.01.29
 import numpy as np
 import math
 
-from gl.handle_array import sum_arr, get_arr_item
+from gl.handle_array import sum_arr, get_arr_item, handle_arr_ex
 
 
 class Loss:
@@ -179,6 +179,24 @@ class CrossEntropyLoss(Loss):
 
     ''''''
 
+    def derivative(self, nn_y, sy):
+        """
+        损失函数求导
+        :param nn_y: 神经网络的输出，n维数组
+        :param sy: 训练样本的输出，n维数组
+        :return: 损失函数的导数
+        """
+
+        # 初始化
+        dy = np.asarray(nn_y)
+        arr_list = [nn_y, sy]
+
+        handle_arr_ex(arr_list, dy, CrossEntropyLoss._derivative)
+
+        return dy
+
+    ''''''
+
     def derivative_index(self, nn_y, sy, index):
         """
         功能：损失函数求导\n
@@ -193,6 +211,23 @@ class CrossEntropyLoss(Loss):
         dy = math.log(nn_y_item) - 1
         return dy
 
+    ''''''
+
+    @staticmethod
+    def _derivative(dy, index, *args):
+        """
+        CrossEntropyLoss 的求导
+        :param dy: CrossEntropyLoss 的导数。dy 已经被迭代为 1维数组
+        :param index: dy 的 index
+        :param args: args[0], nn_y(迭代最后的数值)；args[1], sy（迭代到最后的数值）
+        :return: NULL
+        """
+
+        nn_y_item = args[0][0]
+        # sy_item = args[0][1]  # 这个值，不需要
+
+        dy[index] = math.log(nn_y_item) - 1
+
 
 ''''''
 
@@ -204,7 +239,7 @@ def test():
     返回值：NULL\n
     """
 
-    mse = MSELoss()
+    loss = MSELoss()
 
     nn_y = np.asarray([[[50.113265], [93.826943], [115.373675]],
                        [[59.189640], [119.609671], [104.736651]],
@@ -214,10 +249,35 @@ def test():
                      [[-0.152569], [0.746855], [0.665359]],
                      [[-0.078141], [0.187796], [0.004870]]])
 
-    err = mse.loss(nn_y, sy)
+    print("\nMSELoss\n")
+
+    err = loss.loss(nn_y, sy)
 
     print("\nloss = %f\n" % err)
 
-    dvt = mse.derivative_index(nn_y, sy, [0, 0, 0])
+    dy = loss.derivative_index(nn_y, sy, [0, 0, 0])
 
-    print("\ndvt = %f\n" % dvt)
+    print("\ndy = %f\n" % dy)
+
+    dy = loss.derivative(nn_y, sy)
+
+    print("\ndy = \n")
+    print(dy)
+
+    print("\nCrossEntropyLoss\n")
+
+    loss = CrossEntropyLoss()
+
+    err = loss.loss(nn_y, sy)
+
+    print("\nloss = %f\n" % err)
+
+    dy = loss.derivative_index(nn_y, sy, [0, 0, 0])
+
+    print("\ndy = %f\n" % dy)
+
+    dy = loss.derivative(nn_y, sy)
+
+    print("\ndy = \n")
+    print(dy)
+

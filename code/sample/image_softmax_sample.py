@@ -90,12 +90,12 @@ class ImageSoftMaxSample(FullConnectedSample):
         """
 
         # sy 是一个 10 维向量
-        sy = np.zeros([10])
+        sy = np.zeros([10, 1])
 
         # 判断文件名中所包含的数字
         for i in range(0, 10):
             if str(i) in image_file_name:
-                sy[i] = 1
+                sy[i][0] = 1
                 break
 
         return sy

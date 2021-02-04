@@ -39,8 +39,6 @@ class PointsSample(FullConnectedSample):
     # 样本，输入向量，每个元素的最大值
     sx_max = 0
 
-
-
     ''''''
 
     def create_sample(self, sample_count, sx_max, sx_dim, sy_dim):
