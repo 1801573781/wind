@@ -133,7 +133,7 @@ def handle_arr_ex(arr_list, arr_out, f, *args):
 
             args2 = tuple(a_list)
 
-            f(arr_out, i, args2)
+            arr_out[i] = f(args2)
 
     # 如果不是1维，则需要递归：
     else:

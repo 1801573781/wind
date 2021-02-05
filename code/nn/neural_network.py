@@ -304,7 +304,8 @@ class NeuralNetwork:
 
                 # 2.2 最后一跳修正
                 nn_y = nn_y_list[len(nn_y_list) - 1]
-                self.last_hop_activation.train_activation(nn_y)
+                last_hop_y = self.last_hop_activation.train_activation(nn_y)
+                nn_y_list.append(last_hop_y)
 
                 # 2.3 根据计算结果，修正参数 W，B
                 self._modify_wb(nn_y_list, sx, sy)
@@ -397,10 +398,10 @@ class NeuralNetwork:
             nn_y = nn_y_list[len(nn_y_list) - 1]
 
             # 修正一下
-            self.last_hop_activation.predict_activation(nn_y)
+            last_hop_y = self.last_hop_activation.predict_activation(nn_y)
 
             # 然后再添加到预测列表
-            py_list.append(nn_y)
+            py_list.append(last_hop_y)
 
         return py_list
 

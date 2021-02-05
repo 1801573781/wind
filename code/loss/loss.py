@@ -187,11 +187,15 @@ class CrossEntropyLoss(Loss):
         :return: 损失函数的导数
         """
 
+        """
         # 初始化
         dy = np.asarray(nn_y)
         arr_list = [nn_y, sy]
 
         handle_arr_ex(arr_list, dy, CrossEntropyLoss._derivative)
+        """
+
+        dy = np.subtract(nn_y, 1)
 
         return dy
 
@@ -208,7 +212,9 @@ class CrossEntropyLoss(Loss):
         """
 
         nn_y_item = get_arr_item(nn_y, index)
-        dy = math.log(nn_y_item) - 1
+        # dy = math.log(nn_y_item) - 1
+        dy = nn_y_item - 1
+
         return dy
 
     ''''''
@@ -226,7 +232,8 @@ class CrossEntropyLoss(Loss):
         nn_y_item = args[0][0]
         # sy_item = args[0][1]  # 这个值，不需要
 
-        dy[index] = math.log(nn_y_item) - 1
+        # dy[index] = math.log(nn_y_item) - 1
+        dy[index] = nn_y_item - 1
 
 
 ''''''

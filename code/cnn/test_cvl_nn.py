@@ -168,7 +168,7 @@ def test_cvl_nn_2():
     test_sx_list = list()  # 测试样本列表（输入）
     test_sy_list = list()  # 测试样本列表（输入）
 
-    max_count = 2
+    max_count = 1000
 
     image_path = "../picture/number2/"
 
