@@ -55,20 +55,22 @@ class BPNeuralNetwork(NeuralNetwork):
 
         # 2. 计算最后一层 ksi
 
-        # 2.1 计算误差(err)：最后一层的计算结果与样本输出结果的比较（计算结果 - 训练样本的输出）
-        nn_y_last = nn_y_list[self.layer_count - 1]
-        # dy = np.subtract(nn_y_last, sy)
-        dy = self.loss.derivative(nn_y_last, sy)
+        # 2.1 计算损失函数的偏导
+        last_hop_y = nn_y_list[self.layer_count]
+        loss_dy = self.loss.derivative(last_hop_y, sy)
 
         # 2.2 计算最后一层 ksi
 
         # 最后一层 ksi：ksi_last，ksi_last 是个向量
+        nn_y_last = nn_y_list[self.layer_count - 1]
         row_last = len(nn_y_last)
         ksi_last = list()
 
         for i in range(0, row_last):
             # 计算ksi_last 的每个元素
-            ksi_item = dy[i] * self.activation.derivative(nn_y_last[i])
+            ksi_item = loss_dy[i] * self.last_hop_activation.derivative(last_hop_y, i) \
+                       * self.activation.derivative(nn_y_last[i])
+
             ksi_last.append(ksi_item[0])
 
         ksi_list[self.layer_count - 1] = ksi_last
