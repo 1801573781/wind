@@ -4,6 +4,7 @@ Author：lzb
 Date：2020.12.22
 """
 
+import numpy as np
 import math
 from activation import dichotomy
 
@@ -70,14 +71,19 @@ class：ReLU
 class ReLU(NormalActivation):
     # 激活函数
     def active(self, x):
-        return max(x, 0)
+        y = max(x, 0)
+        return min(y, 10)
+        # return max(x, 0)
 
     # 求导
     def derivative(self, x):
+        shape = x.shape
         if x > 0:
-            return 1
+            y = np.ones(shape)
+            return y
         else:
-            return 0
+            y = np.zeros(shape)
+            return y
 
     # 校正函数
     def revise(self, x):

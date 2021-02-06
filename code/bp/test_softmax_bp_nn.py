@@ -6,7 +6,7 @@ Date：2021.02.02
 
 
 from activation.last_hop_activation import LastHopActivation, SoftMaxLHA
-from activation.normal_activation import Sigmoid
+from activation.normal_activation import Sigmoid, ReLU
 from gl import common_function
 from loss.loss import MSELoss, CrossEntropyLoss
 
@@ -19,6 +19,7 @@ def test_softmax():
 
     # 激活函数
     activation = Sigmoid()
+    # activation = ReLU()
 
     # 最后一跳激活函数
     last_hop_activation = SoftMaxLHA()
@@ -53,7 +54,7 @@ def test_softmax():
     neuron_count_list = [10, 10]
 
     # 最大循环训练次数
-    loop_max = 5
+    loop_max = 200
 
     # 学习效率
     rate = 0.1
