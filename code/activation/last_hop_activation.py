@@ -70,7 +70,7 @@ class DichotomyLHA(LastHopActivation):
         """
 
         # 将神经网络的输出，复制一份输出
-        last_hop_y = np.asarray(nn_y)
+        last_hop_y = np.zeros(nn_y.shape)
 
         # 预测试，最后一跳需要修正，修正为二分类中的某一类
         arr_list = [nn_y]
@@ -136,17 +136,16 @@ class SoftMaxLHA(LastHopActivation):
         """
 
         # 1. exp_arr = exp(arr)
-        exp_arr = np.asarray(arr)
+        exp_arr = np.zeros(arr.shape)
         arr_list = [arr]
         handle_arr_ex(arr_list, exp_arr, SoftMaxLHA._exp)
-        # handle_arr(arr, SoftMaxLHA._exp)
 
         # 2. 求 arr 各元素之和
         s = [0]
         sum_arr(exp_arr, s)
 
         # 3. 求解概率
-        last_hop_arr = np.asarray(arr)
+        last_hop_arr = np.zeros(arr.shape)
         arr_list = [exp_arr]
         handle_arr_ex(arr_list, last_hop_arr, SoftMaxLHA._probability, s[0])
 

@@ -77,6 +77,8 @@ class ImageSoftMaxSample(FullConnectedSample):
         # 将灰度图像值，从3维数组转变为1维数组（list）
         gray = my_image.array_3_1(gray)
 
+        # gray = gray / 400
+
         return gray
 
     ''''''
