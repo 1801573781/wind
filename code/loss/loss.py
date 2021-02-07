@@ -189,7 +189,10 @@ class CrossEntropyLoss(Loss):
 
         # dy = nn_y * sy
 
-        # dy = np.subtract(dy, 1)
+        # dy = -1 * np.subtract(dy, 1)
+
+        # dy[0][0] = -1 * dy[0][0]
+
         dy = np.subtract(nn_y, sy)
 
         return dy

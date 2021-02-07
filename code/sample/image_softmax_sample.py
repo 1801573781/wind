@@ -9,6 +9,7 @@ import matplotlib.image as mpimg  # mpimg 用于读取图片
 import numpy as np
 
 import os
+import string
 
 from gl.common_enum import ArrayDim
 from my_image import my_image
@@ -22,7 +23,7 @@ class ImageSoftMaxSample(FullConnectedSample):
     2、图像的目录，暂时写死\n
     """
 
-    def create_sample(self, sx_dim, sy_dim):
+    def create_sample(self, image_root_path):
         """
         功能：创建样本\n
         参数：\n
@@ -32,26 +33,43 @@ class ImageSoftMaxSample(FullConnectedSample):
         """
 
         # 1. 初始化
-        self.sx_dim = sx_dim
-        self.sy_dim = sy_dim
-
         self.sx_list = list()
         self.sy_list = list()
 
-        image_path = "./../picture/number3"
+        # image_root_path = "./../picture/number4"
 
         # 2. 构建 sx_list, sy_list
 
         # 2.1 获取 image_path 下所有文件
-        for root, dirs, files in os.walk(image_path, topdown=False):
+        for root, dirs, files in os.walk(image_root_path, topdown=True):
+            for directory in dirs:
+                image_file_path = os.path.join(root, directory)
+                index = int(directory)  # directory 以 数字命名
+                self._create_sample(image_file_path, index)
+
+        # 3. 样本混淆
+        self._confuse()
+
+    ''''''
+
+    def _create_sample(self, image_file_path, index):
+        """
+        创建样本
+        :param image_file_path:图像文件路径
+        :param index:图像文件路径所对应的数字
+        :return:NULL
+        """
+
+        # 获取 image_file_path 下所有文件
+        for root, dirs, files in os.walk(image_file_path, topdown=False):
             for name in files:
                 image_file_name = os.path.join(root, name)
-                # 2.2 构建 sx
+                # 1 构建 sx
                 sx = self._create_sx(image_file_name)
                 self.sx_list.append(sx)
 
-                # 2.3 构建 sy
-                sy = self._create_sy(image_file_name)
+                # 2 构建 sy
+                sy = self._create_sy(image_file_name, index)
                 self.sy_list.append(sy)
 
     ''''''
@@ -77,14 +95,16 @@ class ImageSoftMaxSample(FullConnectedSample):
         # 将灰度图像值，从3维数组转变为1维数组（list）
         gray = my_image.array_3_1(gray)
 
-        # gray = gray / 400
+        gray = np.subtract(1, gray)
+
+        gray = gray / 400
 
         return gray
 
     ''''''
 
     @staticmethod
-    def _create_sy(image_file_name):
+    def _create_sy(image_file_name, index):
         """
         通过解析图像文件名，构建为训练样本的输出
         :param image_file_name: 图像文件名
@@ -94,11 +114,65 @@ class ImageSoftMaxSample(FullConnectedSample):
         # sy 是一个 10 维向量
         sy = np.zeros([10, 1])
 
+        sy[index][0] = 1
+
+        """
         # 判断文件名中所包含的数字
         for i in range(0, 10):
             if str(i) in image_file_name:
                 sy[i][0] = 1
                 break
+        """
 
         return sy
 
+    ''''''
+
+    def _confuse(self):
+        """
+        将训练样本的顺序混淆一下
+        :return:NULL
+        """
+
+        _sx_list = list()
+        _sy_list = list()
+
+        count = int(len(self.sx_list) / 2)
+
+        for i in range(0, count):
+            _sx_list.append(self.sx_list[i])
+            _sy_list.append(self.sy_list[i])
+
+            _sx_list.append(self.sx_list[count + i])
+            _sy_list.append(self.sy_list[count + i])
+
+        self.sx_list = _sx_list
+        self.sy_list = _sy_list
+
+    ''''''
+
+    def create_sample_ex(self, count):
+        """
+        认为构建样本，样本的可区分度强
+        :return:NULL
+        """
+
+        self.sx_list = list()
+        self.sy_list = list()
+
+        for i in range(0, count):
+            sx_0 = 0.5 * np.random.random((400, 1))
+            sx_0 = sx_0 / 40
+            self.sx_list.append(sx_0)
+
+            sy_0 = np.zeros([10, 1])
+            sy_0[0][0] = 1
+            self.sy_list.append(sy_0)
+
+            sx_1 = 0.5 * np.random.random((400, 1)) + 0.5
+            sx_1 = sx_1 / 40
+            self.sx_list.append(sx_1)
+
+            sy_1 = np.zeros([10, 1])
+            sy_1[1][0] = 1
+            self.sy_list.append(sy_1)

@@ -72,7 +72,7 @@ class ReLU(NormalActivation):
     # 激活函数
     def active(self, x):
         y = max(x, 0)
-        return min(y, 10)
+        return min(y, 20)
         # return max(x, 0)
 
     # 求导
