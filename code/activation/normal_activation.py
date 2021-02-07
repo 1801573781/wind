@@ -69,11 +69,20 @@ class：ReLU
 
 
 class ReLU(NormalActivation):
+    # 最大值
+    _max_value = -1
+
+    def __init__(self, max_value=-1):
+        self._max_value = max_value
+
     # 激活函数
     def active(self, x):
         y = max(x, 0)
-        return min(y, 20)
-        # return max(x, 0)
+
+        if self._max_value > 0:
+            y = min(y, self._max_value)
+
+        return y
 
     # 求导
     def derivative(self, x):

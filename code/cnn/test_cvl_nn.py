@@ -170,10 +170,10 @@ def test_cvl_nn_2():
 
     max_count = 1000
 
-    image_path = "../picture/number2/"
+    image_path = "../picture/number_cnn/"
 
     for count in range(0, max_count):
-        for number in range(0, 10):
+        for number in range(0, 2):
             # 1.1 输入样本
 
             # 图像路径
@@ -194,6 +194,8 @@ def test_cvl_nn_2():
 
             # 归一化
             sx = my_image.normalize(data, my_image.NormalizationType.NORMAL)
+
+            sx = sx / 10 + number * 10
 
             # 显示归一化灰度图像
             # gray = my_image.array_3_2(sx)

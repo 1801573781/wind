@@ -21,7 +21,7 @@ def test_softmax():
 
     # 激活函数
     # activation = Sigmoid()
-    activation = ReLU()
+    activation = ReLU(20)
 
     # 最后一跳激活函数
     last_hop_activation = SoftMaxLHA()
