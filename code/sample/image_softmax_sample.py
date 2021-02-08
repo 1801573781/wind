@@ -23,7 +23,7 @@ class ImageSoftMaxSample(FullConnectedSample):
     2、图像的目录，暂时写死\n
     """
 
-    def create_sample(self, image_root_path):
+    def create_sample(self, image_root_path, confuse=True):
         """
         功能：创建样本\n
         参数：\n
@@ -36,19 +36,26 @@ class ImageSoftMaxSample(FullConnectedSample):
         self.sx_list = list()
         self.sy_list = list()
 
-        # image_root_path = "./../picture/number4"
-
         # 2. 构建 sx_list, sy_list
 
-        # 2.1 获取 image_path 下所有文件
+        # 获取 image_path 下所有文件
         for root, dirs, files in os.walk(image_root_path, topdown=True):
-            for directory in dirs:
-                image_file_path = os.path.join(root, directory)
-                index = int(directory)  # directory 以 数字命名
-                self._create_sample(image_file_path, index)
+            group_count = len(dirs)
 
-        # 3. 样本混淆
-        self._confuse()
+            if 0 == group_count:
+                continue
+            else:
+                for directory in dirs:
+                    image_file_path = os.path.join(root, directory)
+                    index = int(directory)  # directory 以 数字命名
+                    # 创建样本
+                    self._create_sample(image_file_path, index)
+
+                # 样本混淆
+                if confuse:
+                    self._confuse(group_count)
+
+                return  # 直接 return，不再继续创建样本
 
     ''''''
 
@@ -97,7 +104,7 @@ class ImageSoftMaxSample(FullConnectedSample):
 
         gray = np.subtract(1, gray)
 
-        gray = gray / 400
+        gray = gray / 40
 
         return gray
 
@@ -128,7 +135,7 @@ class ImageSoftMaxSample(FullConnectedSample):
 
     ''''''
 
-    def _confuse(self):
+    def _confuse(self, group_count):
         """
         将训练样本的顺序混淆一下
         :return:NULL
@@ -137,14 +144,13 @@ class ImageSoftMaxSample(FullConnectedSample):
         _sx_list = list()
         _sy_list = list()
 
-        count = int(len(self.sx_list) / 2)
+        count = int(len(self.sx_list) / group_count)
 
         for i in range(0, count):
-            _sx_list.append(self.sx_list[i])
-            _sy_list.append(self.sy_list[i])
-
-            _sx_list.append(self.sx_list[count + i])
-            _sy_list.append(self.sy_list[count + i])
+            for j in range(0, group_count):
+                index = j * count + i
+                _sx_list.append(self.sx_list[index])
+                _sy_list.append(self.sy_list[index])
 
         self.sx_list = _sx_list
         self.sy_list = _sy_list

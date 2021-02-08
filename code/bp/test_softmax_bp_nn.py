@@ -47,8 +47,8 @@ def test_softmax():
     train_image_root_path = "./../picture/number_softmax_train"
     train_image_root_path = os.path.abspath(train_image_root_path)
 
-    # sample.create_sample(train_image_root_path)
-    sample.create_sample_ex(100)
+    sample.create_sample(train_image_root_path)
+    # sample.create_sample_ex(100)
 
     train_sx_list = sample.get_sx_list()
     train_sy_list = sample.get_sy_list()
@@ -59,7 +59,7 @@ def test_softmax():
     neuron_count_list = [10, 10]
 
     # 最大循环训练次数
-    loop_max = 1
+    loop_max = 20
 
     # 学习效率
     rate = 0.1
@@ -73,22 +73,17 @@ def test_softmax():
     test_image_root_path = "./../picture/number_softmax_test"
     test_image_root_path = os.path.abspath(test_image_root_path)
 
-    # sample.create_sample(test_image_root_path)
-    sample.create_sample_ex(2)
+    sample.create_sample(test_image_root_path, confuse=False)
+    # sample.create_sample_ex(2)
 
     test_sx_list = sample.get_sx_list()
     test_sy_list = sample.get_sy_list()
 
     py_list = nn.predict(test_sx_list, test_sy_list)
 
-    accuracy = common_function.calculate_accuracy(py_list, test_sy_list)
-
-    print("\n")
-    print("accuracy = %f%%" % (100 * accuracy))
-    print("\n")
-
     print("\n")
     print("py:\n")
+
     count = len(py_list)
 
     for i in range(0, count):
