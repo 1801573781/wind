@@ -4,7 +4,6 @@ Author：lzb
 Date：2021.02.02
 """
 
-
 import os
 
 from activation.last_hop_activation import LastHopActivation, SoftMaxLHA
@@ -87,11 +86,48 @@ def test_softmax():
     count = len(py_list)
 
     for i in range(0, count):
-        print(i)
+        _revise(py_list[i])
+        number = _get_max_index(test_sy_list[i])
+
         print("\n")
+        print("index = %d, number = %d" % (i, number))
         print(py_list[i])
-        print("\n")
 
 
+def _revise(py):
+    """
+    修正预测结果
+    :param py: 待修正的预测结果
+    :return: NULL
+    """
+
+    row = py.shape[0]
+
+    for r in range(0, row):
+        # 如果小于 0.1 则认为是0
+        if py[r][0] <= 0.1:
+            py[r][0] = 0
+        # 如果大于0.9，则认为是1
+        elif py[r][0] >= 0.9:
+            py[r][0] = 1
+        # 否则的话，其值不变
+        else:
+            pass
 
 
+def _get_max_index(y):
+    """
+    获取 y 中概率最大的那个元素的索引（并且该值大于等于0.9）
+    :param y: 或者是 sy（训练样本输出），或者是 py（预测结果输出）
+    :return: y 中概率最大的那个元素的索引
+    """
+
+    row = y.shape[0]
+
+    for r in range(0, row):
+        # 如果小于 0.1 则认为是0
+        if y[r][0] >= 0.9:
+            return r
+
+    # 如果没有大于等于0.9的，则 return -1
+    return -1
