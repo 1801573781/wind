@@ -195,7 +195,7 @@ def test_cvl_nn_2():
             # 归一化
             sx = my_image.normalize(data, my_image.NormalizationType.NORMAL)
 
-            sx = sx / 10 + number * 10
+            sx = sx / 40
 
             # 显示归一化灰度图像
             # gray = my_image.array_3_2(sx)
