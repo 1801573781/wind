@@ -8,7 +8,6 @@ import numpy as np
 import math
 from activation import dichotomy
 
-
 """
 class：NormalActivation
 说明：激活函数
@@ -16,6 +15,9 @@ class：NormalActivation
 
 
 class NormalActivation:
+    # 最大值
+    _max_value = -1
+
     # 激活函数，虚函数，待子类继承
     def active(self, x):
         pass
@@ -36,12 +38,16 @@ class：Sigmoid
 
 
 class Sigmoid(NormalActivation):
+    # 构造函数
+    def __init__(self, max_value=20):
+        self._max_value = max_value
+
     # 激活函数
     def active(self, x):
-        if x <= -10:
-            x = -10
-        elif x >= 10:
-            x = 10
+        if x <= -self._max_value:
+            x = -self._max_value
+        elif x >= self._max_value:
+            x = self._max_value
         else:
             x = x
 
@@ -51,8 +57,8 @@ class Sigmoid(NormalActivation):
 
     # 求导
     def derivative(self, x):
-        y = x * (1 - x)
-        return y
+        dy = x * (1 - x)
+        return dy
 
     # 校正函数
     def revise(self, x):
@@ -69,9 +75,7 @@ class：ReLU
 
 
 class ReLU(NormalActivation):
-    # 最大值
-    _max_value = -1
-
+    # 构造函数
     def __init__(self, max_value=-1):
         self._max_value = max_value
 
@@ -88,11 +92,80 @@ class ReLU(NormalActivation):
     def derivative(self, x):
         shape = x.shape
         if x > 0:
-            y = np.ones(shape)
-            return y
+            dy = np.ones(shape)
+            return dy
         else:
-            y = np.zeros(shape)
-            return y
+            dy = np.zeros(shape)
+            return dy
+
+    # 校正函数
+    def revise(self, x):
+        if x > 0:
+            return dichotomy.Dichotomy.C1.value
+        else:
+            return dichotomy.Dichotomy.C2.value
+
+
+# noinspection SpellCheckingInspection
+"""
+class：Tanh
+说明：Tanh 激活函数
+"""
+
+
+# noinspection SpellCheckingInspection
+class Tanh(NormalActivation):
+
+    # 构造函数
+    def __init__(self, max_value=20):
+        """
+        构造函数
+        :param max_value:由于需要计算 exp(x)，所以 x 不能太大
+        """
+        self._max_value = max_value
+
+    # 激活函数
+    def active(self, x):
+        """
+        激活函数，tanh
+        :param x: 待激活的变量
+        :return: tanh(x)
+        """
+        if x <= -self._max_value:
+            x = -self._max_value
+        elif x >= self._max_value:
+            x = self._max_value
+        else:
+            x = x
+
+        y = (math.exp(x) - math.exp(-x)) / (math.exp(x) + math.exp(-x))
+
+        return y
+
+    # 激活函数求导
+    def derivative(self, x):
+        """
+        激活函数 tanh(x) 求导数
+        :param x: tanh(x)待求导的变量
+        :return: tanh(x)的导数
+        """
+        y = self.active(x)
+
+        dy = 1 - y ^ 2
+
+        return dy
+
+    # 激活函数求导
+    @staticmethod
+    def derivative_ex(y):
+        """
+        激活函数 tanh(x) 求导数
+        :param y: y = tanh(x)，激活函数的结果
+        :return: tanh(x)的导数
+        """
+        dy = 1 - y ^ 2
+
+        return dy
 
     # 校正函数
     def revise(self, x):

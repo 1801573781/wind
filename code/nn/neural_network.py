@@ -26,49 +26,49 @@ class：NeuralNetwork 神经网络(base class)
 
 class NeuralNetwork:
     # 神经网络输入样本，向量维度
-    sx_dim = 0
+    _sx_dim = 0
 
     # 神经网络输出样本，向量维度
-    sy_dim = 0
+    _sy_dim = 0
 
     # 神经网络层数
-    layer_count = 0
+    _layer_count = 0
 
     # 每一层神经元的数量
-    neuron_count_list = None
+    _neuron_count_list = None
 
     # 每一层 w 参数，w 是个 matrix（BP 网络） or 3维数组（卷积网络）
-    W = None
+    _W = None
 
     # 每一层 b 参数，b 是个 vector（BP 网络） or 2维数组（卷积网络）
-    B = None
+    _B = None
 
     # 每一层 w 参数的 shape list（除了卷积网络，这个参数没有意义）
-    w_shape_list = None
+    _w_shape_list = None
 
     # 样本数量
-    sample_count = 0
+    _sample_count = 0
 
     # 样本输入列表(Sample X list)，每一个输入样本是一个 vector
-    sx_list = None
+    _sx_list = None
 
     # 样本输出列表(Sample Y list)，每一个输出样本是一个 vector
-    sy_list = None
+    _sy_list = None
 
     # 循环训练的最大次数
-    loop_max = 1
+    _loop_max = 1
 
     # 学习效率
-    rate = 0
+    _rate = 0
 
     # 激活函数对象（class Activation 的实例）
-    activation = None
+    _activation = None
 
     # 最后一跳激活函数对象（class LastHopActivation 的实例）
-    last_hop_activation = DichotomyLHA()
+    _last_hop_activation = DichotomyLHA()
 
     # 损失函数
-    loss = MSELoss()
+    _loss = MSELoss()
 
     def __init__(self, activation, last_hop_activation=None, loss=None):
         """
@@ -78,13 +78,13 @@ class NeuralNetwork:
         :param loss: 损失函数对象
         """
 
-        self.activation = activation
+        self._activation = activation
 
         if last_hop_activation is not None:
-            self.last_hop_activation = last_hop_activation
+            self._last_hop_activation = last_hop_activation
 
         if loss is not None:
-            self.loss = loss
+            self._loss = loss
 
     ''''''
 
@@ -105,16 +105,16 @@ class NeuralNetwork:
         """
 
         # 1. 成员变量赋值
-        self.sx_list = sx_list
-        self.sy_list = sy_list
-        self.loop_max = loop_max
-        self.rate = rate
+        self._sx_list = sx_list
+        self._sy_list = sy_list
+        self._loop_max = loop_max
+        self._rate = rate
 
         # 如果是卷积网络，这个参数没有意义（如果是卷积网络，直接传入 None 即可）
-        self.neuron_count_list = neuron_count_list
+        self._neuron_count_list = neuron_count_list
 
         # 如果不是卷积网络，这个参数，没有意义（如果不是卷积网络，直接传入默认值即可）
-        self.w_shape_list = w_shape_list
+        self._w_shape_list = w_shape_list
 
         # 2. 校验
         err = self._valid()
@@ -144,7 +144,7 @@ class NeuralNetwork:
             return err
 
         # 3. 最大循环训练次数，须 >= 1
-        if 1 > self.loop_max:
+        if 1 > self._loop_max:
             return errorcode.FAILED
 
         return errorcode.SUCCESS
@@ -157,14 +157,14 @@ class NeuralNetwork:
 
     def _valid_layer_neuron(self):
         # 1. 神经网络层数，须 >= 1
-        layer_count = len(self.neuron_count_list)
+        layer_count = len(self._neuron_count_list)
 
         if 1 > layer_count:
             return errorcode.FAILED
 
         # 2. 每层的神经元个数，须 >= 1
         for layer in range(0, layer_count):
-            count = self.neuron_count_list[layer]
+            count = self._neuron_count_list[layer]
 
             if 1 > count:
                 return errorcode.FAILED
@@ -177,25 +177,25 @@ class NeuralNetwork:
 
     def _valid_sample(self):
         # 1 输入样本的数量与输出样本的数量，须相同
-        len1 = len(self.sx_list)
-        len2 = len(self.sy_list)
+        len1 = len(self._sx_list)
+        len2 = len(self._sy_list)
 
         if len1 != len2:
             return errorcode.FAILED
 
         # 2 样本数量，须 >= 1
-        sample_count = len(self.sx_list)
+        sample_count = len(self._sx_list)
         if 1 > sample_count:
             return errorcode.FAILED
 
         # 3. 样本向量维度
 
         # 输入向量维度
-        sx_dim = len(self.sx_list[0])
+        sx_dim = len(self._sx_list[0])
 
         # 输出向量维度
-        layer_count = len(self.neuron_count_list)
-        sy_dim = self.neuron_count_list[layer_count - 1]
+        layer_count = len(self._neuron_count_list)
+        sy_dim = self._neuron_count_list[layer_count - 1]
 
         # 3.1 输入样本/输出样本，向量维度 > 1
         if (1 > sx_dim) or (1 > sy_dim):
@@ -203,8 +203,8 @@ class NeuralNetwork:
 
         # 3.2 每一个输入/输出样本的向量维度
         for i in range(0, sample_count):
-            shape_in = self.sx_list[i].shape
-            shape_out = self.sy_list[i].shape
+            shape_in = self._sx_list[i].shape
+            shape_out = self._sy_list[i].shape
 
             # 输入样本的向量维度
             if shape_in[0] != sx_dim:
@@ -232,34 +232,34 @@ class NeuralNetwork:
 
     def _init_other_para(self):
         # 每一层 w、B 参数，w 是个2维数组，b 是个2维数组
-        self.W = list()
-        self.B = list()
+        self._W = list()
+        self._B = list()
 
         # 样本数量
-        self.sample_count = len(self.sx_list)
+        self._sample_count = len(self._sx_list)
 
         # 神经网络输入，向量维度
-        self.sx_dim = len(self.sx_list[0])
+        self._sx_dim = len(self._sx_list[0])
 
         # 神经网络的层数
-        self.layer_count = len(self.neuron_count_list)
+        self._layer_count = len(self._neuron_count_list)
 
         # 神经网络输出，向量维度
-        self.sy_dim = self.neuron_count_list[self.layer_count - 1]
+        self._sy_dim = self._neuron_count_list[self._layer_count - 1]
 
         # 第1层 w 参数，w 是一个2维数组
-        w = np.random.random((self.neuron_count_list[0], self.sx_dim))
-        self.W.append(w)
+        w = np.random.random((self._neuron_count_list[0], self._sx_dim))
+        self._W.append(w)
 
         # 第2层~第layer-1层 w 参数，w 是一个2维数组
-        for i in range(1, self.layer_count):
-            w = np.random.random((self.neuron_count_list[i], self.neuron_count_list[i - 1]))
-            self.W.append(w)
+        for i in range(1, self._layer_count):
+            w = np.random.random((self._neuron_count_list[i], self._neuron_count_list[i - 1]))
+            self._W.append(w)
 
         # 第1层 ~ 第layer-1层 b 参数，b 是一个向量
-        for i in range(0, self.layer_count):
-            b = np.zeros([self.neuron_count_list[i], 1])
-            self.B.append(b)
+        for i in range(0, self._layer_count):
+            b = np.zeros([self._neuron_count_list[i], 1])
+            self._B.append(b)
 
         return errorcode.SUCCESS
 
@@ -278,7 +278,7 @@ class NeuralNetwork:
         print("\nbegin time = " + localtime + "\n")
 
         while 1:
-            if loop >= self.loop_max:
+            if loop >= self._loop_max:
                 # 打印结束时间
                 localtime = time.asctime(time.localtime(time.time()))
                 print("\nend time = " + localtime + "\n")
@@ -294,17 +294,17 @@ class NeuralNetwork:
             loop = loop + 1
 
             # 2. 训练每一个样本
-            for i in range(0, self.sample_count):
+            for i in range(0, self._sample_count):
                 # 第 i 个训练样本
-                sx = self.sx_list[i]
-                sy = self.sy_list[i]
+                sx = self._sx_list[i]
+                sy = self._sy_list[i]
 
                 # 2.1 第 m 个训练样本，经过（多层）神经网络的计算
                 nn_y_list = self._calc_nn(sx)
 
                 # 2.2 最后一跳修正
                 nn_y = nn_y_list[len(nn_y_list) - 1]
-                last_hop_y = self.last_hop_activation.train_activation(nn_y)
+                last_hop_y = self._last_hop_activation.train_activation(nn_y)
                 nn_y_list.append(last_hop_y)
 
                 # 2.3 根据计算结果，修正参数 W，B
@@ -325,7 +325,7 @@ class NeuralNetwork:
         nn_y_list = list()
 
         # 逐层计算
-        for layer in range(0, self.layer_count):
+        for layer in range(0, self._layer_count):
             # 计算该层的输出
             y = self._calc_layer(x, layer)
 
@@ -351,8 +351,8 @@ class NeuralNetwork:
         """
 
         # 获取该层的参数：w, b
-        w = self.W[layer]
-        b = self.B[layer]
+        w = self._W[layer]
+        b = self._B[layer]
 
         y = np.matmul(w, x) + b
 
@@ -360,7 +360,7 @@ class NeuralNetwork:
         row = len(y)
 
         for i in range(0, row):
-            y[i, 0] = self.activation.active(y[i, 0])
+            y[i, 0] = self._activation.active(y[i, 0])
 
         return y
 
@@ -398,7 +398,7 @@ class NeuralNetwork:
             nn_y = nn_y_list[len(nn_y_list) - 1]
 
             # 修正一下
-            last_hop_y = self.last_hop_activation.predict_activation(nn_y)
+            last_hop_y = self._last_hop_activation.predict_activation(nn_y)
 
             # 然后再添加到预测列表
             py_list.append(last_hop_y)
@@ -416,18 +416,18 @@ class NeuralNetwork:
         print("\n")
         print("训练次数 = %d\n" % loop)
 
-        for layer in range(0, self.layer_count):
+        for layer in range(0, self._layer_count):
             print("层数 ＝ %d" % layer)
 
             print("W:")
             # print(self.W[layer])
-            print(array_2_string(self.W[layer]))
+            print(array_2_string(self._W[layer]))
 
             print("\nB:")
             # print(self.B[layer])
-            print(array_2_string(self.B[layer]))
+            print(array_2_string(self._B[layer]))
 
-            if layer < self.layer_count - 1:
+            if layer < self._layer_count - 1:
                 print("\n")
 
     """
@@ -443,19 +443,19 @@ class NeuralNetwork:
 
     def stub_set_para(self, sx_dim, neuron_count_list, W, B, activation):
         # 神经网络输入，向量维度
-        self.sx_dim = sx_dim
+        self._sx_dim = sx_dim
 
         # 每一层神经元的数量(Neuron Count)
-        self.neuron_count_list = neuron_count_list
+        self._neuron_count_list = neuron_count_list
 
         # 神经网络层数
-        self.layer_count = len(W)
+        self._layer_count = len(W)
 
         # 每一层 w 参数，w 是个 matrix
-        self.W = W
+        self._W = W
 
         # 每一层 b 参数，b 是个 vector
-        self.B = B
+        self._B = B
 
         # 激活函数对象
-        self.activation = activation
+        self._activation = activation

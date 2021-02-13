@@ -96,14 +96,14 @@ class CVLNeuralNetwork(NeuralNetwork):
 
         # 校验 w_shape_list
 
-        if self.w_shape_list is None:
+        if self._w_shape_list is None:
             return errorcode.FAILED
 
-        if 0 >= len(self.w_shape_list):
+        if 0 >= len(self._w_shape_list):
             return errorcode
 
         # 这里只处理3维数组
-        shape = self.w_shape_list[0]
+        shape = self._w_shape_list[0]
 
         if 3 != len(shape):
             return errorcode.FAILED
@@ -132,21 +132,21 @@ class CVLNeuralNetwork(NeuralNetwork):
 
     def _valid_sample(self):
         # 1 输入样本的数量与输出样本的数量，须相同（equal with parent class）
-        len1 = len(self.sx_list)
-        len2 = len(self.sy_list)
+        len1 = len(self._sx_list)
+        len2 = len(self._sy_list)
 
         if len1 != len2:
             return errorcode.FAILED
 
         # 2 样本数量，须 >= 1（same as parent class）
-        sample_count = len(self.sx_list)
+        sample_count = len(self._sx_list)
         if 1 > sample_count:
             return errorcode.FAILED
 
         # 3. 样本数组维度（different with parent class）
 
         # 3.1 输入数组维度
-        sx_dim = self.sx_list[0].shape
+        sx_dim = self._sx_list[0].shape
 
         # 输入样本必须是3维样本：图像的宽度、高度，颜色的深度
         if ArrayDim.THREE.value != len(sx_dim):
@@ -166,8 +166,8 @@ class CVLNeuralNetwork(NeuralNetwork):
 
         # 3.2 每一个输入/输出样本的维度
         for i in range(0, sample_count):
-            shape_in = self.sx_list[i].shape
-            shape_out = self.sy_list[i].shape
+            shape_in = self._sx_list[i].shape
+            shape_out = self._sy_list[i].shape
 
             # 输入样本的维度须相等(都是3维)
             if not operator.eq(sx_dim, shape_in):
@@ -197,10 +197,10 @@ class CVLNeuralNetwork(NeuralNetwork):
 
     def _init_other_para(self):
         # 样本数量
-        self.sample_count = len(self.sx_list)
+        self.sample_count = len(self._sx_list)
 
         # 神经网络输入，维度(3维)
-        self.sx_dim = self.sx_list[0].shape
+        self.sx_dim = self._sx_list[0].shape
 
         # 图像宽度，高度，深度
         self.width = self.sx_dim[0]
@@ -211,7 +211,7 @@ class CVLNeuralNetwork(NeuralNetwork):
         # self.sy_dim = self.neuron_count_list[self.layer_count - 1]
 
         # 初始化 self.layer_count
-        self.layer_count = len(self.w_shape_list)
+        self.layer_count = len(self._w_shape_list)
 
         # 初始化 W, B
         self._init_w_b()
@@ -296,12 +296,12 @@ class CVLNeuralNetwork(NeuralNetwork):
         b = 0
         for layer in range(0, self.layer_count):
             # 2.1 每一层的卷积核
-            width = self.w_shape_list[layer][0]
-            height = self.w_shape_list[layer][1]
+            width = self._w_shape_list[layer][0]
+            height = self._w_shape_list[layer][1]
 
             # 如果是第一层，depth = 输入层的 depth
             if 0 == layer:
-                depth = self.w_shape_list[layer][2]
+                depth = self._w_shape_list[layer][2]
             # 否则的话，depth = 1
             else:
                 depth = 1
@@ -314,7 +314,7 @@ class CVLNeuralNetwork(NeuralNetwork):
 
             # 如果是第一层，x 就是样本输入
             if 0 == layer:
-                x = self.sx_list[0]
+                x = self._sx_list[0]
             # 否则的话，x 是上一层的输出
             # 上一层的输出的 width，height 等同于 b
             else:
@@ -467,10 +467,10 @@ class CVLNeuralNetwork(NeuralNetwork):
             w_pd, err = self.cvl.convolution(ksi, v)
 
             # 修正当前层的 w
-            self.W[layer] = np.subtract(w, self.rate * w_pd)  # 不知道3维数组是否可以这样相减
+            self.W[layer] = np.subtract(w, self._rate * w_pd)  # 不知道3维数组是否可以这样相减
 
             # 损失函数针对当前层的 b 的偏导(partial derivative)，b_pd 等于 ksi
             b_pd = ksi
 
             # 修正当前层的 b
-            self.B[layer] = np.subtract(b, self.rate * b_pd)  # 不知道3维数组是否可以这样相减
+            self.B[layer] = np.subtract(b, self._rate * b_pd)  # 不知道3维数组是否可以这样相减

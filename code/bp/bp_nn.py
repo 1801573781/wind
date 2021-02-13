@@ -51,32 +51,32 @@ class BPNeuralNetwork(NeuralNetwork):
 
     def __bp(self, nn_y_list, sy):
         # 1. 初始化 ksi_list
-        ksi_list = [0] * self.layer_count
+        ksi_list = [0] * self._layer_count
 
         # 2. 计算最后一层 ksi
 
         # 2.1 计算损失函数的偏导
-        last_hop_y = nn_y_list[self.layer_count]
-        loss_dy = self.loss.derivative(last_hop_y, sy)
+        last_hop_y = nn_y_list[self._layer_count]
+        loss_dy = self._loss.derivative(last_hop_y, sy)
 
         # 2.2 计算最后一层 ksi
 
         # 最后一层 ksi：ksi_last，ksi_last 是个向量
-        nn_y_last = nn_y_list[self.layer_count - 1]
+        nn_y_last = nn_y_list[self._layer_count - 1]
         row_last = len(nn_y_last)
         ksi_last = list()
 
         for i in range(0, row_last):
             # 计算ksi_last 的每个元素
-            ksi_item = loss_dy[i] * self.last_hop_activation.derivative(last_hop_y, i) \
-                       * self.activation.derivative(nn_y_last[i])
+            ksi_item = loss_dy[i] * self._last_hop_activation.derivative(last_hop_y, i) \
+                       * self._activation.derivative(nn_y_last[i])
 
             ksi_last.append(ksi_item[0])
 
-        ksi_list[self.layer_count - 1] = ksi_last
+        ksi_list[self._layer_count - 1] = ksi_last
 
         # 3. 反向传播，计算：倒数第2层 ~ 第1层的 ksi
-        for layer in range(self.layer_count - 2, -1, -1):
+        for layer in range(self._layer_count - 2, -1, -1):
             # 当前层的 ksi
             ksi_cur = list()
 
@@ -87,13 +87,13 @@ class BPNeuralNetwork(NeuralNetwork):
             nn_y_cur = nn_y_list[layer]
 
             # 当前层神经元的个数
-            neuron_count_cur = self.neuron_count_list[layer]
+            neuron_count_cur = self._neuron_count_list[layer]
 
             # 下一层神经元的个数
-            neuron_count_next = self.neuron_count_list[layer + 1]
+            neuron_count_next = self._neuron_count_list[layer + 1]
 
             # 下一层的 w
-            w = self.W[layer + 1]
+            w = self._W[layer + 1]
 
             # 计算当前层的每一个 ksi
             for i in range(0, neuron_count_cur):
@@ -103,7 +103,7 @@ class BPNeuralNetwork(NeuralNetwork):
                     s = s + w[j, i] * ksi_next[j]
 
                 # ksi_item 的计算公式为：ksi_item = sum(w[j][i] * ksi_next[j]) * f'(y)
-                ksi_item = s * self.activation.derivative(nn_y_cur[i])
+                ksi_item = s * self._activation.derivative(nn_y_cur[i])
 
                 # 将 ksi_item 加入向量
                 ksi_cur.append(ksi_item[0])
@@ -125,24 +125,24 @@ class BPNeuralNetwork(NeuralNetwork):
 
     def __modify_wb_by_ksi_list(self, ksi_list, sx, nn_y_list):
         # 逐层修正
-        for layer in range(0, self.layer_count):
-            w = self.W[layer]
-            b = self.B[layer]
+        for layer in range(0, self._layer_count):
+            w = self._W[layer]
+            b = self._B[layer]
             ksi = ksi_list[layer]
 
-            cur_neuron_count = self.neuron_count_list[layer]
+            cur_neuron_count = self._neuron_count_list[layer]
 
             if 0 == layer:
-                pre_neuron_count = self.sx_dim
+                pre_neuron_count = self._sx_dim
                 v = sx
             else:
-                pre_neuron_count = self.neuron_count_list[layer - 1]
+                pre_neuron_count = self._neuron_count_list[layer - 1]
                 v = nn_y_list[layer - 1]
 
             for i in range(0, cur_neuron_count):
                 # 计算 w[i, j]
                 for j in range(0, pre_neuron_count):
-                    w[i, j] = w[i, j] - self.rate * ksi[i] * v[j, 0]
+                    w[i, j] = w[i, j] - self._rate * ksi[i] * v[j, 0]
 
                 # 计算 b[i]
-                b[i] = b[i] - self.rate * ksi[i]
+                b[i] = b[i] - self._rate * ksi[i]

@@ -32,13 +32,13 @@ class Perceptron(NeuralNetwork):
             return err
 
         # 感知器只能是1层
-        layer_count = len(self.neuron_count_list)
+        layer_count = len(self._neuron_count_list)
 
         if 1 != layer_count:
             return errorcode.FAILED
 
         # 感知器的输出只能是1维向量
-        sy_dim = self.neuron_count_list[layer_count - 1]
+        sy_dim = self._neuron_count_list[layer_count - 1]
 
         if 1 != sy_dim:
             return errorcode.FAILED
@@ -59,20 +59,20 @@ class Perceptron(NeuralNetwork):
 
     def _modify_wb(self, nn_y_list, sx, sy):
         # 逐层修正
-        for layer in range(0, self.layer_count):
-            w = self.W[layer]
-            b = self.B[layer]
+        for layer in range(0, self._layer_count):
+            w = self._W[layer]
+            b = self._B[layer]
 
-            nn_y_last = nn_y_list[self.layer_count - 1]
+            nn_y_last = nn_y_list[self._layer_count - 1]
             err = np.subtract(nn_y_last, sy)
 
             # 修正 w, b
             if 0 != err[0, 0]:
                 # 修正 w
-                for j in range(0, self.sx_dim):
-                    w[0, j] = w[0, j] - self.rate * err[0, 0] * sx[j, 0]
+                for j in range(0, self._sx_dim):
+                    w[0, j] = w[0, j] - self._rate * err[0, 0] * sx[j, 0]
 
                 # 修正 b
-                b[0, 0] = b[0, 0] - self.rate * err[0, 0]
+                b[0, 0] = b[0, 0] - self._rate * err[0, 0]
             else:
                 pass
