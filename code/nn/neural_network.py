@@ -283,13 +283,16 @@ class NeuralNetwork:
                 localtime = time.asctime(time.localtime(time.time()))
                 print("\nend time = " + localtime + "\n")
 
-                # 打印参数
+                # 打印最后一轮参数
                 self._print_w_b_loop(loop)
 
                 break
 
-            # 1. 打印每一轮的参数
+            # 打印每一轮的参数
             # self._print_w_b_loop(loop)
+
+            # 1. 每一轮训练之前，预准备工作
+            self._pre_train()
 
             loop = loop + 1
 
@@ -312,14 +315,22 @@ class NeuralNetwork:
 
         return errorcode.SUCCESS
 
-    """
-    功能：计算整个网络的输出
-    参数：
-    s：神经网络的输入    
-    返回值：整个神经网络，每一层的输出
-    """
+    # 每一轮训练之前预准备工作
+    def _pre_train(self):
+        """
+        每一轮训练之前预准备工作（一般来说，啥都不用做）
+        :return: NULL
+        """
+        pass
 
+    # 计算整个网络的输出
     def _calc_nn(self, sx):
+        """
+        计算整个网络的输出
+        :param sx: 神经网络的输入
+        :return: 整个神经网络，每一层的输出
+        """
+
         x = sx
         y = 0
         nn_y_list = list()
@@ -342,12 +353,10 @@ class NeuralNetwork:
 
     def _calc_layer(self, x, layer):
         """
-        功能：计算某一层神经网络的输出
-        参数：
-        x：该层神经网络的输入，x 是一个向量
-        w: 该层神经网络的 w 参数, w 是一个矩阵
-        b：该层神经网络的 b 参数，b 是一个向量
-        返回值：y，该层神经网络的输出（sigmoid(w * x + b)）， y 是一个向量
+        计算神经网络某一层的输出
+        :param x: 该层神经网络的输入，x 是一个向量
+        :param layer: 当前的层数
+        :return: y，该层神经网络的输出， y 是一个向量
         """
 
         # 获取该层的参数：w, b
@@ -356,6 +365,8 @@ class NeuralNetwork:
 
         y = np.matmul(w, x) + b
 
+        y = y + self._calc_recurrent(layer)
+
         # 针对每一个元素，调用激活函数
         row = len(y)
 
@@ -363,6 +374,16 @@ class NeuralNetwork:
             y[i, 0] = self._activation.active(y[i, 0])
 
         return y
+
+    ''''''
+
+    def _calc_recurrent(self, layer):
+        """
+        计算循环神经网络， u * h(t - 1) ，默认值是 0
+        :param layer: 层数
+        :return: u * h(t - 1)
+        """
+        return 0
 
     ''''''
 
