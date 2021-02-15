@@ -26,9 +26,6 @@ class RecurrentNN(BPFNN):
     # 隐藏层 h(t) 输出，时间序列
     _hidden_out_sequence = None
 
-    # 当前的 t
-    _cur_t = 0
-
     # RNN 只作用于第1层的标记
     _rnn_layer_0 = True
 
@@ -56,11 +53,8 @@ class RecurrentNN(BPFNN):
         :return: NULL
         """
 
-        # _HT_list 重新初始化
-        _HT_list = list()
-
-        # 当前的 t，重新初始化
-        _cur_t = 0
+        # _hidden_out_sequence 重新初始化
+        self._hidden_out_sequence = list()
 
     ''''''
 
@@ -121,7 +115,7 @@ class RecurrentNN(BPFNN):
         ksi_list = self._bp(nn_y_list, sy)
 
         # 2. 随时间反向传播（backpropagation through time, bttt），计算沿着时间轴的 delta_list
-        cur_t = len(self._hidden_out_sequence) + 1
+        cur_t = len(self._hidden_out_sequence)
         delta_list = self._bptt(cur_t, ksi_list, 0)
 
         # 3. 修正 w, b, u
@@ -143,6 +137,10 @@ class RecurrentNN(BPFNN):
         :return: delta_list
         """
 
+        # 如果当前是 t0 时刻（cur_t = 1），则无须 bptt
+        if cur_t <= 1:
+            return None
+
         # delta_list 初始化
         delta_list = [0] * (cur_t - 1)
 
@@ -156,9 +154,9 @@ class RecurrentNN(BPFNN):
         uT = self._u_layer[layer].T
 
         # 反向计算 delta
-        for t in range((cur_t - 1), 0, -1):
+        for t in range((cur_t - 2), -1, -1):
             # 上一时刻的输出
-            hidden_out_pre = self._hidden_out_sequence[t - 1][layer]
+            hidden_out_pre = self._hidden_out_sequence[t][layer]
             # 上一时刻输出的导数
             dh = self._activation.derivative_array(hidden_out_pre)
             # 将导数变为对角线矩阵
@@ -167,7 +165,7 @@ class RecurrentNN(BPFNN):
             delta = diag_dh * uT * delta
 
             # 存储 delta
-            delta_list[t - 1] = delta
+            delta_list[t] = delta
 
         return delta_list
 
@@ -181,6 +179,10 @@ class RecurrentNN(BPFNN):
         :param layer: 神经网络层数，默认是0层
         :return: NULL
         """
+
+        # 如果 delta_list 是 None（也就意味着是 t0 时刻），则无须修正
+        if delta_list is None:
+            return
 
         # 获取第 layer（0）层的 w, b, u
         w = self._w_layer[layer]
