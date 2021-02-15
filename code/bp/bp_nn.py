@@ -33,10 +33,10 @@ class BPFNN(FNN):
 
     def _modify_fnn_para(self, nn_y_list, sx, sy):
         # 1. 后向传播，计算 ksi_list
-        ksi_list = self.__bp(nn_y_list, sy)
+        ksi_list = self._bp(nn_y_list, sy)
 
         # 2. 通过 ksi_list，修正 w, b
-        self.__modify_wb_by_ksi_list(ksi_list, sx, nn_y_list)
+        self._modify_wb_by_ksi_list(ksi_list, sx, nn_y_list)
 
     """
     功能：后向传播，计算 ksi_list
@@ -49,7 +49,7 @@ class BPFNN(FNN):
     2、ksi_list 记录每一层的 ksi
     """
 
-    def __bp(self, nn_y_list, sy):
+    def _bp(self, nn_y_list, sy):
         # 1. 初始化 ksi_list
         ksi_list = [0] * self._layer_count
 
@@ -123,7 +123,7 @@ class BPFNN(FNN):
     返回值：NULL  
     """
 
-    def __modify_wb_by_ksi_list(self, ksi_list, sx, nn_y_list):
+    def _modify_wb_by_ksi_list(self, ksi_list, sx, nn_y_list):
         # 逐层修正
         for layer in range(0, self._layer_count):
             w = self._w_layer[layer]

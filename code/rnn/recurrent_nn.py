@@ -8,12 +8,12 @@ Date：2021.02.10
 
 import numpy as np
 
-from fnn.feedforward_nn import FNN
+from bp.bp_nn import BPFNN
 
 
-class RecurrentNN(FNN):
+class RecurrentNN(BPFNN):
     """
-    循环神经网络，继承自 NeuralNetwork
+    循环神经网络，继承自 BPFNN
     特别说明： \n
     1、h(t) = f(u * h(t - 1) + (w * x + b)) \n
     2、隐藏层也有多层，那么对于 u * h(t - 1) 而言，它该是几层呢？ \n
@@ -112,28 +112,99 @@ class RecurrentNN(FNN):
     def _modify_fnn_para(self, nn_y_list, sx, sy):
         """
         修正神经网络的参数，w, b, u
-        :param nn_y_list: 神经网路计算的每一层结果，nn_y 是一个向量
+        :param nn_y_list: 神经网路，最新时刻计算的每一层结果，nn_y 是一个向量
         :param sx: 训练样本的输入，sx 是一个向量
         :param sy: 训练样本的输出，sy 是一个向量
         :return: NULL
         """
         # 1. 后向传播，计算当前时间轴的每一层的 ksi
-        ksi_list = self.__bp(nn_y_list, sy)
+        ksi_list = self._bp(nn_y_list, sy)
 
         # 2. 随时间反向传播（backpropagation through time, bttt），计算沿着时间轴的 delta_list
+        cur_t = len(self._hidden_out_sequence) + 1
+        delta_list = self._bptt(cur_t, ksi_list, 0)
+
+        # 3. 修正 w, b, u
+
+        # 3.1 先修正所有层 w, b
+        self._modify_wb_by_ksi_list(ksi_list, sx, nn_y_list)
+
+        # 3.2 修正第0层的 w, b, u（其中，w, b 是再修正一次）
+        self._modify_uwb_by_delta_list(delta_list, sx, layer=0)
 
     ''''''
 
-    def _bptt(self, ksi_list, layer=0):
+    def _bptt(self, cur_t, ksi_list, layer=0):
         """
         随时间反向传播（backpropagation through time, bttt），计算沿着时间轴的 delta_list
+        :param cur_t: 当前时刻
         :param ksi_list: 当前时间轴的每一层的 ksi 列表
-        :param layer: 计算某一层的 bptt
+        :param layer: 计算某一层的 bptt, layer 默认值是0
         :return: delta_list
         """
 
         # delta_list 初始化
-        delta_list = list()
+        delta_list = [0] * (cur_t - 1)
+
+        # ksi
+        ksi = ksi_list[layer]
+
+        # delta 初始化
+        delta = ksi
+
+        # 获取该层（layer）的 u.T
+        uT = self._u_layer[layer].T
+
+        # 反向计算 delta
+        for t in range((cur_t - 1), 0, -1):
+            # 上一时刻的输出
+            hidden_out_pre = self._hidden_out_sequence[t - 1][layer]
+            # 上一时刻输出的导数
+            dh = self._activation.derivative_array(hidden_out_pre)
+            # 将导数变为对角线矩阵
+            diag_dh = np.diag(dh)
+            # 计算 delta
+            delta = diag_dh * uT * delta
+
+            # 存储 delta
+            delta_list[t - 1] = delta
+
+        return delta_list
+
+    ''''''
+
+    def _modify_uwb_by_delta_list(self, delta_list, sx, layer=0):
+        """
+        修正 w, b, u
+        :param delta_list: 沿着时间轴的 delta_list
+        :param sx: 训练输入样本
+        :param layer: 神经网络层数，默认是0层
+        :return: NULL
+        """
+
+        # 获取第 layer（0）层的 w, b, u
+        w = self._w_layer[layer]
+        b = self._b_layer[layer]
+        u = self._u_layer[layer]
 
         # 当前时刻
-        T = len(self._hidden_out_sequence)
+        cur_t = len(self._hidden_out_sequence) + 1
+
+        # 偏导初始化
+        dw = np.zeros(self._w_layer[layer].shape)
+        db = np.zeros(self._b_layer[layer].shape)
+        du = np.zeros(self._u_layer[layer].shape)
+
+        # 偏导按照时间序列相加
+        for t in range(0, cur_t - 1):
+            dw = dw + delta_list[t] * sx.T
+            db = db + delta_list[t]
+            du = du + delta_list[t] * self._hidden_out_sequence[t][layer].T
+
+        # 修正 w, b, u
+        w = w - self._rate * dw
+        b = b - self._rate * db
+        u = u - self._rate * du
+
+
+

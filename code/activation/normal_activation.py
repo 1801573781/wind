@@ -7,6 +7,7 @@ Date：2020.12.22
 import numpy as np
 import math
 from activation import dichotomy
+from gl.handle_array import handle_arr_ex
 
 """
 class：NormalActivation
@@ -29,6 +30,21 @@ class NormalActivation:
     # 求导
     def derivative(self, x):
         pass
+
+    # 求导
+    def derivative_array(self, arr):
+        """
+        针对一个数组求导
+        :param arr: 待求导的数组（数组的维度是可变的/未知的）
+        :return: 数组求导的结果
+        """
+
+        dy_arr = np.zeros(arr.shape)
+
+        arr_list = [arr]
+        handle_arr_ex(arr_list, dy_arr, self.derivative())
+
+        return dy_arr
 
 
 """
