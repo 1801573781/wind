@@ -8,7 +8,7 @@ Date：2021.02.10
 
 import numpy as np
 
-from nn.feedforward_neural_network import FNN
+from fnn.feedforward_nn import FNN
 
 
 class RecurrentNN(FNN):
@@ -21,10 +21,10 @@ class RecurrentNN(FNN):
     """
 
     # 每一层 u 参数，u 是个 matrix（BP 网络） or 3维数组（卷积网络）
-    _U = None
+    _u_layer = None
 
-    # 隐藏层 h(t) list
-    _HT_list = None
+    # 隐藏层 h(t) 输出，时间序列
+    _hidden_out_sequence = None
 
     # 当前的 t
     _cur_t = 0
@@ -32,7 +32,8 @@ class RecurrentNN(FNN):
     # RNN 只作用于第1层的标记
     _rnn_layer_0 = True
 
-    # 初始化 self._U
+    ''''''
+
     def _init_other_para(self):
         """
         初始化 self._U
@@ -41,13 +42,14 @@ class RecurrentNN(FNN):
         super()._init_other_para()
 
         # 初始化 self._U
-        self._U = list()
+        self._u_layer = list()
 
         for i in range(0, self._layer_count):
             u = np.random.random((self._neuron_count_list[i], self._neuron_count_list[i]))
-            self._U.append(u)
+            self._u_layer.append(u)
 
-    # 每一轮训练之前预准备工作
+    ''''''
+
     def _pre_train(self):
         """
         每一轮训练之前预准备工作
@@ -60,7 +62,8 @@ class RecurrentNN(FNN):
         # 当前的 t，重新初始化
         _cur_t = 0
 
-    # 计算整个网络的输出
+    ''''''
+
     def _calc_nn(self, sx):
         """
         计算整个网络的输出
@@ -70,7 +73,7 @@ class RecurrentNN(FNN):
 
         nn_y_list = super()._calc_nn(sx)
 
-        self._HT_list.append(nn_y_list)
+        self._hidden_out_sequence.append(nn_y_list)
 
         return nn_y_list
 
@@ -90,17 +93,47 @@ class RecurrentNN(FNN):
 
         # 其他情形，则计算 recurrent
 
-        count = len(self._HT_list)
+        T = len(self._hidden_out_sequence)
 
-        # 0 == count，意味着是 t0 时刻，此时还不存在前一个状态
-        if 0 == count:
+        # 0 == T，意味着是 t0 时刻，此时还不存在前一个状态
+        if 0 == T:
             return 0
         # 此时意味着，存在前一状态
         else:
-            nn_y_list_pre_time = self._HT_list[count - 1]  # 前一状态的神经网络各层的输出
+            nn_y_list_pre_time = self._hidden_out_sequence[T - 1]  # 前一状态的神经网络各层的输出
             nn_y_pre_time = nn_y_list_pre_time[layer]  # 前一状态的神经网络第 layer 层的输出
-            u = self._U[layer]  # 该层的 u 参数
+            u = self._u_layer[layer]  # 该层的 u 参数
             uy = np.matmul(u, nn_y_pre_time)
 
             return uy
 
+    ''''''
+
+    def _modify_fnn_para(self, nn_y_list, sx, sy):
+        """
+        修正神经网络的参数，w, b, u
+        :param nn_y_list: 神经网路计算的每一层结果，nn_y 是一个向量
+        :param sx: 训练样本的输入，sx 是一个向量
+        :param sy: 训练样本的输出，sy 是一个向量
+        :return: NULL
+        """
+        # 1. 后向传播，计算当前时间轴的每一层的 ksi
+        ksi_list = self.__bp(nn_y_list, sy)
+
+        # 2. 随时间反向传播（backpropagation through time, bttt），计算沿着时间轴的 delta_list
+
+    ''''''
+
+    def _bptt(self, ksi_list, layer=0):
+        """
+        随时间反向传播（backpropagation through time, bttt），计算沿着时间轴的 delta_list
+        :param ksi_list: 当前时间轴的每一层的 ksi 列表
+        :param layer: 计算某一层的 bptt
+        :return: delta_list
+        """
+
+        # delta_list 初始化
+        delta_list = list()
+
+        # 当前时刻
+        T = len(self._hidden_out_sequence)

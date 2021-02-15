@@ -7,7 +7,7 @@ Date：2021.01.10
 import numpy as np
 import operator
 
-from nn.feedforward_neural_network import FNN
+from fnn.feedforward_nn import FNN
 from gl import errorcode
 from gl.common_enum import ArrayDim
 from gl.common_function import rand_array_3
@@ -374,7 +374,7 @@ class CVLFNN(FNN):
     返回值：NULL
     """
 
-    def _modify_wb(self, nn_y_list, sx, sy):
+    def _modify_fnn_para(self, nn_y_list, sx, sy):
         # 1. 后向传播，计算 ksi_list
         ksi_list = self.__bp(nn_y_list, sy)
 

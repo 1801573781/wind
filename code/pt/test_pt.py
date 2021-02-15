@@ -8,7 +8,7 @@ import numpy as np
 
 from gl import draw
 from sample import straight_line_sample
-from nn.test_nn import NNTest
+from fnn.test_fnn import NNTest
 from pt.perceptron import Perceptron
 
 # 感知器 title

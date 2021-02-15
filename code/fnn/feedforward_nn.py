@@ -310,8 +310,8 @@ class FNN:
                 last_hop_y = self._last_hop_activation.train_activation(nn_y)
                 nn_y_list.append(last_hop_y)
 
-                # 2.3 根据计算结果，修正参数 W，B
-                self._modify_wb(nn_y_list, sx, sy)
+                # 2.3 根据计算结果，修正参数神经网络参数，比如：W，B
+                self._modify_fnn_para(nn_y_list, sx, sy)
 
         return errorcode.SUCCESS
 
@@ -387,7 +387,7 @@ class FNN:
 
     ''''''
 
-    def _modify_wb(self, nn_y_list, sx, sy):
+    def _modify_fnn_para(self, nn_y_list, sx, sy):
         """
         功能：修正 W，B
         参数：

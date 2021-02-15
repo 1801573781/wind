@@ -51,7 +51,7 @@ class NNTest:
         sy_list = sample.get_sy_list()
 
         # 3. 训练
-        # nn.train(sx_list, sy_list, loop_max, neuron_count_list, rate, self.activation)
+        # fnn.train(sx_list, sy_list, loop_max, neuron_count_list, rate, self.activation)
         nn.train(sx_list, sy_list, loop_max, neuron_count_list, rate)
 
         # 4. 预测

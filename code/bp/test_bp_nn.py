@@ -13,7 +13,7 @@ from bp import bp_nn
 from sample import sin_sample
 from sample import straight_line_sample
 from sample import two_line_sample
-from nn.test_nn import NNTest
+from fnn.test_fnn import NNTest
 
 # BP 神经网络 title
 BP_NN_TITLE = "BP Neural Network"

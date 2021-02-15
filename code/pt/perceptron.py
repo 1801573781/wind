@@ -8,7 +8,7 @@ import numpy as np
 
 from gl import errorcode
 
-from nn.feedforward_neural_network import FNN
+from fnn.feedforward_nn import FNN
 
 """
 class：Perceptron 感知器
@@ -57,7 +57,7 @@ class Perceptron(FNN):
     2、所以代码中出现了 err[0, 0]、b[0, 0] 这样的直接写死的下标    
     """
 
-    def _modify_wb(self, nn_y_list, sx, sy):
+    def _modify_fnn_para(self, nn_y_list, sx, sy):
         # 逐层修正
         for layer in range(0, self._layer_count):
             w = self._w_layer[layer]
