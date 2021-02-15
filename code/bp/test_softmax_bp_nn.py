@@ -58,7 +58,7 @@ def test_softmax():
     neuron_count_list = [10, 10]
 
     # 最大循环训练次数
-    loop_max = 20
+    loop_max = 30
 
     # 学习效率
     rate = 0.1
