@@ -24,7 +24,7 @@ class：NeuralNetwork 神经网络(base class)
 """
 
 
-class NeuralNetwork:
+class FNN:
     # 神经网络输入样本，向量维度
     _sx_dim = 0
 
@@ -38,13 +38,13 @@ class NeuralNetwork:
     _neuron_count_list = None
 
     # 每一层 w 参数，w 是个 matrix（BP 网络） or 3维数组（卷积网络）
-    _W = None
+    _w_layer = None
 
     # 每一层 b 参数，b 是个 vector（BP 网络） or 2维数组（卷积网络）
-    _B = None
+    _b_layer = None
 
     # 每一层 w 参数的 shape list（除了卷积网络，这个参数没有意义）
-    _w_shape_list = None
+    _w_shape_layer = None
 
     # 样本数量
     _sample_count = 0
@@ -114,7 +114,7 @@ class NeuralNetwork:
         self._neuron_count_list = neuron_count_list
 
         # 如果不是卷积网络，这个参数，没有意义（如果不是卷积网络，直接传入默认值即可）
-        self._w_shape_list = w_shape_list
+        self._w_shape_layer = w_shape_list
 
         # 2. 校验
         err = self._valid()
@@ -232,8 +232,8 @@ class NeuralNetwork:
 
     def _init_other_para(self):
         # 每一层 w、B 参数，w 是个2维数组，b 是个2维数组
-        self._W = list()
-        self._B = list()
+        self._w_layer = list()
+        self._b_layer = list()
 
         # 样本数量
         self._sample_count = len(self._sx_list)
@@ -249,17 +249,17 @@ class NeuralNetwork:
 
         # 第1层 w 参数，w 是一个2维数组
         w = np.random.random((self._neuron_count_list[0], self._sx_dim))
-        self._W.append(w)
+        self._w_layer.append(w)
 
         # 第2层~第layer-1层 w 参数，w 是一个2维数组
         for i in range(1, self._layer_count):
             w = np.random.random((self._neuron_count_list[i], self._neuron_count_list[i - 1]))
-            self._W.append(w)
+            self._w_layer.append(w)
 
         # 第1层 ~ 第layer-1层 b 参数，b 是一个向量
         for i in range(0, self._layer_count):
             b = np.zeros([self._neuron_count_list[i], 1])
-            self._B.append(b)
+            self._b_layer.append(b)
 
         return errorcode.SUCCESS
 
@@ -360,8 +360,8 @@ class NeuralNetwork:
         """
 
         # 获取该层的参数：w, b
-        w = self._W[layer]
-        b = self._B[layer]
+        w = self._w_layer[layer]
+        b = self._b_layer[layer]
 
         y = np.matmul(w, x) + b
 
@@ -442,11 +442,11 @@ class NeuralNetwork:
 
             print("W:")
             # print(self.W[layer])
-            print(array_2_string(self._W[layer]))
+            print(array_2_string(self._w_layer[layer]))
 
             print("\nB:")
             # print(self.B[layer])
-            print(array_2_string(self._B[layer]))
+            print(array_2_string(self._b_layer[layer]))
 
             if layer < self._layer_count - 1:
                 print("\n")
@@ -473,10 +473,10 @@ class NeuralNetwork:
         self._layer_count = len(W)
 
         # 每一层 w 参数，w 是个 matrix
-        self._W = W
+        self._w_layer = W
 
         # 每一层 b 参数，b 是个 vector
-        self._B = B
+        self._b_layer = B
 
         # 激活函数对象
         self._activation = activation

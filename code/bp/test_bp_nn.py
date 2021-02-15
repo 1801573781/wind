@@ -42,7 +42,7 @@ def test_straight_line():
     activation = normal_activation.Sigmoid()
 
     # 神经网络对象
-    nn = bp_nn.BPNeuralNetwork(activation)
+    nn = bp_nn.BPFNN(activation)
 
     # 每一层网络的神经元个数
     neuron_count_list = [2, 1]
@@ -102,7 +102,7 @@ def test_two_line():
     activation = normal_activation.Sigmoid()
 
     # 神经网络对象
-    nn = bp_nn.BPNeuralNetwork(activation)
+    nn = bp_nn.BPFNN(activation)
 
     # 每一层网络的神经元个数
     neuron_count_list = [2, 1]
@@ -160,7 +160,7 @@ def test_sin():
     activation = normal_activation.Sigmoid()
 
     # 神经网络对象
-    nn = bp_nn.BPNeuralNetwork(activation)
+    nn = bp_nn.BPFNN(activation)
 
     # 每一层网络的神经元个数
     neuron_count_list = [5, 1]
@@ -207,7 +207,7 @@ def test_straight_line_without_train():
     activation = normal_activation.Sigmoid()
 
     # 神经网络对象
-    nn = bp_nn.BPNeuralNetwork(activation)
+    nn = bp_nn.BPFNN(activation)
 
     # 预测样本个数
     predict_sample_count = 500
@@ -273,7 +273,7 @@ def test_two_line_without_train():
     activation = normal_activation.Sigmoid()
 
     # 神经网络对象
-    nn = bp_nn.BPNeuralNetwork(activation)
+    nn = bp_nn.BPFNN(activation)
 
     # 预测样本个数
     predict_sample_count = 1000
@@ -339,7 +339,7 @@ def test_sin_without_train():
     activation = normal_activation.Sigmoid()
 
     # 神经网络对象
-    nn = bp_nn.BPNeuralNetwork(activation)
+    nn = bp_nn.BPFNN(activation)
 
     # 预测样本个数
     predict_sample_count = 1000

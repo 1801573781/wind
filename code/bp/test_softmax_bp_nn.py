@@ -29,7 +29,7 @@ def test_softmax():
     loss = CrossEntropyLoss()
 
     # 神经网络
-    nn = bp_nn.BPNeuralNetwork(activation, last_hop_activation, loss)
+    nn = bp_nn.BPFNN(activation, last_hop_activation, loss)
 
     # 2. 构建训练样本
 

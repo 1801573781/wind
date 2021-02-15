@@ -7,7 +7,7 @@ Date：2021.01.10
 import numpy as np
 import operator
 
-from nn.neural_network import NeuralNetwork
+from nn.feedforward_neural_network import FNN
 from gl import errorcode
 from gl.common_enum import ArrayDim
 from gl.common_function import rand_array_3
@@ -34,7 +34,7 @@ C. 第3维：图像像素的颜色值。如果是 RGB 图像，则第3维有3个
 """
 
 
-class CVLNeuralNetwork(NeuralNetwork):
+class CVLFNN(FNN):
     # 可以理解为图像宽度
     width = 1
 
@@ -96,14 +96,14 @@ class CVLNeuralNetwork(NeuralNetwork):
 
         # 校验 w_shape_list
 
-        if self._w_shape_list is None:
+        if self._w_shape_layer is None:
             return errorcode.FAILED
 
-        if 0 >= len(self._w_shape_list):
+        if 0 >= len(self._w_shape_layer):
             return errorcode
 
         # 这里只处理3维数组
-        shape = self._w_shape_list[0]
+        shape = self._w_shape_layer[0]
 
         if 3 != len(shape):
             return errorcode.FAILED
@@ -211,7 +211,7 @@ class CVLNeuralNetwork(NeuralNetwork):
         # self.sy_dim = self.neuron_count_list[self.layer_count - 1]
 
         # 初始化 self.layer_count
-        self.layer_count = len(self._w_shape_list)
+        self.layer_count = len(self._w_shape_layer)
 
         # 初始化 W, B
         self._init_w_b()
@@ -296,12 +296,12 @@ class CVLNeuralNetwork(NeuralNetwork):
         b = 0
         for layer in range(0, self.layer_count):
             # 2.1 每一层的卷积核
-            width = self._w_shape_list[layer][0]
-            height = self._w_shape_list[layer][1]
+            width = self._w_shape_layer[layer][0]
+            height = self._w_shape_layer[layer][1]
 
             # 如果是第一层，depth = 输入层的 depth
             if 0 == layer:
-                depth = self._w_shape_list[layer][2]
+                depth = self._w_shape_layer[layer][2]
             # 否则的话，depth = 1
             else:
                 depth = 1

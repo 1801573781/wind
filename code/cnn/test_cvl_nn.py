@@ -13,7 +13,7 @@ import os
 from cnn.max_pooling import MaxPooling
 from cnn.mean_pooling import MeanPooling
 from cnn.convolution import Convolution, Reversal, ConvolutionType
-from cnn.cvl_nn import CVLNeuralNetwork
+from cnn.cvl_nn import CVLFNN
 from gl.array_string import array_2_string
 from gl.common_enum import ArrayDim
 from gl.common_function import *
@@ -131,7 +131,7 @@ def test_cvl_nn():
     cvl = Convolution()
 
     # 构建卷积神经网络对象
-    cnn = CVLNeuralNetwork(cvl, activation, last_hop_activation, loss)
+    cnn = CVLFNN(cvl, activation, last_hop_activation, loss)
 
     # 3. 训练
     cnn.train(sx_list, sy_list, loop_max, neuron_count_list, rate, w_shape_list)
@@ -271,7 +271,7 @@ def test_cvl_nn_2():
     cvl = Convolution()
 
     # 构建卷积神经网络对象
-    cnn = CVLNeuralNetwork(cvl, activation, last_hop_activation, loss)
+    cnn = CVLFNN(cvl, activation, last_hop_activation, loss)
 
     # 3. 训练
     cnn.train(train_sx_list, train_sy_list, loop_max, neuron_count_list, rate, w_shape_list)
@@ -482,7 +482,7 @@ def test_cvl_nn_without_train():
     cvl = Convolution()
 
     # 构建卷积神经网络对象
-    cnn = CVLNeuralNetwork(cvl, activation, last_hop_activation, loss)
+    cnn = CVLFNN(cvl, activation, last_hop_activation, loss)
 
     # 参数赋值
     cnn.stub_set_para(0, None, W, B, activation)

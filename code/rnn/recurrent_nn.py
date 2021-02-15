@@ -8,10 +8,10 @@ Date：2021.02.10
 
 import numpy as np
 
-from nn.neural_network import NeuralNetwork
+from nn.feedforward_neural_network import FNN
 
 
-class RecurrentNN(NeuralNetwork):
+class RecurrentNN(FNN):
     """
     循环神经网络，继承自 NeuralNetwork
     特别说明： \n

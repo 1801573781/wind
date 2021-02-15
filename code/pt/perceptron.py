@@ -8,7 +8,7 @@ import numpy as np
 
 from gl import errorcode
 
-from nn.neural_network import NeuralNetwork
+from nn.feedforward_neural_network import FNN
 
 """
 class：Perceptron 感知器
@@ -18,7 +18,7 @@ class：Perceptron 感知器
 """
 
 
-class Perceptron(NeuralNetwork):
+class Perceptron(FNN):
     """
     功能：校验训练样本是否正确
     参数：NULL
@@ -60,8 +60,8 @@ class Perceptron(NeuralNetwork):
     def _modify_wb(self, nn_y_list, sx, sy):
         # 逐层修正
         for layer in range(0, self._layer_count):
-            w = self._W[layer]
-            b = self._B[layer]
+            w = self._w_layer[layer]
+            b = self._b_layer[layer]
 
             nn_y_last = nn_y_list[self._layer_count - 1]
             err = np.subtract(nn_y_last, sy)

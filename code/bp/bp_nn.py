@@ -6,7 +6,7 @@ Date：2020.12.25
 
 import numpy as np
 
-from nn.neural_network import NeuralNetwork
+from nn.feedforward_neural_network import FNN
 
 
 """
@@ -21,7 +21,7 @@ class：BPNeuralNetwork，BP 神经网络
 """
 
 
-class BPNeuralNetwork(NeuralNetwork):
+class BPFNN(FNN):
     """
     功能：修正 W，B
     参数：
@@ -93,7 +93,7 @@ class BPNeuralNetwork(NeuralNetwork):
             neuron_count_next = self._neuron_count_list[layer + 1]
 
             # 下一层的 w
-            w = self._W[layer + 1]
+            w = self._w_layer[layer + 1]
 
             # 计算当前层的每一个 ksi
             for i in range(0, neuron_count_cur):
@@ -126,8 +126,8 @@ class BPNeuralNetwork(NeuralNetwork):
     def __modify_wb_by_ksi_list(self, ksi_list, sx, nn_y_list):
         # 逐层修正
         for layer in range(0, self._layer_count):
-            w = self._W[layer]
-            b = self._B[layer]
+            w = self._w_layer[layer]
+            b = self._b_layer[layer]
             ksi = ksi_list[layer]
 
             cur_neuron_count = self._neuron_count_list[layer]
