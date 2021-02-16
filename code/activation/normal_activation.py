@@ -42,7 +42,7 @@ class NormalActivation:
         dy_arr = np.zeros(arr.shape)
 
         arr_list = [arr]
-        handle_arr_ex(arr_list, dy_arr, self.derivative())
+        handle_arr_ex(arr_list, dy_arr, self.derivative)
 
         return dy_arr
 
@@ -106,6 +106,7 @@ class ReLU(NormalActivation):
 
     # 求导
     def derivative(self, x):
+        """
         shape = x.shape
         if x > 0:
             dy = np.ones(shape)
@@ -113,6 +114,11 @@ class ReLU(NormalActivation):
         else:
             dy = np.zeros(shape)
             return dy
+        """
+        if x > 0:
+            return 1
+        else:
+            return 0
 
     # 校正函数
     def revise(self, x):

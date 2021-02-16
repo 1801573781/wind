@@ -68,10 +68,11 @@ class BPFNN(FNN):
 
         for i in range(0, row_last):
             # 计算ksi_last 的每个元素
-            ksi_item = loss_dy[i] * self._last_hop_activation.derivative(last_hop_y, i) \
-                       * self._activation.derivative(nn_y_last[i])
+            ksi_item = loss_dy[i][0] * self._last_hop_activation.derivative(last_hop_y, i) \
+                       * self._activation.derivative(nn_y_last[i][0])
 
-            ksi_last.append(ksi_item[0])
+            # ksi_last.append(ksi_item[0])
+            ksi_last.append(ksi_item)
 
         ksi_list[self._layer_count - 1] = ksi_last
 
@@ -106,7 +107,8 @@ class BPFNN(FNN):
                 ksi_item = s * self._activation.derivative(nn_y_cur[i])
 
                 # 将 ksi_item 加入向量
-                ksi_cur.append(ksi_item[0])
+                # ksi_cur.append(ksi_item[0])
+                ksi_cur.append(ksi_item)
 
             # 将本层计算出的 ksi 加入到 ksiList
             ksi_list[layer] = ksi_cur

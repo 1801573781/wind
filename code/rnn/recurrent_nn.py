@@ -158,7 +158,7 @@ class RecurrentNN(BPFNN):
             # 上一时刻的输出
             hidden_out_pre = self._hidden_out_sequence[t][layer]
             # 上一时刻输出的导数
-            dh = self._activation.derivative_array(hidden_out_pre)
+            dh = self._activation.derivative(hidden_out_pre)
             # 将导数变为对角线矩阵
             diag_dh = np.diag(dh)
             # 计算 delta
