@@ -144,11 +144,8 @@ class RecurrentNN(BPFNN):
         # delta_list 初始化
         delta_list = [0] * (cur_t - 1)
 
-        # ksi
-        ksi = ksi_list[layer]
-
         # delta 初始化
-        delta = ksi
+        delta = self.__list_2_matrix(ksi_list[layer])
 
         # 获取该层（layer）的 u.T
         uT = self._u_layer[layer].T
@@ -158,16 +155,56 @@ class RecurrentNN(BPFNN):
             # 上一时刻的输出
             hidden_out_pre = self._hidden_out_sequence[t][layer]
             # 上一时刻输出的导数
-            dh = self._activation.derivative(hidden_out_pre)
+            dh = self._activation.derivative_array(hidden_out_pre)
             # 将导数变为对角线矩阵
-            diag_dh = np.diag(dh)
+            diag_dh = np.diag(self.__matrix_2_list(dh))
             # 计算 delta
-            delta = diag_dh * uT * delta
+            delta = np.matmul(uT, delta)
+            delta = np.matmul(diag_dh, delta)
+            # delta = diag_dh * uT * delta
 
             # 存储 delta
             delta_list[t] = delta
 
         return delta_list
+
+    ''''''
+
+    @staticmethod
+    def __list_2_matrix(lst):
+        """
+        将 list 转换为 matrix, row = lst.len, col = 1
+        :param lst: 待转换的 list
+        :return: 转换后的 matrix
+        """
+        count = len(lst)
+
+        arr = np.zeros([count, 1])
+
+        for i in range(0, count):
+            arr[i][0] = lst[i]
+
+        return arr
+
+    ''''''
+
+    @staticmethod
+    def __matrix_2_list(arr):
+        """
+        将 matrix 转换为 list， arr 是 [row, 1] 矩阵
+        :param arr:
+        :return: 转换后的 list
+        """
+
+        shape = arr.shape
+        row = shape[0]
+
+        lst = list()
+
+        for i in range(0, row):
+            lst.append(arr[i][0])
+
+        return lst
 
     ''''''
 
@@ -190,7 +227,7 @@ class RecurrentNN(BPFNN):
         u = self._u_layer[layer]
 
         # 当前时刻
-        cur_t = len(self._hidden_out_sequence) + 1
+        cur_t = len(self._hidden_out_sequence)
 
         # 偏导初始化
         dw = np.zeros(self._w_layer[layer].shape)
@@ -199,9 +236,9 @@ class RecurrentNN(BPFNN):
 
         # 偏导按照时间序列相加
         for t in range(0, cur_t - 1):
-            dw = dw + delta_list[t] * sx.T
+            dw = dw + np.matmul(delta_list[t], self._sx_list[t].T)
             db = db + delta_list[t]
-            du = du + delta_list[t] * self._hidden_out_sequence[t][layer].T
+            du = du + np.matmul(delta_list[t], self._hidden_out_sequence[t][layer].T)
 
         # 修正 w, b, u
         w = w - self._rate * dw

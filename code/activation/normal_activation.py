@@ -42,9 +42,21 @@ class NormalActivation:
         dy_arr = np.zeros(arr.shape)
 
         arr_list = [arr]
-        handle_arr_ex(arr_list, dy_arr, self.derivative)
+        handle_arr_ex(arr_list, dy_arr, self._derivative_array_callback)
 
         return dy_arr
+
+    ''''''
+
+    def _derivative_array_callback(self, *args):
+        """
+        针对一个数组求导，回调函数
+        :param args: args[0][0] 为 x
+        :return: self.derivative(x)
+        """
+        x = args[0][0]
+        return self.derivative(x)
+
 
 
 """
