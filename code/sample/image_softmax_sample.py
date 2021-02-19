@@ -4,12 +4,9 @@ Author：lzb
 Date：2020.12.25
 """
 
-import matplotlib.pyplot as plt  # plt 用于显示图片
-import matplotlib.image as mpimg  # mpimg 用于读取图片
 import numpy as np
 
 import os
-import string
 
 from gl.common_enum import ArrayDim
 from my_image import my_image
@@ -33,8 +30,8 @@ class ImageSoftMaxSample(FullConnectedSample):
         """
 
         # 1. 初始化
-        self.sx_list = list()
-        self.sy_list = list()
+        self._sx_list = list()
+        self._sy_list = list()
 
         # 2. 构建 sx_list, sy_list
 
@@ -73,11 +70,11 @@ class ImageSoftMaxSample(FullConnectedSample):
                 image_file_name = os.path.join(root, name)
                 # 1 构建 sx
                 sx = self._create_sx(image_file_name)
-                self.sx_list.append(sx)
+                self._sx_list.append(sx)
 
                 # 2 构建 sy
-                sy = self._create_sy(image_file_name, index)
-                self.sy_list.append(sy)
+                sy = self._create_sy(index)
+                self._sy_list.append(sy)
 
     ''''''
 
@@ -109,10 +106,9 @@ class ImageSoftMaxSample(FullConnectedSample):
     ''''''
 
     @staticmethod
-    def _create_sy(image_file_name, index):
+    def _create_sy(index):
         """
         通过解析图像文件名，构建为训练样本的输出
-        :param image_file_name: 图像文件名
         :return: 训练样本的输出
         """
 
@@ -120,14 +116,6 @@ class ImageSoftMaxSample(FullConnectedSample):
         sy = np.zeros([10, 1])
 
         sy[index][0] = 1
-
-        """
-        # 判断文件名中所包含的数字
-        for i in range(0, 10):
-            if str(i) in image_file_name:
-                sy[i][0] = 1
-                break
-        """
 
         return sy
 
@@ -139,19 +127,19 @@ class ImageSoftMaxSample(FullConnectedSample):
         :return:NULL
         """
 
-        _sx_list = list()
-        _sy_list = list()
+        sx_list = list()
+        sy_list = list()
 
-        count = int(len(self.sx_list) / group_count)
+        count = int(len(self._sx_list) / group_count)
 
         for i in range(0, count):
             for j in range(0, group_count):
                 index = j * count + i
-                _sx_list.append(self.sx_list[index])
-                _sy_list.append(self.sy_list[index])
+                sx_list.append(self._sx_list[index])
+                sy_list.append(self._sy_list[index])
 
-        self.sx_list = _sx_list
-        self.sy_list = _sy_list
+        self._sx_list = sx_list
+        self._sy_list = sy_list
 
     ''''''
 
@@ -161,22 +149,22 @@ class ImageSoftMaxSample(FullConnectedSample):
         :return:NULL
         """
 
-        self.sx_list = list()
-        self.sy_list = list()
+        self._sx_list = list()
+        self._sy_list = list()
 
         for i in range(0, count):
             sx_0 = 0.5 * np.random.random((400, 1))
             sx_0 = sx_0 / 40
-            self.sx_list.append(sx_0)
+            self._sx_list.append(sx_0)
 
             sy_0 = np.zeros([10, 1])
             sy_0[0][0] = 1
-            self.sy_list.append(sy_0)
+            self._sy_list.append(sy_0)
 
             sx_1 = 0.5 * np.random.random((400, 1)) + 0.5
             sx_1 = sx_1 / 40
-            self.sx_list.append(sx_1)
+            self._sx_list.append(sx_1)
 
             sy_1 = np.zeros([10, 1])
             sy_1[1][0] = 1
-            self.sy_list.append(sy_1)
+            self._sy_list.append(sy_1)

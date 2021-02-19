@@ -13,6 +13,7 @@ from gl import errorcode
 from gl import common_function
 from gl.array_string import array_2_string
 
+from activation.normal_activation import Sigmoid
 from activation.last_hop_activation import DichotomyLHA
 from loss.loss import MSELoss
 
@@ -62,7 +63,7 @@ class FNN:
     _rate = 0
 
     # 激活函数对象（class Activation 的实例）
-    _activation = None
+    _activation = Sigmoid()
 
     # 最后一跳激活函数对象（class LastHopActivation 的实例）
     _last_hop_activation = DichotomyLHA()
@@ -70,7 +71,7 @@ class FNN:
     # 损失函数
     _loss = MSELoss()
 
-    def __init__(self, activation, last_hop_activation=None, loss=None):
+    def __init__(self, activation=None, last_hop_activation=None, loss=None):
         """
         构造函数
         :param activation: 激活函数对象
@@ -78,7 +79,8 @@ class FNN:
         :param loss: 损失函数对象
         """
 
-        self._activation = activation
+        if activation is not None:
+            self._activation = activation
 
         if last_hop_activation is not None:
             self._last_hop_activation = last_hop_activation

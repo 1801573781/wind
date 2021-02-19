@@ -21,7 +21,7 @@ class：SinSample
 
 class SinSample(PointsSample):
     # 欧米咖：sin(wx)
-    omega = 2 * np.pi
+    __omega = 2 * np.pi
 
     """
     功能：重载父类的 _create_sy_list
@@ -34,12 +34,12 @@ class SinSample(PointsSample):
 
     def _create_sy_list(self):
         # 1. 初始化
-        self.sy_list = list()
+        self._sy_list = list()
 
         # 2. 构建 sy_list，sy 是分类 C1 or C2
-        for i in range(0, self.sample_count):
+        for i in range(0, self._sample_count):
             # sx 是一个 [2, 1] 的矩阵
-            sx = self.sx_list[i]
+            sx = self._sx_list[i]
             x0 = sx[0][0]  # 对应到坐标系的 x
             x1 = sx[1][0]  # 对应到坐标系的 y
 
@@ -47,7 +47,7 @@ class SinSample(PointsSample):
             sy = np.empty([1, 1])
 
             # 计算 sin(x0)
-            sin_x0 = self.sx_max[1] * np.sin(self.omega * x0)
+            sin_x0 = self._sx_max[1] * np.sin(self.__omega * x0)
 
             # 比较
             if x1 >= sin_x0:
@@ -55,7 +55,7 @@ class SinSample(PointsSample):
             else:
                 sy[0][0] = dichotomy.Dichotomy.C2.value
 
-            self.sy_list.append(sy)
+            self._sy_list.append(sy)
 
     """
     功能：重载父类的 draw_segment
@@ -65,6 +65,6 @@ class SinSample(PointsSample):
 
     def draw_segment(self):
         # 1. 绘制 sin(x) 图像
-        x = np.linspace(-self.sx_max[0], self.sx_max[0], 300)
-        y = self.sx_max[1] * np.sin(self.omega * x)
+        x = np.linspace(-self._sx_max[0], self._sx_max[0], 300)
+        y = self._sx_max[1] * np.sin(self.__omega * x)
         plt.plot(x, y, color='blue', linewidth=1.0)

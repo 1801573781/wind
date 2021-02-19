@@ -21,10 +21,10 @@ class：StraightLineSample
 
 class StraightLineSample(PointsSample):
     # a
-    a = 2
+    __a = 2
 
     # b
-    b = -10
+    __b = -10
 
     """
     功能：重载父类的 _create_sy_list
@@ -37,12 +37,12 @@ class StraightLineSample(PointsSample):
 
     def _create_sy_list(self):
         # 1. 初始化
-        self.sy_list = list()
+        self._sy_list = list()
 
         # 2. 构建 sy_list，sy 是分类 C1 or C2
-        for i in range(0, self.sample_count):
+        for i in range(0, self._sample_count):
             # sx 是一个 [2, 1] 的矩阵
-            sx = self.sx_list[i]
+            sx = self._sx_list[i]
             x0 = sx[0][0]  # 对应到坐标系的 x
             x1 = sx[1][0]  # 对应到坐标系的 y
 
@@ -50,7 +50,7 @@ class StraightLineSample(PointsSample):
             sy = np.empty([1, 1])
 
             # 计算 sin(x0)
-            sl_x0 = self.a * x0 + self.b
+            sl_x0 = self.__a * x0 + self.__b
 
             # 比较
             if x1 >= sl_x0:
@@ -58,7 +58,7 @@ class StraightLineSample(PointsSample):
             else:
                 sy[0][0] = dichotomy.Dichotomy.C2.value
 
-            self.sy_list.append(sy)
+            self._sy_list.append(sy)
 
     """
     功能：重载父类的 draw_segment
@@ -68,6 +68,6 @@ class StraightLineSample(PointsSample):
 
     def draw_segment(self):
         # 1. 绘制 ax + b 图像
-        x = np.arange(-(self.sx_max[0]), (self.sx_max[0] * 1.01))
-        y = self.a * x + self.b
+        x = np.arange(-(self._sx_max[0]), (self._sx_max[0] * 1.01))
+        y = self.__a * x + self.__b
         plt.plot(x, y, color='blue', linewidth=1.0)

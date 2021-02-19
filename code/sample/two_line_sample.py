@@ -21,12 +21,12 @@ class：StraightLineSample
 
 class TwoLineSample(PointsSample):
     # a0, b0
-    a0 = 1
-    b0 = 0.5
+    __a0 = 1
+    __b0 = 0.5
 
     # h1
-    a1 = 1
-    b1 = -0.5
+    __a1 = 1
+    __b1 = -0.5
 
     """
     功能：重载父类的 _create_sy_list
@@ -39,20 +39,20 @@ class TwoLineSample(PointsSample):
 
     def _create_sy_list(self):
         # 1. 初始化
-        self.sy_list = list()
+        self._sy_list = list()
 
         # 2. 构建 sy_list，sy 是分类 C1 or C2
-        for i in range(0, self.sample_count):
+        for i in range(0, self._sample_count):
             # sx 是一个 [2, 1] 的矩阵
-            sx = self.sx_list[i]
+            sx = self._sx_list[i]
             x0 = sx[0][0]  # 对应到坐标系的 x
             x1 = sx[1][0]  # 对应到坐标系的 y
 
             # sy 是一个 [1, 1] 的矩阵
             sy = np.empty([1, 1])
 
-            sl0_x0 = self.a0 * x0 + self.b0
-            sl1_x1 = self.a1 * x0 + self.b1
+            sl0_x0 = self.__a0 * x0 + self.__b0
+            sl1_x1 = self.__a1 * x0 + self.__b1
 
             # 比较
             if (x1 >= sl0_x0) or (x1 <= sl1_x1):
@@ -60,7 +60,7 @@ class TwoLineSample(PointsSample):
             else:
                 sy[0][0] = dichotomy.Dichotomy.C2.value
 
-            self.sy_list.append(sy)
+            self._sy_list.append(sy)
 
     """
     功能：重载父类的 draw_segment
@@ -75,12 +75,12 @@ class TwoLineSample(PointsSample):
         # plt.axhline(self.h1, color='blue', linewidth=1.0)
         """
 
-        x = np.arange(-(self.sx_max[0]), (self.sx_max[0] + 0.5))
-        y = self.a0 * x + self.b0
+        x = np.arange(-(self._sx_max[0]), (self._sx_max[0] + 0.5))
+        y = self.__a0 * x + self.__b0
         plt.plot(x, y, color='blue', linewidth=1.0)
 
-        x = np.arange(-(self.sx_max[0]), (self.sx_max[0] + 0.5))
-        y = self.a1 * x + self.b1
+        x = np.arange(-(self._sx_max[0]), (self._sx_max[0] + 0.5))
+        y = self.__a1 * x + self.__b1
         plt.plot(x, y, color='blue', linewidth=1.0)
 
     """
@@ -91,37 +91,37 @@ class TwoLineSample(PointsSample):
 
     def _create_sx_list_stub(self):
         #
-        self.sx_max = list()
-        self.sx_max.append(1)
-        self.sx_max.append(1)
+        self._sx_max = list()
+        self._sx_max.append(1)
+        self._sx_max.append(1)
 
         # 样本数量
-        self.sample_count = 5
+        self._sample_count = 5
 
         # 初始化 sx_list
-        self.sx_list = list()
+        self._sx_list = list()
 
         sx = np.empty([2, 1])
         sx[0, 0] = 0
         sx[1, 0] = 0.8
-        self.sx_list.append(sx)
+        self._sx_list.append(sx)
 
         sx = np.empty([2, 1])
         sx[0, 0] = 0
         sx[1, 0] = -0.8
-        self.sx_list.append(sx)
+        self._sx_list.append(sx)
 
         sx = np.empty([2, 1])
         sx[0, 0] = 0.5
         sx[1, 0] = 0.5
-        self.sx_list.append(sx)
+        self._sx_list.append(sx)
 
         sx = np.empty([2, 1])
         sx[0, 0] = -0.5
         sx[1, 0] = -0.5
-        self.sx_list.append(sx)
+        self._sx_list.append(sx)
 
         sx = np.empty([2, 1])
         sx[0, 0] = 0
         sx[1, 0] = 0
-        self.sx_list.append(sx)
+        self._sx_list.append(sx)
