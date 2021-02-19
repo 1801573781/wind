@@ -78,11 +78,13 @@ class RNNSanmple(FullConnectedSample):
         创建样本-输入
         :return: NULL
         """
-        self
+        self._sx_list = list()
+
         count = len(self.poem)
 
         for i in range(0, count - 1):
-
+            sx = self.poem_encoder.dict[self.poem[i]]
+            self._sx_list.append(sx)
 
     ''''''
 
@@ -91,4 +93,11 @@ class RNNSanmple(FullConnectedSample):
         创建样本-输出
         :return: NULL
         """
-        pass
+        self._sy_list = list()
+
+        count = len(self.poem)
+
+        for i in range(1, count):
+            sy = self.poem_encoder.dict[self.poem[i]]
+            self._sx_list.append(sy)
+

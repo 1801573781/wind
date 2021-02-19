@@ -9,6 +9,7 @@ Date：2021.02.10
 import numpy as np
 
 from bp.bp_nn import BPFNN
+from gl.matrix_list import matrix_2_list, list_2_matrix
 
 
 class RecurrentNN(BPFNN):
@@ -145,7 +146,7 @@ class RecurrentNN(BPFNN):
         delta_list = [0] * (cur_t - 1)
 
         # delta 初始化
-        delta = self.__list_2_matrix(ksi_list[layer])
+        delta = list_2_matrix(ksi_list[layer])
 
         # 获取该层（layer）的 u.T
         uT = self._u_layer[layer].T
@@ -157,54 +158,15 @@ class RecurrentNN(BPFNN):
             # 上一时刻输出的导数
             dh = self._activation.derivative_array(hidden_out_pre)
             # 将导数变为对角线矩阵
-            diag_dh = np.diag(self.__matrix_2_list(dh))
+            diag_dh = np.diag(matrix_2_list(dh))
             # 计算 delta
             delta = np.matmul(uT, delta)
             delta = np.matmul(diag_dh, delta)
-            # delta = diag_dh * uT * delta
 
             # 存储 delta
             delta_list[t] = delta
 
         return delta_list
-
-    ''''''
-
-    @staticmethod
-    def __list_2_matrix(lst):
-        """
-        将 list 转换为 matrix, row = lst.len, col = 1
-        :param lst: 待转换的 list
-        :return: 转换后的 matrix
-        """
-        count = len(lst)
-
-        arr = np.zeros([count, 1])
-
-        for i in range(0, count):
-            arr[i][0] = lst[i]
-
-        return arr
-
-    ''''''
-
-    @staticmethod
-    def __matrix_2_list(arr):
-        """
-        将 matrix 转换为 list， arr 是 [row, 1] 矩阵
-        :param arr:
-        :return: 转换后的 list
-        """
-
-        shape = arr.shape
-        row = shape[0]
-
-        lst = list()
-
-        for i in range(0, row):
-            lst.append(arr[i][0])
-
-        return lst
 
     ''''''
 

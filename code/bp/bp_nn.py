@@ -71,7 +71,6 @@ class BPFNN(FNN):
             ksi_item = loss_dy[i][0] * self._last_hop_activation.derivative(last_hop_y, i) \
                        * self._activation.derivative(nn_y_last[i][0])
 
-            # ksi_last.append(ksi_item[0])
             ksi_last.append(ksi_item)
 
         ksi_list[self._layer_count - 1] = ksi_last
