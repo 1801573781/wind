@@ -11,39 +11,9 @@ Date：2021.02.19
 低头思故乡
 2、测试样本，也用这首诗
 """
-
+from gl.hanzi_encoder import HanziEncoder
 from sample.fully_connected_sample import FullConnectedSample
-
-
-class HanziEncoder:
-    """
-    简单测试，只用李白这首诗做 one-hot 编码
-    """
-
-    # 这首诗中有几个重复的字符：明、月、头，将这几个重复字符换成：唐、李、白
-    dict = {
-        "床": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        "前": [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        "明": [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        "月": [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        "光": [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        "疑": [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        "是": [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        "地": [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        "上": [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        "霜": [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        "举": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        "头": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        "望": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-        "唐": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
-        "李": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-        "低": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-        "白": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-        "思": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-        "故": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-        "乡": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
-        "END": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
-    }
+from gl.matrix_list import list_2_matrix
 
 
 class RNNSanmple(FullConnectedSample):
@@ -83,7 +53,8 @@ class RNNSanmple(FullConnectedSample):
         count = len(self.poem)
 
         for i in range(0, count - 1):
-            sx = self.poem_encoder.dict[self.poem[i]]
+            sx = self.poem_encoder.encode(self.poem[i])
+            sx = list_2_matrix(sx)
             self._sx_list.append(sx)
 
     ''''''
@@ -98,6 +69,28 @@ class RNNSanmple(FullConnectedSample):
         count = len(self.poem)
 
         for i in range(1, count):
-            sy = self.poem_encoder.dict[self.poem[i]]
-            self._sx_list.append(sy)
+            sy = self.poem_encoder.encode(self.poem[i])
+            sy = list_2_matrix(sy)
+            self._sy_list.append(sy)
 
+    ''''''
+
+    def create_test_sample(self, ch):
+        """
+        创建测试样本（输入）
+        :param ch: 测试样本字符
+        :return: ch 的 one-hot 编码
+        """
+        sx = self.poem_encoder.encode(ch)
+        return sx
+
+
+def test():
+    sample = RNNSanmple()
+    sample.create_sample()
+
+    sx_list = sample.get_sx_list()
+    sy_list = sample.get_sy_list()
+
+    print(sx_list)
+    print(sy_list)

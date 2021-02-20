@@ -10,6 +10,7 @@ import numpy as np
 
 from bp.bp_nn import BPFNN
 from gl.matrix_list import matrix_2_list, list_2_matrix
+from gl.hanzi_encoder import HanziEncoder
 
 
 class RecurrentNN(BPFNN):
@@ -29,6 +30,9 @@ class RecurrentNN(BPFNN):
 
     # RNN 只作用于第1层的标记
     _rnn_layer_0 = True
+
+    # 汉字编码解码器
+    _hanzi_encoder = HanziEncoder()
 
     ''''''
 
@@ -206,6 +210,59 @@ class RecurrentNN(BPFNN):
         w = w - self._rate * dw
         b = b - self._rate * db
         u = u - self._rate * du
+
+    ''''''
+
+    def predict(self, sx, py_list):
+        """
+        预测
+        :param sx: 待预测的样本
+        :param py_list: 预测结果
+        :return: NULL
+        """
+
+        nn_y_list = self._calc_nn(sx)
+
+        # 最后一层的 nn_y，才是神经网络的最终输出
+        nn_y = nn_y_list[len(nn_y_list) - 1]
+
+        # 最后一跳激活
+        last_hop_y = self._last_hop_activation.predict_activation(nn_y)
+
+        # 将矩阵转成 list
+        last_hop_y = matrix_2_list(last_hop_y)
+
+        # 将 list 修正一下
+        RecurrentNN._revise(last_hop_y)
+
+        # 解码
+        ch = self._hanzi_encoder.decode(last_hop_y)
+
+        # 将 ch 加入预测结果列表
+        py_list.append(ch)
+
+        # 如果 ch == END，那么结束递归
+        if self._hanzi_encoder.is_end(ch):
+            return
+        # 否则，递归下去，继续预测
+        else:
+            self.predict(ch, py_list)
+
+    ''''''
+
+    @staticmethod
+    def _revise(lst):
+        # 最大值索引
+        max_index = lst.index(max(lst))
+
+        count = len(lst)
+
+        for i in range(0, count):
+            if i == max_index:
+                lst[i] = 1
+            else:
+                lst[i] = 0
+
 
 
 
