@@ -21,14 +21,23 @@ class RNNSanmple(FullConnectedSample):
     简单测试，只用李白这首诗做 one-hot 编码，构建 rnn 训练样本
     """
 
+    '''    
     poem = ["床", "前", "明", "月", "光",
             "疑", "是", "地", "上", "霜",
             "举", "头", "望", "明", "月",
             "低", "头", "思", "故", "乡",
             "END"
             ]
+    '''
 
-    poem_encoder = HanziEncoder()
+    _poem = ["白", "日", "依", "山", "尽",
+            "黄", "河", "入", "海", "流",
+            "欲", "穷", "千", "里", "目",
+            "更", "上", "一", "层", "楼",
+            "END"
+             ]
+
+    _poem_encoder = HanziEncoder()
 
     ''''''
 
@@ -38,38 +47,17 @@ class RNNSanmple(FullConnectedSample):
         :return: NULL
         """
 
-        self._create_sx_list()
-        self._create_sy_list()
-
-    ''''''
-
-    def _create_sx_list(self):
-        """
-        创建样本-输入
-        :return: NULL
-        """
         self._sx_list = list()
+        self._sy_list = list()
 
-        count = len(self.poem)
+        count = len(self._poem)
 
         for i in range(0, count - 1):
-            sx = self.poem_encoder.encode(self.poem[i])
+            sx = self._poem_encoder.encode(self._poem[i])
             sx = list_2_matrix(sx)
             self._sx_list.append(sx)
 
-    ''''''
-
-    def _create_sy_list(self):
-        """
-        创建样本-输出
-        :return: NULL
-        """
-        self._sy_list = list()
-
-        count = len(self.poem)
-
-        for i in range(1, count):
-            sy = self.poem_encoder.encode(self.poem[i])
+            sy = self._poem_encoder.encode(self._poem[i + 1])
             sy = list_2_matrix(sy)
             self._sy_list.append(sy)
 
@@ -81,7 +69,8 @@ class RNNSanmple(FullConnectedSample):
         :param ch: 测试样本字符
         :return: ch 的 one-hot 编码
         """
-        sx = self.poem_encoder.encode(ch)
+        sx = self._poem_encoder.encode(ch)
+        sx = list_2_matrix(sx)
         return sx
 
 

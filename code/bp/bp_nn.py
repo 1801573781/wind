@@ -7,7 +7,8 @@ Date：2020.12.25
 import numpy as np
 
 from fnn.feedforward_nn import FNN
-
+from gl.hanzi_encoder import HanziEncoder
+from gl.matrix_list import list_2_matrix, matrix_2_list
 
 """
 class：BPNeuralNetwork，BP 神经网络
@@ -22,6 +23,10 @@ class：BPNeuralNetwork，BP 神经网络
 
 
 class BPFNN(FNN):
+
+    # 汉字编码解码器（使用 BP，测试诗歌生成器）
+    _hanzi_encoder = HanziEncoder()
+
     """
     功能：修正 w, b
     参数：
@@ -147,3 +152,69 @@ class BPFNN(FNN):
 
                 # 计算 b[i]
                 b[i] = b[i] - self._rate * ksi[i]
+
+    """
+    使用 BP 网络，做一个诗歌生成测试
+    """
+
+    def predict(self, sx, py_list):
+        """
+        预测
+        :param sx: 待预测的样本
+        :param py_list: 预测结果
+        :return: NULL
+        """
+
+        # 由于是递归调用，所以设置一个保护，防止死循环
+        count = len(py_list)
+
+        if count >= 30:
+            return
+
+        nn_y_list = self._calc_nn(sx)
+
+        # 最后一层的 nn_y，才是神经网络的最终输出
+        nn_y = nn_y_list[len(nn_y_list) - 1]
+
+        # 最后一跳激活
+        last_hop_y = self._last_hop_activation.predict_activation(nn_y)
+
+        # 将矩阵转成 list
+        last_hop_y = matrix_2_list(last_hop_y)
+
+        # 将 list 修正一下
+        self._revise(last_hop_y)
+
+        # 解码
+        ch = self._hanzi_encoder.decode(last_hop_y)
+
+        # 将 ch 加入预测结果列表
+        py_list.append(ch)
+
+        # 如果 ch == END，那么结束递归
+        if self._hanzi_encoder.is_end(ch):
+            return
+        # 否则，递归下去，继续预测
+        else:
+            # 将 ch 编码
+            ec = self._hanzi_encoder.encode(ch)
+            # 将 ec 转换为矩阵
+            ec = list_2_matrix(ec)
+            self.predict(ec, py_list)
+
+    ''''''
+
+    @staticmethod
+    def _revise(lst):
+        # 最大值索引
+        max_index = lst.index(max(lst))
+
+        count = len(lst)
+
+        for i in range(0, count):
+            if i == max_index:
+                lst[i] = 1
+            else:
+                lst[i] = 0
+
+

@@ -221,6 +221,12 @@ class RecurrentNN(BPFNN):
         :return: NULL
         """
 
+        # 由于是递归调用，所以设置一个保护，防止死循环
+        count = len(py_list)
+
+        if count >= 30:
+            return
+
         nn_y_list = self._calc_nn(sx)
 
         # 最后一层的 nn_y，才是神经网络的最终输出
@@ -246,7 +252,11 @@ class RecurrentNN(BPFNN):
             return
         # 否则，递归下去，继续预测
         else:
-            self.predict(ch, py_list)
+            # 将 ch 编码
+            ec = self._hanzi_encoder.encode(ch)
+            # 将 ec 转换为矩阵
+            ec = list_2_matrix(ec)
+            self.predict(ec, py_list)
 
     ''''''
 

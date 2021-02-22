@@ -17,7 +17,7 @@ from sample.image_softmax_sample import ImageSoftMaxSample
 from sample.rnn_sample import RNNSanmple
 
 
-def test_softmax():
+def test_poem():
     # 1. 构建神经网络对象
 
     # 激活函数
@@ -49,7 +49,7 @@ def test_softmax():
     neuron_count_list = [10, 21]
 
     # 最大循环训练次数
-    loop_max = 30
+    loop_max = 50
 
     # 学习效率
     rate = 0.1

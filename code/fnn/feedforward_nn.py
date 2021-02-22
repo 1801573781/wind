@@ -307,7 +307,7 @@ class FNN:
                 # 2.1 第 m 个训练样本，经过（多层）神经网络的计算
                 nn_y_list = self._calc_nn(sx)
 
-                # 2.2 最后一跳修正
+                # 2.2 最后一跳激活
                 nn_y = nn_y_list[len(nn_y_list) - 1]
                 last_hop_y = self._last_hop_activation.train_activation(nn_y)
                 nn_y_list.append(last_hop_y)
@@ -420,7 +420,7 @@ class FNN:
             # 最后一层的 nn_y，才是神经网络的最终输出
             nn_y = nn_y_list[len(nn_y_list) - 1]
 
-            # 修正一下
+            # 最后一跳激活/修正
             last_hop_y = self._last_hop_activation.predict_activation(nn_y)
 
             # 然后再添加到预测列表
