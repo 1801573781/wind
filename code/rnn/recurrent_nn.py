@@ -6,11 +6,14 @@ Date：2021.02.10
 特别说明：明天（2021.02.11）是除夕！
 """
 
+import time
+
 import numpy as np
 
 from bp.bp_nn import BPFNN
 from gl.matrix_list import matrix_2_list, list_2_matrix
 from gl.hanzi_encoder import HanziEncoder
+from gl import errorcode
 
 
 class RecurrentNN(BPFNN):
@@ -49,6 +52,58 @@ class RecurrentNN(BPFNN):
         for i in range(0, self._layer_count):
             u = np.random.random((self._neuron_count_list[i], self._neuron_count_list[i]))
             self._u_layer.append(u)
+
+    ''''''
+
+    def _train(self):
+        """
+        rnn 的关键之一，好像是分组训练 \n
+        1、先 copy 代码，冗余代码，后面再重构 \n
+        2、暂时先将所有的训练样本，当作一组，后面再修改/优化 \n
+        :return: error code
+        """
+
+        # 循环训练次数
+        loop = 0
+
+        # 打印开始时间
+        localtime = time.asctime(time.localtime(time.time()))
+        print("\nbegin time = " + localtime + "\n")
+
+        while 1:
+            if loop >= self._loop_max:
+                # 打印结束时间
+                localtime = time.asctime(time.localtime(time.time()))
+                print("\nend time = " + localtime + "\n")
+
+                # 打印最后一轮参数
+                self._print_w_b_loop(loop)
+
+                break
+
+            # 1. 每一轮训练之前，预准备工作
+            self._pre_train()
+
+            loop = loop + 1
+
+            # 2. 训练每一个样本
+            for i in range(0, self._sample_count):
+                # 第 i 个训练样本
+                sx = self._sx_list[i]
+                sy = self._sy_list[i]
+
+                # 2.1 第 m 个训练样本，经过（多层）神经网络的计算
+                nn_y_list = self._calc_nn(sx)
+
+                # 2.2 最后一跳激活
+                nn_y = nn_y_list[len(nn_y_list) - 1]
+                last_hop_y = self._last_hop_activation.train_activation(nn_y)
+                nn_y_list.append(last_hop_y)
+
+                # 2.3 根据计算结果，修正参数神经网络参数，比如：W，B
+                self._modify_fnn_para(nn_y_list, sx, sy)
+
+        return errorcode.SUCCESS
 
     ''''''
 

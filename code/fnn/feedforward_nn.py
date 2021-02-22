@@ -1,16 +1,14 @@
 """
-Function：Neural Network (base class)
+Function：Feedforward Neural Network (base class)
 Author：lzb
 Date：2021.01.07
 """
 
-import numpy.matlib
 import numpy as np
 
 import time
 
 from gl import errorcode
-from gl import common_function
 from gl.array_string import array_2_string
 
 from activation.normal_activation import Sigmoid
@@ -18,7 +16,7 @@ from activation.last_hop_activation import DichotomyLHA
 from loss.loss import MSELoss
 
 """
-class：NeuralNetwork 神经网络(base class)
+class：FNN 神经网络(base class)
 
 特别说明：
 语义上的 vector，在代码中，实际上是一个 [n, 1] 的 matrix
@@ -124,7 +122,7 @@ class FNN:
             print("\nvalid error, errcode = %d\n" % err)
             return err
 
-        # 3. 初始化 W, B，及其他参数
+        # 3. 初始化 w, b，及其他参数
         self._init_other_para()
 
         # 4. 训练
@@ -290,9 +288,6 @@ class FNN:
 
                 break
 
-            # 打印每一轮的参数
-            # self._print_w_b_loop(loop)
-
             # 1. 每一轮训练之前，预准备工作
             self._pre_train()
 
@@ -334,7 +329,7 @@ class FNN:
         """
 
         x = sx
-        y = 0
+
         nn_y_list = list()
 
         # 逐层计算
