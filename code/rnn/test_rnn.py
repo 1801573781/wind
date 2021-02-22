@@ -60,11 +60,15 @@ def test_poem():
     # 4. 测试
 
     # 4.1 创建测试样本
-    test_sx = sample.create_test_sample("床")
+    ch = "白"
+    test_sx = sample.create_test_sample(ch)
 
     # 测试
     py_list = list()
     nn.predict(test_sx, py_list)
+
+    # 将测试样本放在首位，这样就组成了一首完整的诗
+    py_list.insert(0, ch)
 
     print("\n")
     print("py:\n")
