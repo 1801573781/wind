@@ -349,6 +349,7 @@ class FNNEx:
                 sy_list = self._sy_group_list[g]
 
                 sample_count = len(sx_list)
+                delta_list = list()
 
                 for i in range(0, sample_count):
                     # 第 i 个训练样本
@@ -364,7 +365,6 @@ class FNNEx:
                     nn_y_list.append(last_hop_y)
 
                     # 2.3 根据神经网络计算结果，计算训练参数的 delta（比如：delta w, delta b）
-                    delta_list = list()
                     self._calc_train_para_delta(nn_y_list, sx, sy, delta_list)
 
                 # 2.4 一组样本计算完毕，修正训练参数(比如：w, b)
