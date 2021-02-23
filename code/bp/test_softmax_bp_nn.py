@@ -87,7 +87,7 @@ def test_softmax():
     count = len(py_list)
 
     for i in range(0, count):
-        _revise(py_list[i])
+        # _revise(py_list[i])
         number = _get_max_index(test_sy_list[i])
 
         print("\n")

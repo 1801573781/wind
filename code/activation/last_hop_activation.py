@@ -78,6 +78,26 @@ class DichotomyLHA(LastHopActivation):
     功能：二分类最后一跳激活函数\n
     """
 
+    def predict_revise(self, lha_y, revise_strong=False):
+        """
+        预测时，最后一跳激活之后，再修正
+        :param lha_y: 最后一跳激活之后的输出
+        :param revise_strong: 强修正 flag
+        :return: 最后一跳激活之后，再修正的结果
+        """
+
+        # 将神经网络的输出，复制一份输出
+        lhr_y = np.zeros(lha_y.shape)
+
+        # 预测试，最后一跳需要修正，修正为二分类中的某一类
+        arr_list = [lha_y]
+        handle_arr_ex(arr_list, lhr_y, dichotomy_revise)
+
+        return lhr_y
+
+    ''''''
+
+    '''
     def predict_activation(self, nn_y):
         """
         功能：预测时，最后一跳激活\n
@@ -94,6 +114,7 @@ class DichotomyLHA(LastHopActivation):
         handle_arr_ex(arr_list, last_hop_y, dichotomy_revise)
 
         return last_hop_y
+    '''
 
     def derivative(self, last_hop_y, index):
         """
@@ -141,6 +162,8 @@ class SoftMaxLHA(LastHopActivation):
         # 预测时，最后一跳做 soft max 处理
         return SoftMaxLHA._soft_max(nn_y)
 
+    ''''''
+
     @staticmethod
     def _soft_max(arr):
         """
@@ -165,6 +188,8 @@ class SoftMaxLHA(LastHopActivation):
         handle_arr_ex(arr_list, last_hop_arr, SoftMaxLHA._probability, s[0])
 
         return last_hop_arr
+
+    ''''''
 
     @staticmethod
     def _exp(*args):
@@ -192,6 +217,97 @@ class SoftMaxLHA(LastHopActivation):
         s = args[0][1]
 
         return a / s
+
+    ''''''
+
+    def predict_revise(self, lha_y, revise_strong=False):
+        """
+        预测时，最后一跳激活之后，再修正
+        :param lha_y: 最后一跳激活之后的输出
+        :param revise_strong: 强修正 flag
+        :return: 最后一跳激活之后，再修正的结果
+        """
+
+        if revise_strong:
+            return SoftMaxLHA._strong_revise(lha_y)
+        else:
+            return SoftMaxLHA._weak_revise(lha_y)
+
+    ''''''
+    @staticmethod
+    def _strong_revise(lha_y):
+        """
+        强修正：最大值修正为 1，其余值修正为 0
+        :param lha_y:
+        :return: 修正后的值
+        """
+
+        # 不搞那么复杂了，因为是 softmax，所以可以肯定 lha_y 是一个 [row, 1] 矩阵（只有1列）
+
+        # 将神经网络的输出，复制一份输出
+        lhr_y = np.zeros(lha_y.shape)
+
+        # 获取 lha 最大值的索引
+        max_index = SoftMaxLHA._get_max_index(lha_y)
+
+        # 将 lhr_y 该索引位置赋值为1
+        lhr_y[max_index][0] = 1
+
+        return lhr_y
+
+    ''''''
+
+    @staticmethod
+    def _get_max_index(lha_y):
+        """
+        获取 lha_y 最大值的索引
+        :param lha_y: [row, 1] 矩阵
+        :return: lha_y 最大值的索引
+        """
+
+        max_value = 0
+        max_index = 0
+        row = lha_y.shape[0]
+
+        # 可以肯定，lha_y 每个值都大于0
+        for r in range(0, row):
+            if lha_y[r][0] > max_value:
+                max_value = lha_y[r][0]
+                max_index = r
+
+        return max_index
+
+    ''''''
+
+    @staticmethod
+    def _weak_revise(lha_y):
+        """
+        弱修正：只有大于一定的值，才修正为1，只有小于一定的值，才修正为0
+        :param lha_y: [row, 1] 矩阵
+        :return: 修正后的值
+        """
+
+        # 不搞那么复杂了，因为是 softmax，所以可以肯定 lha_y 是一个 [row, 1] 矩阵（只有1列）
+
+        # 将神经网络的输出，复制一份输出
+        lhr_y = np.zeros(lha_y.shape)
+
+        row = lha_y.shape[0]
+
+        max_value = 0.9
+        min_value = 0.1
+
+        for r in range(0, row):
+            if lha_y[r][0] >= max_value:
+                lhr_y[r][0] = 1
+            elif lha_y[r][0] <= min_value:
+                lhr_y[r][0] = 0
+            else:
+                lhr_y[r][0] = lha_y[r][0]
+
+        return lhr_y
+
+    ''''''
 
     def derivative(self, last_hop_y, index):
         """

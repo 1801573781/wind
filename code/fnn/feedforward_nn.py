@@ -397,7 +397,7 @@ class FNN:
 
     ''''''
 
-    def predict(self, sx_list, sy_list):
+    def predict(self, sx_list, sy_list, revise_strong=False):
         """
         功能：预测
         参数：
@@ -415,11 +415,14 @@ class FNN:
             # 最后一层的 nn_y，才是神经网络的最终输出
             nn_y = nn_y_list[len(nn_y_list) - 1]
 
-            # 最后一跳激活/修正
-            last_hop_y = self._last_hop_activation.predict_activation(nn_y)
+            # 最后一跳激活
+            lha_y = self._last_hop_activation.predict_activation(nn_y)
+
+            # 最后一跳修正
+            lhr_y = self._last_hop_activation.predict_revise(lha_y, revise_strong)
 
             # 然后再添加到预测列表
-            py_list.append(last_hop_y)
+            py_list.append(lhr_y)
 
         return py_list
 
