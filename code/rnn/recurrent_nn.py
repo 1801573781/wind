@@ -216,7 +216,7 @@ class RecurrentNN(BPFNN):
 
     ''''''
 
-    def predict(self, sx, py_list):
+    def predict_r(self, sx, py_list):
         """
         预测
         :param sx: 待预测的样本
@@ -259,7 +259,7 @@ class RecurrentNN(BPFNN):
             ec = self._hanzi_encoder.encode(ch)
             # 将 ec 转换为矩阵
             ec = list_2_matrix(ec)
-            self.predict(ec, py_list)
+            self.predict_r(ec, py_list)
 
     ''''''
 

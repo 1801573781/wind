@@ -185,7 +185,7 @@ def test_poem():
 
     # 测试
     py_list = list()
-    nn.predict(test_sx, py_list)
+    nn.predict_r(test_sx, py_list)
 
     # 将测试样本放在首位，这样就组成了一首完整的诗
     py_list.insert(0, ch)
