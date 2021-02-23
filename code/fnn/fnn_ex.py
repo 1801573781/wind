@@ -469,6 +469,90 @@ class FNNEx:
 
     ''''''
 
+    def predict(self, sx_list, revise_strong=False):
+        """
+        神经网络预测
+        :param sx_list: 待预测的样本列表列表
+        :param revise_strong: 预测时，修正标记
+        :return: 预测结果
+        """
+
+        count = len(sx_list)
+        py_list = list()
+
+        for i in range(0, count):
+            sx = sx_list[i]
+            nn_y_list = self._calc_nn(sx)
+
+            # 最后一层的 nn_y，才是神经网络的最终输出
+            nn_y = nn_y_list[len(nn_y_list) - 1]
+
+            # 最后一跳激活
+            lha_y = self._last_hop_activation.predict_activation(nn_y)
+
+            # 最后一跳修正
+            lhr_y = self._last_hop_activation.predict_revise(lha_y, revise_strong)
+
+            # 然后再添加到预测列表
+            py_list.append(lha_y)
+
+        return py_list
+
+    ''''''
+
+    def predict_recurrent(self, sx, py_list, max_recursion_count=30):
+        """
+        循环（递归）预测
+        :param sx: 待预测样本
+        :param py_list: 预测结果
+        :param max_recursion_count: 最大递归次数
+        :return: NULL
+        """
+
+        # 由于是递归调用，所以设置一个保护，防止死循环
+        count = len(py_list)
+
+        if count >= 30:
+            return
+
+        nn_y_list = self._calc_nn(sx)
+
+        # 最后一层的 nn_y，才是神经网络的最终输出
+        nn_y = nn_y_list[len(nn_y_list) - 1]
+
+        # 最后一跳激活
+        lha_y = self._last_hop_activation.predict_activation(nn_y)
+
+        # 最后一跳修正
+        lhr_y = self._last_hop_activation.predict_revise(lha_y, revise_strong=True)
+
+        # 对修正后的结果，再处理一次
+        recurrent_flag, recurrent_sx = self._handle_lhr(lhr_y, py_list)
+
+        # 如果需要递归，则继续递归预测
+        if recurrent_flag:
+            self.predict_recurrent(recurrent_sx, py_list, max_recursion_count)
+        # 如果不需要递归，则啥都不做
+        else:
+            pass
+
+    ''''''
+
+    def _handle_lhr(self, lhr_y, py_list):
+        """
+        处理最后一跳修正后的输出
+        :param lhr_y: 最后一跳修正后的输出
+        :param py_list: 预测结果
+        :return: recurrent_flag，是否继续递归；recurrent_sx，如果递归，其 sx =  recurrent_sx
+        """
+
+        recurrent_flag = False
+        recurrent_sx = None
+
+        return recurrent_flag, recurrent_sx
+
+    ''''''
+
     def _print_w_b_loop(self, loop):
         """
         打印 w, b, loop

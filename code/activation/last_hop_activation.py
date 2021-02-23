@@ -41,6 +41,23 @@ class LastHopActivation:
 
         return last_hop_y
 
+    ''''''
+
+    def predict_revise(self, lha_y, revise_strong=False):
+        """
+        预测时，最后一跳激活之后，再修正
+        :param lha_y: 最后一跳激活之后的输出
+        :param revise_strong: 强修正 flag
+        :return: 最后一跳激活之后，再修正的结果
+        """
+
+        # 默认实现，将 lha_y 复制一份输出
+        lhr_y = np.asarray(lha_y)
+
+        return lhr_y
+
+    ''''''
+
     def derivative(self, last_hop_y, index):
         """
         预测时，最后一跳激活函数的导数
@@ -75,8 +92,6 @@ class DichotomyLHA(LastHopActivation):
         # 预测试，最后一跳需要修正，修正为二分类中的某一类
         arr_list = [nn_y]
         handle_arr_ex(arr_list, last_hop_y, dichotomy_revise)
-
-        # handle_arr(nn_y, dichotomy_revise)
 
         return last_hop_y
 
