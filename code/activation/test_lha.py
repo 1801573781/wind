@@ -16,13 +16,13 @@ def test_last_hop_activation():
                      [[-0.152569], [0.746855], [0.665359]],
                      [[-0.078141], [0.187796], [0.004870]]])
 
-    lha.active(nn_y)
+    lha.active_array(nn_y)
 
     print("\nDichotomyLHA: train\n")
 
     print(nn_y)
 
-    lha.active(nn_y)
+    lha.active_array(nn_y)
 
     print("\nDichotomyLHA: predict\n")
 
@@ -30,13 +30,13 @@ def test_last_hop_activation():
 
     lha = SoftMaxLHA()
 
-    lha.active(nn_y)
+    lha.active_array(nn_y)
 
     print("\nSoftMaxLHA: train\n")
 
     print(nn_y)
 
-    lha.active(nn_y)
+    lha.active_array(nn_y)
 
     print("\nSoftMaxLHA: predict\n")
 

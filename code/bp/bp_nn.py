@@ -4,7 +4,6 @@ Author：lzb
 Date：2020.12.25
 """
 
-import numpy as np
 
 from fnn.feedforward_nn import FNN
 from gl.hanzi_encoder import HanziEncoder
@@ -177,7 +176,7 @@ class BPFNN(FNN):
         nn_y = nn_y_list[len(nn_y_list) - 1]
 
         # 最后一跳激活
-        last_hop_y = self._last_hop_activation.active(nn_y)
+        last_hop_y = self._last_hop_activation.active_array(nn_y)
 
         # 将矩阵转成 list
         last_hop_y = matrix_2_list(last_hop_y)
@@ -216,5 +215,3 @@ class BPFNN(FNN):
                 lst[i] = 1
             else:
                 lst[i] = 0
-
-

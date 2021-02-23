@@ -6,7 +6,7 @@ Date：2020.12.22
 
 import numpy as np
 import math
-from activation import dichotomy
+
 from gl.handle_array import handle_arr_ex
 
 """
@@ -19,21 +19,26 @@ class NormalActivation:
     # 最大值
     _max_value = -1
 
-    # 激活函数，虚函数，待子类继承
     def active(self, x):
+        """
+        激活函数，虚函数，待子类重载
+        :param x: 待激活的数
+        :return: 激活后的值
+        """
         pass
 
-    '''
-    # 校正函数
-    def revise(self, x):
-        pass
-    '''
+    ''''''
 
-    # 求导
     def derivative(self, x):
+        """
+        针对一个数求导，虚函数，待子类重载
+        :param x: 待求导的数
+        :return: 求导后的值
+        """
         pass
 
-    # 求导
+    ''''''
+
     def derivative_array(self, arr):
         """
         针对一个数组求导
@@ -60,16 +65,16 @@ class NormalActivation:
         return self.derivative(x)
 
 
-
-"""
-class：Sigmoid
-说明：SIGMOID 激活函数
-"""
-
-
 class Sigmoid(NormalActivation):
-    # 构造函数
+    """
+    SIGMOID 激活函数
+    """
+
     def __init__(self, max_value=20):
+        """
+        构建函数
+        :param max_value: 由于涉及到 exp(x) 的计算，所以 x 不能太大，也不宜太小
+        """
         self._max_value = max_value
 
     # 激活函数
@@ -90,22 +95,12 @@ class Sigmoid(NormalActivation):
         dy = x * (1 - x)
         return dy
 
-    '''
-    # 校正函数
-    def revise(self, x):
-        if x > 0.5:
-            return dichotomy.Dichotomy.C1.value
-        else:
-            return dichotomy.Dichotomy.C2.value
-    '''
-
-"""
-class：ReLU
-说明：ReLU 激活函数
-"""
-
 
 class ReLU(NormalActivation):
+    """
+    ReLU 激活函数
+    """
+
     # 构造函数
     def __init__(self, max_value=-1):
         self._max_value = max_value
@@ -121,39 +116,17 @@ class ReLU(NormalActivation):
 
     # 求导
     def derivative(self, x):
-        """
-        shape = x.shape
-        if x > 0:
-            dy = np.ones(shape)
-            return dy
-        else:
-            dy = np.zeros(shape)
-            return dy
-        """
         if x > 0:
             return 1
         else:
             return 0
 
-    '''
-    
-    # 校正函数
-    def revise(self, x):
-        if x > 0:
-            return dichotomy.Dichotomy.C1.value
-        else:
-            return dichotomy.Dichotomy.C2.value
-    '''
-
-# noinspection SpellCheckingInspection
-"""
-class：Tanh
-说明：Tanh 激活函数
-"""
-
 
 # noinspection SpellCheckingInspection
 class Tanh(NormalActivation):
+    """
+    Tanh 激活函数
+    """
 
     # 构造函数
     def __init__(self, max_value=20):

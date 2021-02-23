@@ -361,7 +361,7 @@ class FNNEx:
 
                     # 2.2 最后一跳激活
                     nn_y = nn_y_list[len(nn_y_list) - 1]
-                    last_hop_y = self._last_hop_activation.active(nn_y)
+                    last_hop_y = self._last_hop_activation.active_array(nn_y)
                     nn_y_list.append(last_hop_y)
 
                     # 2.3 根据神经网络计算结果，计算训练参数的 delta（比如：delta w, delta b）
@@ -488,7 +488,7 @@ class FNNEx:
             nn_y = nn_y_list[len(nn_y_list) - 1]
 
             # 最后一跳激活
-            lha_y = self._last_hop_activation.active(nn_y)
+            lha_y = self._last_hop_activation.active_array(nn_y)
 
             # 最后一跳修正
             lhr_y = self._last_hop_activation.predict_revise(lha_y, revise_strong)
@@ -521,7 +521,7 @@ class FNNEx:
         nn_y = nn_y_list[len(nn_y_list) - 1]
 
         # 最后一跳激活
-        lha_y = self._last_hop_activation.active(nn_y)
+        lha_y = self._last_hop_activation.active_array(nn_y)
 
         # 最后一跳修正
         lhr_y = self._last_hop_activation.predict_revise(lha_y, revise_strong=True)
