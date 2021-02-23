@@ -46,7 +46,7 @@ class Loss:
 
     ''''''
 
-    def derivative(self, nn_y, sy):
+    def derivative_array(self, nn_y, sy):
         """
         功能：损失函数求导\n
         参数：\n
@@ -147,7 +147,7 @@ class MSELoss(Loss):
 
     ''''''
 
-    def derivative(self, nn_y, sy):
+    def derivative_array(self, nn_y, sy):
         """
         功能：损失函数求导\n
         参数：\n
@@ -179,7 +179,7 @@ class CrossEntropyLoss(Loss):
 
     ''''''
 
-    def derivative(self, nn_y, sy):
+    def derivative_array(self, nn_y, sy):
         """
         损失函数求导
         :param nn_y: 神经网络的输出，n维数组
@@ -204,13 +204,14 @@ class CrossEntropyLoss(Loss):
         """
 
         nn_y_item = get_arr_item(nn_y, index)
-        # dy = math.log(nn_y_item) - 1
+
         dy = nn_y_item - 1
 
         return dy
 
     ''''''
 
+    '''"""
     @staticmethod
     def _derivative(dy, index, *args):
         """
@@ -226,7 +227,7 @@ class CrossEntropyLoss(Loss):
 
         # dy[index] = math.log(nn_y_item) - 1
         dy[index] = nn_y_item - 1
-
+    '''
 
 ''''''
 
@@ -258,7 +259,7 @@ def test():
 
     print("\ndy = %f\n" % dy)
 
-    dy = loss.derivative(nn_y, sy)
+    dy = loss.derivative_array(nn_y, sy)
 
     print("\ndy = \n")
     print(dy)
@@ -275,7 +276,7 @@ def test():
 
     print("\ndy = %f\n" % dy)
 
-    dy = loss.derivative(nn_y, sy)
+    dy = loss.derivative_array(nn_y, sy)
 
     print("\ndy = \n")
     print(dy)

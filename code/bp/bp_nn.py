@@ -62,7 +62,7 @@ class BPFNN(FNN):
 
         # 2.1 计算损失函数的偏导
         last_hop_y = nn_y_list[self._layer_count]
-        loss_dy = self._loss.derivative(last_hop_y, sy)
+        loss_dy = self._loss.derivative_array(last_hop_y, sy)
 
         # 2.2 计算最后一层 ksi
 

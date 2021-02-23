@@ -341,7 +341,7 @@ class CVLFNN(FNN):
         # 2.1 计算误差(err)：最后一层的计算结果与样本输出结果的比较（计算结果 - 训练样本的输出）
         nn_y_last = nn_y_list[self._layer_count - 1]
         # dy = np.subtract(nn_y_last, sy)  # 不知道3维数组是否可以这样相减
-        dy = self._loss.derivative(nn_y_last, sy)
+        dy = self._loss.derivative_array(nn_y_last, sy)
 
         # 2.2 计算最后一层 ksi
 
