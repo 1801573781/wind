@@ -177,7 +177,7 @@ class BPFNN(FNN):
         nn_y = nn_y_list[len(nn_y_list) - 1]
 
         # 最后一跳激活
-        last_hop_y = self._last_hop_activation.predict_activation(nn_y)
+        last_hop_y = self._last_hop_activation.active(nn_y)
 
         # 将矩阵转成 list
         last_hop_y = matrix_2_list(last_hop_y)

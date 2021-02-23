@@ -23,9 +23,11 @@ class NormalActivation:
     def active(self, x):
         pass
 
+    '''
     # 校正函数
     def revise(self, x):
         pass
+    '''
 
     # 求导
     def derivative(self, x):
@@ -88,13 +90,14 @@ class Sigmoid(NormalActivation):
         dy = x * (1 - x)
         return dy
 
+    '''
     # 校正函数
     def revise(self, x):
         if x > 0.5:
             return dichotomy.Dichotomy.C1.value
         else:
             return dichotomy.Dichotomy.C2.value
-
+    '''
 
 """
 class：ReLU
@@ -132,13 +135,15 @@ class ReLU(NormalActivation):
         else:
             return 0
 
+    '''
+    
     # 校正函数
     def revise(self, x):
         if x > 0:
             return dichotomy.Dichotomy.C1.value
         else:
             return dichotomy.Dichotomy.C2.value
-
+    '''
 
 # noinspection SpellCheckingInspection
 """
@@ -201,9 +206,12 @@ class Tanh(NormalActivation):
 
         return dy
 
+    '''
+    
     # 校正函数
     def revise(self, x):
         if x > 0:
             return dichotomy.Dichotomy.C1.value
         else:
             return dichotomy.Dichotomy.C2.value
+    '''

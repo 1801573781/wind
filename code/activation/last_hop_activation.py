@@ -17,7 +17,7 @@ class LastHopActivation:
     说明：神经网络的最后一跳，也需要激活函数，比如 SoftMax \n
     """
 
-    def train_activation(self, nn_y):
+    def active(self, nn_y):
         """
         训练时，最后一跳激活
         :param nn_y: 神经网络训练的输出，是一个n维数组，或者是一个数值
@@ -29,6 +29,7 @@ class LastHopActivation:
 
         return last_hop_y
 
+    '''
     def predict_activation(self, nn_y):
         """
         预测时，最后一跳激活
@@ -40,6 +41,7 @@ class LastHopActivation:
         last_hop_y = np.asarray(nn_y)
 
         return last_hop_y
+    '''
 
     ''''''
 
@@ -97,25 +99,6 @@ class DichotomyLHA(LastHopActivation):
 
     ''''''
 
-    '''
-    def predict_activation(self, nn_y):
-        """
-        功能：预测时，最后一跳激活\n
-        参数：\n
-        nn_y：神经网络训练的输出，是一个n维数组，或者是一个数值\n
-        返回值：最后一跳激活的结果（是一个n维数组，或者是一个数值）\n
-        """
-
-        # 将神经网络的输出，复制一份输出
-        last_hop_y = np.zeros(nn_y.shape)
-
-        # 预测试，最后一跳需要修正，修正为二分类中的某一类
-        arr_list = [nn_y]
-        handle_arr_ex(arr_list, last_hop_y, dichotomy_revise)
-
-        return last_hop_y
-    '''
-
     def derivative(self, last_hop_y, index):
         """
         预测时，最后一跳激活函数的导数 \n
@@ -138,7 +121,7 @@ class SoftMaxLHA(LastHopActivation):
 
     ''''''
 
-    def train_activation(self, nn_y):
+    def active(self, nn_y):
         """
         功能：训练时，最后一跳激活\n
         参数：\n
@@ -151,6 +134,7 @@ class SoftMaxLHA(LastHopActivation):
 
     ''''''
 
+    '''
     def predict_activation(self, nn_y):
         """
         功能：预测时，最后一跳激活\n
@@ -161,6 +145,7 @@ class SoftMaxLHA(LastHopActivation):
 
         # 预测时，最后一跳做 soft max 处理
         return SoftMaxLHA._soft_max(nn_y)
+    '''
 
     ''''''
 
