@@ -17,39 +17,41 @@ class BPFNNEx(FNNEx):
 
     ''''''
 
-    def _calc_train_para_delta(self, nn_y_list, sx, sy, delta_list):
+    def _calc_train_para_delta(self, nn_y_list, sx, sy):
         """
         计算神经网络训练参数的 delta
         :param nn_y_list: 神经网络每一层的输出
         :param sx: 训练样本（输入）
         :param sy: 训练样本（输出）
-        :param delta_list: 训练参数 delta 列表
         :return: NULL
         """
-        pass
+
+        # 1. 通过 bp 算法，计算 ksi
+        ksi_list = self._bp(nn_y_list, sy)
+
+        # 2. 通过 ksi，计算 delta w, delta b
+        self._calc_delta_wb(ksi_list, sx, nn_y_list)
 
     ''''''
 
-    def _modify_train_para(self, delta_list):
+    def _modify_train_para(self):
         """
-        根据 delta_list，修正训练参数
-        :param delta_list: 训练参数的 delta 列表
+        根据训练参数的 delta，修正训练参数
         :return: NULL
         """
-        pass
+
+        # 修正每一层的 w，b 参数
+        for layer in range(0, self._layer_count):
+            _w = self._w_layer[layer]
+            _b = self._b_layer[layer]
+
+            _delta_w = self._delta_w_layer[layer]
+            _delta_b = self._delta_b_layer[layer]
+
+            _w = _w - self._rate * _delta_w
+            _b = _b - self._rate * _delta_b
 
     ''''''
-
-    """
-    功能：后向传播，计算 ksi_list
-    参数：
-    nn_y_list：神经网路计算的每一层结果，nn_y 是一个向量    
-    sy：训练样本的输出，sy 是一个向量 
-    返回值：ksi_list
-    说明：
-    1、ksi(代表希腊字母，音：科赛)，是一个向量，每层都有，代表目标函数 E 对每一层中间输出的偏导
-    2、ksi_list 记录每一层的 ksi
-    """
 
     def _bp(self, nn_y_list, sy):
         """
@@ -145,15 +147,16 @@ class BPFNNEx(FNNEx):
 
         # 因为已经通过 bp，计算出每一层的 ksi，所以，计算 delta_w, delta_b 时，就不必使用 bp 算法了，正向计算即可
         for layer in range(0, self._layer_count):
-            w = self._w_layer[layer]
-            b = self._b_layer[layer]
+            # 该层的训练参数 delta，及该层的 ksi
+            _delta_w = self._delta_w_layer[layer]
+            _delta_b = self._delta_b_layer[layer]
             ksi = ksi_list[layer]
 
-            cur_neuron_count = self._neuron_count_list[layer]
-
             if 0 == layer:
-                pre_neuron_count = self._sx_dim
                 v = sx
             else:
-                pre_neuron_count = self._neuron_count_list[layer - 1]
                 v = nn_y_list[layer - 1]
+
+            # 非常关键的计算公式
+            _delta_w = _delta_w + np.matmul(ksi, v.T)
+            _delta_b = _delta_b + ksi

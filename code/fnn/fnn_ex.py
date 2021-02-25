@@ -38,11 +38,17 @@ class FNNEx:
     # 每一层神经元的数量
     _neuron_count_list = None
 
-    # 每一层 w 参数，w 是个 matrix（BP 网络） or 3维数组（卷积网络）
+    # 每一层 w 参数
     _w_layer = None
 
-    # 每一层 b 参数，b 是个 vector（BP 网络） or 2维数组（卷积网络）
+    # 每一层 w 参数的 delta
+    _delta_w_layer = None
+
+    # 每一层 b 参数
     _b_layer = None
+
+    # 每一层 b 参数的 delta
+    _delta_b_layer = None
 
     # 每一层 w 参数的 shape list（除了卷积网络，这个参数没有意义）
     _w_shape_layer = None
@@ -335,40 +341,44 @@ class FNNEx:
 
                 break
 
+            loop = loop + 1
+
             # 1. 每一轮训练之前，预准备工作
             self._pre_train()
-
-            loop = loop + 1
 
             # 2. 训练每一个样本，分组训练
 
             group_count = len(self._sx_group_list)
 
             for g in range(0, group_count):
+                # 2.1 获取分组训练样本
                 sx_list = self._sx_group_list[g]
                 sy_list = self._sy_group_list[g]
 
                 sample_count = len(sx_list)
-                delta_list = list()
 
+                # 2.2 初始化训练参数的 delta
+                self._init_train_para_delta()
+
+                # 2.3 针对该组的每一个样本开始训练
                 for i in range(0, sample_count):
                     # 第 i 个训练样本
                     sx = sx_list[i]
                     sy = sy_list[i]
 
-                    # 2.1 第 i 个训练样本，经过（多层）神经网络的计算
+                    # 2.3.1 第 i 个训练样本，经过（多层）神经网络的计算
                     nn_y_list = self._calc_nn(sx)
 
-                    # 2.2 最后一跳激活
+                    # 2.3.2 最后一跳激活
                     nn_y = nn_y_list[len(nn_y_list) - 1]
                     last_hop_y = self._last_hop_activation.active_array(nn_y)
                     nn_y_list.append(last_hop_y)
 
-                    # 2.3 根据神经网络计算结果，计算训练参数的 delta（比如：delta w, delta b）
-                    self._calc_train_para_delta(nn_y_list, sx, sy, delta_list)
+                    # 2.3.3 根据神经网络计算结果，计算训练参数的 delta（比如：delta w, delta b）
+                    self._calc_train_para_delta(nn_y_list, sx, sy)
 
-                # 2.4 一组样本计算完毕，修正训练参数(比如：w, b)
-                self._modify_train_para(delta_list)
+                # 2.3.4 一组样本计算完毕，修正训练参数(比如：w, b)
+                self._modify_train_para()
 
         return errorcode.SUCCESS
 
@@ -446,26 +456,45 @@ class FNNEx:
 
     ''''''
 
-    def _calc_train_para_delta(self, nn_y_list, sx, sy, delta_list):
+    def _init_train_para_delta(self):
+        """
+        初始化训练参数的 delta
+        :return: NULL
+        """
+
+        pass
+
+    ''''''
+
+    def _calc_train_para_delta(self, nn_y_list, sx, sy):
         """
         计算神经网络训练参数的 delta
         :param nn_y_list: 神经网络每一层的输出
         :param sx: 训练样本（输入）
         :param sy: 训练样本（输出）
-        :param delta_list: 训练参数 delta 列表
         :return: NULL
         """
         pass
 
     ''''''
 
-    def _modify_train_para(self, delta_list):
+    def _modify_train_para(self):
         """
-        根据 delta_list，修正训练参数
-        :param delta_list: 训练参数的 delta 列表
+        根据练参数的 delta，修正训练参数
         :return: NULL
         """
-        pass
+
+        self._delta_w_layer = list()
+        self._delta_b_layer = list()
+
+        for i in range(0, self._layer_count):
+            # _delta_w, _w 维度相同，初始值为 0
+            _delta_w = np.zeros(self._w_layer[i].shape)
+            self._delta_w_layer.append(_delta_w)
+
+            # _delta_b, _b 维度相同，初始值为 0
+            _delta_b = np.zeros(self._b_layer[i].shape)
+            self._delta_b_layer.append(_delta_b)
 
     ''''''
 
