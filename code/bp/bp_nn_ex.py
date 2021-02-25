@@ -3,7 +3,11 @@ Function：分组训练的 BP 神经网络
 Author：lzb
 Date：2021.02.23
 """
+
+import numpy as np
+
 from fnn.fnn_ex import FNNEx
+from gl.matrix_list import matrix_2_list
 
 
 class BPFNNEx(FNNEx):
@@ -62,63 +66,94 @@ class BPFNNEx(FNNEx):
         ksi_list = [0] * self._layer_count
 
         # 2. 计算最后一层 ksi
-
-        # 2.1 计算损失函数的偏导
-        last_hop_y = nn_y_list[self._layer_count]
-        loss_dy = self._loss.derivative_array(last_hop_y, sy)
-
-        # 2.2 计算最后一层 ksi
-
-        # 最后一层 ksi：ksi_last，ksi_last 是个向量
-        nn_y_last = nn_y_list[self._layer_count - 1]
-        row_last = len(nn_y_last)
-        ksi_last = list()
-
-        for i in range(0, row_last):
-            # 计算ksi_last 的每个元素
-            ksi_item = loss_dy[i][0] * self._last_hop_activation.derivative(last_hop_y, i) \
-                       * self._activation.derivative(nn_y_last[i][0])
-
-            ksi_last.append(ksi_item)
-
+        ksi_last = self._calc_last_ksi(nn_y_list, sy)
         ksi_list[self._layer_count - 1] = ksi_last
 
         # 3. 反向传播，计算：倒数第2层 ~ 第1层的 ksi
-        for layer in range(self._layer_count - 2, -1, -1):
-            # 当前层的 ksi
-            ksi_cur = list()
-
-            # 下一层的 ksi
-            ksi_next = ksi_list[layer + 1]
-
-            # 当前层神经网络的计算结果
-            nn_y_cur = nn_y_list[layer]
-
-            # 当前层神经元的个数
-            neuron_count_cur = self._neuron_count_list[layer]
-
-            # 下一层神经元的个数
-            neuron_count_next = self._neuron_count_list[layer + 1]
-
-            # 下一层的 w
-            w = self._w_layer[layer + 1]
-
-            # 计算当前层的每一个 ksi
-            for i in range(0, neuron_count_cur):
-                # s 的计算公式为：s = sum(w[j][i] * ksi_next[j])
-                s = 0
-                for j in range(0, neuron_count_next):
-                    s = s + w[j, i] * ksi_next[j]
-
-                # ksi_item 的计算公式为：ksi_item = sum(w[j][i] * ksi_next[j]) * f'(y)
-                ksi_item = s * self._activation.derivative(nn_y_cur[i])
-
-                # 将 ksi_item 加入向量
-                # ksi_cur.append(ksi_item[0])
-                ksi_cur.append(ksi_item)
-
-            # 将本层计算出的 ksi 加入到 ksiList
-            ksi_list[layer] = ksi_cur
+        self._bp_ksi(nn_y_list, ksi_list)
 
         # return 计算结果
         return ksi_list
+
+    ''''''
+
+    def _calc_last_ksi(self, nn_y_list, sy):
+        """
+        计算最后一层 ksi
+        :param nn_y_list: 神经网路计算的每一层结果
+        :param sy: 训练样本的输出
+        :return: 最后一层 ksi
+        """
+
+        # 1. 计算损失函数的偏导
+        last_hop_y = nn_y_list[self._layer_count]
+        loss_dy = self._loss.derivative_array(last_hop_y, sy)
+
+        # 2. 计算最后一层 ksi
+        nn_y_last = nn_y_list[self._layer_count - 1]
+        ksi_last = np.dot(loss_dy, self._last_hop_activation.derivative_array(last_hop_y))
+        ksi_last = np.dot(ksi_last, self._activation.derivative_array(nn_y_last))
+
+        return ksi_last
+
+    ''''''
+
+    def _bp_ksi(self, nn_y_list, ksi_list):
+        """
+        反向传播，计算：倒数第2层 ~ 第1层的 ksi
+        :param nn_y_list: 神经网路计算的每一层结果
+        :param ksi_list: 存储每一层的 ksi
+        :return: NULL
+        """
+
+        # 反向传播
+        for layer in range(self._layer_count - 2, -1, -1):
+            # 1. 求解当前层激活函数的导数
+
+            # 1.1 当前层神经网络的计算结果
+            nn_y_cur = nn_y_list[layer]
+
+            # 1.2 求导
+            dy_cur_activiation = self._activation.derivative_array(nn_y_cur)
+
+            # 1.3 将求导结果转化为对角矩阵
+            diag_dy = np.diag(matrix_2_list(dy_cur_activiation))
+
+            # 2. 下一层的 w 的转置
+            w_next_T = (self._w_layer[layer + 1]).T
+
+            # 3. 下一层的 ksi
+            ksi_next = ksi_list[layer + 1]
+
+            # 4. 计算当前层的 ksi: ksi_cur = diag_y * w_next_T, ksi_next
+            ksi_cur = np.matmu(w_next_T, ksi_next)
+            ksi_cur = np.matmul(diag_dy, ksi_cur)
+
+            # 5. 将本层计算出的 ksi 加入到 ksi_list
+            ksi_list[layer] = ksi_cur
+
+    ''''''
+
+    def _calc_delta_wb(self, ksi_list, sx, nn_y_list):
+        """
+        计算每一层的 delta_w, delta_b
+        :param ksi_list: 每一层的 ksi 列表
+        :param sx: 每一层的 ksi 列表
+        :param ksi_list: 每一层的 ksi 列表
+        :return:
+        """
+
+        # 因为已经通过 bp，计算出每一层的 ksi，所以，计算 delta_w, delta_b 时，就不必使用 bp 算法了，正向计算即可
+        for layer in range(0, self._layer_count):
+            w = self._w_layer[layer]
+            b = self._b_layer[layer]
+            ksi = ksi_list[layer]
+
+            cur_neuron_count = self._neuron_count_list[layer]
+
+            if 0 == layer:
+                pre_neuron_count = self._sx_dim
+                v = sx
+            else:
+                pre_neuron_count = self._neuron_count_list[layer - 1]
+                v = nn_y_list[layer - 1]

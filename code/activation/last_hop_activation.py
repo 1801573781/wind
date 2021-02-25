@@ -48,7 +48,7 @@ class LastHopActivation:
 
     def derivative(self, last_hop_y, index):
         """
-        预测时，最后一跳激活函数的导数
+        最后一跳激活函数的导数
         :param last_hop_y: 最后一跳的输出，是一个n维数组，或者是一个数值
         :param index: 最后一跳的输出的索引，是一个向量
         :return: 最后一跳激活函数的导数（是一个n维数组，或者是一个数值）
@@ -56,6 +56,20 @@ class LastHopActivation:
 
         # 默认实现
         return 1
+
+    ''''''
+
+    def derivative_array(self, lha_y):
+        """
+        最后一跳激活函数的导数
+        :param lha_y: 最后一跳激活函数的输出
+        :return: 最后一跳激活函数的导数
+        """
+
+        # 默认实现，返回“1”
+        lhd_y = np.ones(lha_y.shape)
+
+        return lhd_y
 
 
 ''''''

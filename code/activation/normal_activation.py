@@ -29,6 +29,34 @@ class NormalActivation:
 
     ''''''
 
+    def active_array(self, arr):
+        """
+        针对一个数组，激活
+        :param arr: 待激活的数组
+        :return: 激活后的结果
+        """
+
+        active_arr = np.zeros(arr.shape)
+
+        arr_list = [arr]
+        handle_arr_ex(arr_list, active_arr, self._derivative_array_callback)
+
+        return active_arr
+
+    ''''''
+
+    def _active_array_callback(self, *args):
+        """
+        针对一个数组激活，回调函数
+        :param args: args[0][0] 为 x
+        :return: self.active(x)
+        """
+
+        x = args[0][0]
+        return self.active(x)
+
+    ''''''
+
     def derivative(self, x):
         """
         针对一个数求导，虚函数，待子类重载
@@ -178,13 +206,3 @@ class Tanh(NormalActivation):
         dy = 1 - y ^ 2
 
         return dy
-
-    '''
-    
-    # 校正函数
-    def revise(self, x):
-        if x > 0:
-            return dichotomy.Dichotomy.C1.value
-        else:
-            return dichotomy.Dichotomy.C2.value
-    '''
