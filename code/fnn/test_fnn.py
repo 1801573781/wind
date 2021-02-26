@@ -31,7 +31,7 @@ class NNTest:
     """
 
     def test(self, train_sample_count, train_sx_max, sample, neuron_count_list, loop_max, rate,
-             predict_sample_count, predict_sx_max, nn, title,
+             predict_sample_count, predict_sx_max, fnn, title,
              draw_train_sample_flag=draw.ShowFlag.NO_SHOW,
              draw_predict_sample_flag=draw.ShowFlag.NO_SHOW,
              draw_predict_result_flag=draw.ShowFlag.SHOW,
@@ -52,7 +52,7 @@ class NNTest:
 
         # 3. 训练
         # fnn.train(sx_list, sy_list, loop_max, neuron_count_list, rate, self.activation)
-        nn.train(sx_list, sy_list, loop_max, neuron_count_list, rate)
+        fnn.train(sx_list, sy_list, loop_max, neuron_count_list, rate)
 
         # 4. 预测
 
@@ -66,7 +66,7 @@ class NNTest:
         sy_list = sample.get_sy_list()
 
         # 4.2 预测
-        py_list = nn.predict(sx_list, sy_list)
+        py_list = fnn.predict(sx_list, sy_list)
 
         accuracy = common_function.calculate_accuracy(py_list, sy_list)
 
@@ -81,7 +81,7 @@ class NNTest:
     返回值：NULL
     """
 
-    def test_stub(self, predict_sample_count, predict_sx_max, neuron_count_list, W, B, sample, nn, title,
+    def test_stub(self, predict_sample_count, predict_sx_max, neuron_count_list, W, B, sample, fnn, title,
                   draw_predict_sample_flag=draw.ShowFlag.NO_SHOW,
                   draw_predict_result_flag=draw.ShowFlag.SHOW,
                   sx_dim=2, sy_dim=1):
@@ -90,7 +90,7 @@ class NNTest:
         self.sy_dim = sy_dim
 
         # 2. 参数赋值
-        nn.stub_set_para(sx_dim, neuron_count_list, W, B, self.activation)
+        fnn.stub_set_para(sx_dim, neuron_count_list, W, B, self.activation)
 
         # 3. 预测
 
@@ -104,7 +104,7 @@ class NNTest:
         sy_list = sample.get_sy_list()
 
         # 3.2 预测
-        py_list = nn.predict(sx_list, sy_list)
+        py_list = fnn.predict(sx_list, sy_list)
 
         accuracy = common_function.calculate_accuracy(py_list, sy_list)
 
