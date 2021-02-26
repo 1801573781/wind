@@ -42,6 +42,10 @@ class BPFNNEx(FNNEx):
 
         # 修正每一层的 w，b 参数
         for layer in range(0, self._layer_count):
+            self._w_layer[layer] -= self._rate * self._delta_w_layer[layer]
+            self._b_layer[layer] -= self._rate * self._delta_b_layer[layer]
+
+            '''
             _w = self._w_layer[layer]
             _b = self._b_layer[layer]
 
@@ -50,6 +54,7 @@ class BPFNNEx(FNNEx):
 
             _w = _w - self._rate * _delta_w
             _b = _b - self._rate * _delta_b
+            '''
 
     ''''''
 
@@ -128,7 +133,7 @@ class BPFNNEx(FNNEx):
             ksi_next = ksi_list[layer + 1]
 
             # 4. 计算当前层的 ksi: ksi_cur = diag_y * w_next_T, ksi_next
-            ksi_cur = np.matmu(w_next_T, ksi_next)
+            ksi_cur = np.matmul(w_next_T, ksi_next)
             ksi_cur = np.matmul(diag_dy, ksi_cur)
 
             # 5. 将本层计算出的 ksi 加入到 ksi_list
@@ -147,6 +152,19 @@ class BPFNNEx(FNNEx):
 
         # 因为已经通过 bp，计算出每一层的 ksi，所以，计算 delta_w, delta_b 时，就不必使用 bp 算法了，正向计算即可
         for layer in range(0, self._layer_count):
+            # 该层的 ksi
+            ksi = ksi_list[layer]
+
+            if 0 == layer:
+                v = sx
+            else:
+                v = nn_y_list[layer - 1]
+
+            # 非常关键的计算公式
+            self._delta_w_layer[layer] += np.matmul(ksi, v.T)
+            self._delta_b_layer[layer] += ksi
+
+            '''
             # 该层的训练参数 delta，及该层的 ksi
             _delta_w = self._delta_w_layer[layer]
             _delta_b = self._delta_b_layer[layer]
@@ -160,3 +178,4 @@ class BPFNNEx(FNNEx):
             # 非常关键的计算公式
             _delta_w = _delta_w + np.matmul(ksi, v.T)
             _delta_b = _delta_b + ksi
+            '''

@@ -39,7 +39,7 @@ class NormalActivation:
         active_arr = np.zeros(arr.shape)
 
         arr_list = [arr]
-        handle_arr_ex(arr_list, active_arr, self._derivative_array_callback)
+        handle_arr_ex(arr_list, active_arr, self._active_array_callback)
 
         return active_arr
 

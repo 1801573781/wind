@@ -184,6 +184,8 @@ class FNNEx:
             if 1 > count:
                 return errorcode.FAILED
 
+        return errorcode.SUCCESS
+
     ''''''
 
     def _valid_sample(self):
@@ -436,6 +438,12 @@ class FNNEx:
 
         y = y + self._calc_recurrent(layer)
 
+        # 激活
+        y = self._activation.active_array(y)
+
+        return y
+
+        '''
         # 针对每一个元素，调用激活函数
         row = len(y)
 
@@ -443,6 +451,7 @@ class FNNEx:
             y[i, 0] = self._activation.active(y[i, 0])
 
         return y
+        '''
 
     ''''''
 
@@ -462,7 +471,17 @@ class FNNEx:
         :return: NULL
         """
 
-        pass
+        self._delta_w_layer = list()
+        self._delta_b_layer = list()
+
+        for i in range(0, self._layer_count):
+            # _delta_w, _w 维度相同，初始值为 0
+            _delta_w = np.zeros(self._w_layer[i].shape)
+            self._delta_w_layer.append(_delta_w)
+
+            # _delta_b, _b 维度相同，初始值为 0
+            _delta_b = np.zeros(self._b_layer[i].shape)
+            self._delta_b_layer.append(_delta_b)
 
     ''''''
 
@@ -484,17 +503,7 @@ class FNNEx:
         :return: NULL
         """
 
-        self._delta_w_layer = list()
-        self._delta_b_layer = list()
-
-        for i in range(0, self._layer_count):
-            # _delta_w, _w 维度相同，初始值为 0
-            _delta_w = np.zeros(self._w_layer[i].shape)
-            self._delta_w_layer.append(_delta_w)
-
-            # _delta_b, _b 维度相同，初始值为 0
-            _delta_b = np.zeros(self._b_layer[i].shape)
-            self._delta_b_layer.append(_delta_b)
+        pass
 
     ''''''
 
@@ -523,7 +532,7 @@ class FNNEx:
             lhr_y = self._last_hop_activation.predict_revise(lha_y, revise_strong)
 
             # 然后再添加到预测列表
-            py_list.append(lha_y)
+            py_list.append(lhr_y)
 
         return py_list
 

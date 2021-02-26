@@ -1,5 +1,5 @@
 """
-Function：神经网络测试
+Function：BP 神经网络测试
 Author：lzb
 Date：2021.01.01
 """
@@ -15,18 +15,45 @@ from sample import straight_line_sample
 from sample import two_line_sample
 from fnn.test_fnn import NNTest
 
+from fnn.test_fnn_ex import FNNExTest
+from bp import bp_nn_ex
+
 # BP 神经网络 title
 BP_NN_TITLE = "BP Neural Network"
 
-
-"""
-功能：测试 ax + b 分割
-参数：NULL    
-返回值：NULL
-"""
+# BP 神经网络分类（两个不同的实现）
+FNN_0 = 0
+FNN_1 = 1
 
 
-def test_straight_line():
+def test():
+    """
+    测试神经网络
+    :return: NULL
+    """
+
+    fnn_flag = FNN_1
+
+    # 测试 ax + b 分割
+    _test_straight_line(fnn_flag)
+
+    # 测试两根直线 分割
+    _test_two_line(fnn_flag)
+
+    # 测试 sin(x) 分割
+    _test_sin(fnn_flag)
+
+
+''''''
+
+
+def _test_straight_line(fnn_flag):
+    """
+    测试 ax + b 分割
+    :param fnn_flag: 神经网络分类标记
+    :return:
+    """
+
     # 训练样本个数
     train_sample_count = 1000
 
@@ -42,7 +69,10 @@ def test_straight_line():
     activation = normal_activation.Sigmoid()
 
     # 神经网络对象
-    nn = bp_nn.BPFNN(activation)
+    if fnn_flag == FNN_0:
+        nn = bp_nn.BPFNN(activation)
+    else:
+        nn = bp_nn_ex.BPFNNEx(activation)
 
     # 每一层网络的神经元个数
     neuron_count_list = [2, 1]
@@ -62,29 +92,34 @@ def test_straight_line():
     predict_sx_max.append(5000)
 
     # 是否画训练样本
-    draw_train_sample_flag = draw.ShowFlag.NO_SHOW
+    draw_train_sample_flag = draw.ShowFlag.SHOW
 
     # 是否画预测样本
-    draw_predict_sample_flag = draw.ShowFlag.NO_SHOW
+    draw_predict_sample_flag = draw.ShowFlag.SHOW
 
     # 是否画预测结果
     draw_predict_result_flag = draw.ShowFlag.SHOW
 
-    test = NNTest()
+    # 神经网络测试对象：
+    if fnn_flag == FNN_0:
+        nn_test = NNTest()
+    else:
+        nn_test = FNNExTest()
 
-    test.test(train_sample_count, train_sx_max, sample, neuron_count_list, loop_max, rate,
-              predict_sample_count, predict_sx_max, nn, BP_NN_TITLE,
-              draw_train_sample_flag, draw_predict_sample_flag, draw_predict_result_flag)
-
-
-"""
-功能：测试 两根直线 分割
-参数：NULL    
-返回值：NULL
-"""
+    nn_test.test(train_sample_count, train_sx_max, sample, neuron_count_list, loop_max, rate,
+                 predict_sample_count, predict_sx_max, nn, BP_NN_TITLE,
+                 draw_train_sample_flag, draw_predict_sample_flag, draw_predict_result_flag)
 
 
-def test_two_line():
+''''''
+
+
+def _test_two_line(fnn_flag):
+    """
+    测试两根直线 分割
+    :param fnn_flag: 神经网络分类标记
+    :return: NULL
+    """
     os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
     # 训练样本个数
@@ -102,7 +137,10 @@ def test_two_line():
     activation = normal_activation.Sigmoid()
 
     # 神经网络对象
-    nn = bp_nn.BPFNN(activation)
+    if fnn_flag == FNN_0:
+        nn = bp_nn.BPFNN(activation)
+    else:
+        nn = bp_nn_ex.BPFNNEx(activation)
 
     # 每一层网络的神经元个数
     neuron_count_list = [2, 1]
@@ -130,21 +168,27 @@ def test_two_line():
     # 是否画预测结果
     draw_predict_result_flag = draw.ShowFlag.SHOW
 
-    test = NNTest()
+    # 神经网络测试对象：
+    if fnn_flag == FNN_0:
+        nn_test = NNTest()
+    else:
+        nn_test = FNNExTest()
 
-    test.test(train_sample_count, train_sx_max, sample, neuron_count_list, loop_max, rate,
-              predict_sample_count, predict_sx_max, nn, BP_NN_TITLE,
-              draw_train_sample_flag, draw_predict_sample_flag, draw_predict_result_flag)
-
-
-"""
-功能：测试 sin(x) 分割
-参数：NULL    
-返回值：NULL
-"""
+    nn_test.test(train_sample_count, train_sx_max, sample, neuron_count_list, loop_max, rate,
+                 predict_sample_count, predict_sx_max, nn, BP_NN_TITLE,
+                 draw_train_sample_flag, draw_predict_sample_flag, draw_predict_result_flag)
 
 
-def test_sin():
+''''''
+
+
+def _test_sin(fnn_flag):
+    """
+    测试 sin(x) 分割
+    :param fnn_flag: 神经网络分类标记
+    :return: NULL
+    """
+
     # 训练样本个数
     train_sample_count = 1000
 
@@ -160,7 +204,10 @@ def test_sin():
     activation = normal_activation.Sigmoid()
 
     # 神经网络对象
-    nn = bp_nn.BPFNN(activation)
+    if fnn_flag == FNN_0:
+        nn = bp_nn.BPFNN(activation)
+    else:
+        nn = bp_nn_ex.BPFNNEx(activation)
 
     # 每一层网络的神经元个数
     neuron_count_list = [5, 1]
@@ -188,26 +235,56 @@ def test_sin():
     # 是否画预测结果
     draw_predict_result_flag = draw.ShowFlag.SHOW
 
-    test = NNTest()
+    # 神经网络测试对象：
+    if fnn_flag == FNN_0:
+        nn_test = NNTest()
+    else:
+        nn_test = FNNExTest()
 
-    test.test(train_sample_count, train_sx_max, sample, neuron_count_list, loop_max, rate,
-              predict_sample_count, predict_sx_max, nn, BP_NN_TITLE,
-              draw_train_sample_flag, draw_predict_sample_flag, draw_predict_result_flag)
-
-
-"""
-功能：测试 ax + b 分割，不经过训练，直接赋值参数
-参数：NULL    
-返回值：NULL
-"""
+    nn_test.test(train_sample_count, train_sx_max, sample, neuron_count_list, loop_max, rate,
+                 predict_sample_count, predict_sx_max, nn, BP_NN_TITLE,
+                 draw_train_sample_flag, draw_predict_sample_flag, draw_predict_result_flag)
 
 
-def test_straight_line_without_train():
+''''''
+
+
+def test_without_train():
+    """
+    测试神经网络，不经过训练，直接赋值参数
+    :return: NULL
+    """
+
+    fnn_flag = FNN_1
+
+    # 测试 ax + b 分割，不经过训练，直接赋值参数
+    _test_straight_line_without_train(fnn_flag)
+
+    # 测试 两根直线 分割，不经过训练，直接赋值参数
+    _test_two_line_without_train(fnn_flag)
+
+    # 测试 sin(x) 分割，不经过训练，直接赋值参数
+    _test_sin_without_train(fnn_flag)
+
+
+''''''
+
+
+def _test_straight_line_without_train(fnn_flag):
+    """
+    测试 ax + b 分割，不经过训练，直接赋值参数
+    :param fnn_flag: 神经网络分类标记
+    :return: NULL
+    """
+
     # 激活函数对象
     activation = normal_activation.Sigmoid()
 
     # 神经网络对象
-    nn = bp_nn.BPFNN(activation)
+    if fnn_flag == FNN_0:
+        nn = bp_nn.BPFNN(activation)
+    else:
+        nn = bp_nn_ex.BPFNNEx(activation)
 
     # 预测样本个数
     predict_sample_count = 500
@@ -254,26 +331,35 @@ def test_straight_line_without_train():
     # 是否画预测结果
     draw_predict_result_flag = draw.ShowFlag.SHOW
 
-    test = NNTest()
+    # 神经网络测试对象：
+    if fnn_flag == FNN_0:
+        nn_test = NNTest()
+    else:
+        nn_test = FNNExTest()
 
-    test.test_stub(predict_sample_count, predict_sx_max, neuron_count_list, W, B, sample, nn, BP_NN_TITLE,
-                   draw_predict_sample_flag, draw_predict_result_flag,
-                   sx_dim, sy_dim)
-
-
-"""
-功能：测试 两根直线 分割，不经过训练，直接赋值参数
-参数：NULL    
-返回值：NULL
-"""
+    nn_test.test_stub(predict_sample_count, predict_sx_max, neuron_count_list, W, B, sample, nn, BP_NN_TITLE,
+                      draw_predict_sample_flag, draw_predict_result_flag,
+                      sx_dim, sy_dim)
 
 
-def test_two_line_without_train():
+''''''
+
+
+def _test_two_line_without_train(fnn_flag):
+    """
+    测试 两根直线 分割，不经过训练，直接赋值参数
+    :param fnn_flag: 神经网络分类标记
+    :return: NULL
+    """
+
     # 激活函数对象
     activation = normal_activation.Sigmoid()
 
     # 神经网络对象
-    nn = bp_nn.BPFNN(activation)
+    if fnn_flag == FNN_0:
+        nn = bp_nn.BPFNN(activation)
+    else:
+        nn = bp_nn_ex.BPFNNEx(activation)
 
     # 预测样本个数
     predict_sample_count = 1000
@@ -320,26 +406,35 @@ def test_two_line_without_train():
     # 是否画预测结果
     draw_predict_result_flag = draw.ShowFlag.SHOW
 
-    test = NNTest()
+    # 神经网络测试对象：
+    if fnn_flag == FNN_0:
+        nn_test = NNTest()
+    else:
+        nn_test = FNNExTest()
 
-    test.test_stub(predict_sample_count, predict_sx_max, neuron_count_list, W, B, sample, nn, BP_NN_TITLE,
-                   draw_predict_sample_flag, draw_predict_result_flag,
-                   sx_dim, sy_dim)
-
-
-"""
-功能：测试 两根直线 分割，不经过训练，直接赋值参数
-参数：NULL    
-返回值：NULL
-"""
+    nn_test.test_stub(predict_sample_count, predict_sx_max, neuron_count_list, W, B, sample, nn, BP_NN_TITLE,
+                      draw_predict_sample_flag, draw_predict_result_flag,
+                      sx_dim, sy_dim)
 
 
-def test_sin_without_train():
+''''''
+
+
+def _test_sin_without_train(fnn_flag):
+    """
+    测试 sin(x) 分割，不经过训练，直接赋值参数
+    :param fnn_flag: 神经网络分类标记
+    :return: NULL
+    """
+
     # 激活函数对象
     activation = normal_activation.Sigmoid()
 
     # 神经网络对象
-    nn = bp_nn.BPFNN(activation)
+    if fnn_flag == FNN_0:
+        nn = bp_nn.BPFNN(activation)
+    else:
+        nn = bp_nn_ex.BPFNNEx(activation)
 
     # 预测样本个数
     predict_sample_count = 1000
@@ -395,8 +490,12 @@ def test_sin_without_train():
     # 是否画预测结果
     draw_predict_result_flag = draw.ShowFlag.SHOW
 
-    test = NNTest()
+    # 神经网络测试对象：
+    if fnn_flag == FNN_0:
+        nn_test = NNTest()
+    else:
+        nn_test = FNNExTest()
 
-    test.test_stub(predict_sample_count, predict_sx_max, neuron_count_list, W, B, sample, nn, BP_NN_TITLE,
-                   draw_predict_sample_flag, draw_predict_result_flag,
-                   sx_dim, sy_dim)
+    nn_test.test_stub(predict_sample_count, predict_sx_max, neuron_count_list, W, B, sample, nn, BP_NN_TITLE,
+                      draw_predict_sample_flag, draw_predict_result_flag,
+                      sx_dim, sy_dim)
