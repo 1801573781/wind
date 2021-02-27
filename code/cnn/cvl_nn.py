@@ -8,6 +8,7 @@ import numpy as np
 import operator
 
 from fnn.feedforward_nn import FNN
+from fnn.fnn_ex import FNNEx
 from gl import errorcode
 from gl.common_enum import ArrayDim
 from gl.common_function import rand_array_3
@@ -33,6 +34,8 @@ C. 第3维：图像像素的颜色值。如果是 RGB 图像，则第3维有3个
 7、输出样本，暂时还定义为分类，所以它还是一个1维向量。因此，sy_dim 还是表示1维向量的元素个数（1维向量的维度）
 """
 
+
+# class CVLFNN(FNNEx):
 
 class CVLFNN(FNN):
     # 可以理解为图像宽度

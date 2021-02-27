@@ -6,21 +6,16 @@ Date：2021.01.14
 特别说明：来到了卷积网络，这几天编码的效率有点低
 """
 
-import numpy as np
-import numpy.matlib
-import os
 
-from cnn.max_pooling import MaxPooling
-from cnn.mean_pooling import MeanPooling
 from cnn.convolution import Convolution, Reversal, ConvolutionType
 from cnn.cvl_nn import CVLFNN
-from gl.array_string import array_2_string
+
 from gl.common_enum import ArrayDim
 from gl.common_function import *
 from my_image import my_image
 from my_image.my_image import show_file, gray_file, show_data, ImageDataType, get_data
 from activation.normal_activation import Sigmoid
-from activation.normal_activation import ReLU
+
 
 from activation.last_hop_activation import LastHopActivation
 from loss.loss import MSELoss
@@ -274,6 +269,9 @@ def test_cvl_nn_2():
     cnn = CVLFNN(cvl, activation, last_hop_activation, loss)
 
     # 3. 训练
+    # train_sx_group = get_sample_group(train_sx_list)
+    # train_sy_group = get_sample_group(train_sy_list)
+    # cnn.train(train_sx_group, train_sy_group, loop_max, neuron_count_list, rate, w_shape_list)
     cnn.train(train_sx_list, train_sy_list, loop_max, neuron_count_list, rate, w_shape_list)
 
     # 4. 预测
@@ -290,6 +288,30 @@ def test_cvl_nn_2():
         py = my_image.array_3_2(py)
 
         show_data(py, ImageDataType.GRAY)
+
+
+''''''
+
+
+def get_sample_group(sample_list):
+    """
+    将训练样本，分组。默认是1个训练样本，1组
+    :param sample_list:
+    :return: 训练样本分组
+    """
+
+    sample_group = list()
+
+    count = len(sample_list)
+
+    for i in range(0, count):
+        sample = sample_list[i]
+        # 1个样本组成1个list
+        sl = [sample]
+        # 1样本组成的list，是1个分组
+        sample_group.append(sl)
+
+    return sample_group
 
 
 """
