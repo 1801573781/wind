@@ -7,7 +7,7 @@ Date：2021.02.23
 import numpy as np
 
 from fnn.fnn_ex import FNNEx
-from gl.matrix_list import matrix_2_list
+from gl.matrix_list import matrix_2_list, list_2_matrix
 
 
 class BPFNNEx(FNNEx):
@@ -44,17 +44,6 @@ class BPFNNEx(FNNEx):
         for layer in range(0, self._layer_count):
             self._w_layer[layer] -= self._rate * self._delta_w_layer[layer]
             self._b_layer[layer] -= self._rate * self._delta_b_layer[layer]
-
-            '''
-            _w = self._w_layer[layer]
-            _b = self._b_layer[layer]
-
-            _delta_w = self._delta_w_layer[layer]
-            _delta_b = self._delta_b_layer[layer]
-
-            _w = _w - self._rate * _delta_w
-            _b = _b - self._rate * _delta_b
-            '''
 
     ''''''
 
@@ -98,8 +87,24 @@ class BPFNNEx(FNNEx):
 
         # 2. 计算最后一层 ksi
         nn_y_last = nn_y_list[self._layer_count - 1]
+        row_last = len(nn_y_last)
+        ksi_last = list()
+
+        for i in range(0, row_last):
+            # 计算ksi_last 的每个元素
+            ksi_item = loss_dy[i][0] * self._last_hop_activation.derivative(last_hop_y, i) \
+                       * self._activation.derivative(nn_y_last[i][0])
+
+            ksi_last.append(ksi_item)
+
+        ksi_last = list_2_matrix(ksi_last)
+
+        '''
+        nn_y_last = nn_y_list[self._layer_count - 1]
+        
         ksi_last = np.dot(loss_dy, self._last_hop_activation.derivative_array(last_hop_y))
         ksi_last = np.dot(ksi_last, self._activation.derivative_array(nn_y_last))
+        '''
 
         return ksi_last
 
@@ -163,19 +168,3 @@ class BPFNNEx(FNNEx):
             # 非常关键的计算公式
             self._delta_w_layer[layer] += np.matmul(ksi, v.T)
             self._delta_b_layer[layer] += ksi
-
-            '''
-            # 该层的训练参数 delta，及该层的 ksi
-            _delta_w = self._delta_w_layer[layer]
-            _delta_b = self._delta_b_layer[layer]
-            ksi = ksi_list[layer]
-
-            if 0 == layer:
-                v = sx
-            else:
-                v = nn_y_list[layer - 1]
-
-            # 非常关键的计算公式
-            _delta_w = _delta_w + np.matmul(ksi, v.T)
-            _delta_b = _delta_b + ksi
-            '''

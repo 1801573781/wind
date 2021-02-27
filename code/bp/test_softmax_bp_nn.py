@@ -6,12 +6,14 @@ Date：2021.02.02
 
 import os
 
+import numpy as np
+
 from activation.last_hop_activation import LastHopActivation, SoftMaxLHA
 from activation.normal_activation import Sigmoid, ReLU
-from gl import common_function
 from loss.loss import MSELoss, CrossEntropyLoss
 
-from bp import bp_nn
+from bp.bp_nn_recitation import Recitation
+from bp import bp_nn, bp_nn_ex
 from sample.image_softmax_sample import ImageSoftMaxSample
 from sample.rnn_sample import RNNSanmple
 
@@ -30,7 +32,8 @@ def test_softmax():
     loss = CrossEntropyLoss()
 
     # 神经网络
-    nn = bp_nn.BPFNN(activation, last_hop_activation, loss)
+    # nn = bp_nn.BPFNN(activation, last_hop_activation, loss)
+    nn = bp_nn_ex.BPFNNEx(activation, last_hop_activation, loss)
 
     # 2. 构建训练样本
 
@@ -50,8 +53,11 @@ def test_softmax():
     sample.create_sample(train_image_root_path)
     # sample.create_sample_ex(100)
 
-    train_sx_list = sample.get_sx_list()
-    train_sy_list = sample.get_sy_list()
+    # train_sx_list = sample.get_sx_list()
+    # train_sy_list = sample.get_sy_list()
+
+    train_sx_group = sample.get_sx_group()
+    train_sy_group = sample.get_sy_group()
 
     # 3. 训练
 
@@ -65,7 +71,8 @@ def test_softmax():
     rate = 0.1
 
     # 训练
-    nn.train(train_sx_list, train_sy_list, loop_max, neuron_count_list, rate)
+    # nn.train(train_sx_list, train_sy_list, loop_max, neuron_count_list, rate)
+    nn.train(train_sx_group, train_sy_group, loop_max, neuron_count_list, rate)
 
     # 4. 测试
 
@@ -87,7 +94,6 @@ def test_softmax():
     count = len(py_list)
 
     for i in range(0, count):
-        # _revise(py_list[i])
         number = _get_max_index(test_sy_list[i])
 
         print("\n")
@@ -95,25 +101,7 @@ def test_softmax():
         print(py_list[i])
 
 
-def _revise(py):
-    """
-    修正预测结果
-    :param py: 待修正的预测结果
-    :return: NULL
-    """
-
-    row = py.shape[0]
-
-    for r in range(0, row):
-        # 如果小于 0.1 则认为是0
-        if py[r][0] <= 0.1:
-            py[r][0] = 0
-        # 如果大于0.9，则认为是1
-        elif py[r][0] >= 0.9:
-            py[r][0] = 1
-        # 否则的话，其值不变
-        else:
-            pass
+''''''
 
 
 def _get_max_index(y):
@@ -151,7 +139,8 @@ def test_poem():
     loss = CrossEntropyLoss()
 
     # 神经网络
-    nn = bp_nn.BPFNN(activation, last_hop_activation, loss)
+    # nn = bp_nn.BPFNN(activation, last_hop_activation, loss)
+    nn = Recitation(activation, last_hop_activation, loss)
 
     # 2. 构建训练样本
 
@@ -160,8 +149,8 @@ def test_poem():
 
     sample.create_sample()
 
-    train_sx_list = sample.get_sx_list()
-    train_sy_list = sample.get_sy_list()
+    train_sx_group = sample.get_sx_group()
+    train_sy_group = sample.get_sy_group()
 
     # 3. 训练
 
@@ -175,7 +164,7 @@ def test_poem():
     rate = 0.1
 
     # 训练
-    nn.train(train_sx_list, train_sy_list, loop_max, neuron_count_list, rate)
+    nn.train(train_sx_group, train_sy_group, loop_max, neuron_count_list, rate)
 
     # 4. 测试
 
@@ -185,12 +174,12 @@ def test_poem():
 
     # 测试
     py_list = list()
-    nn.predict_r(test_sx, py_list)
+    nn.predict_recurrent(test_sx, py_list)
 
     # 将测试样本放在首位，这样就组成了一首完整的诗
     py_list.insert(0, ch)
 
     print("\n")
-    print("py:\n")
+    print("py_list:\n")
 
     print(py_list)

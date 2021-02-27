@@ -443,16 +443,6 @@ class FNNEx:
 
         return y
 
-        '''
-        # 针对每一个元素，调用激活函数
-        row = len(y)
-
-        for i in range(0, row):
-            y[i, 0] = self._activation.active(y[i, 0])
-
-        return y
-        '''
-
     ''''''
 
     def _calc_recurrent(self, layer):
@@ -565,22 +555,24 @@ class FNNEx:
         lhr_y = self._last_hop_activation.predict_revise(lha_y, revise_strong=True)
 
         # 对修正后的结果，再处理一次
-        recurrent_flag, recurrent_sx = self._handle_lhr(lhr_y, py_list)
+        r_flag, ch, r_sx = self._handle_lhr(lhr_y)
+
+        # 将 recurrent_sx 加入 py_list
+        py_list.append(ch)
 
         # 如果需要递归，则继续递归预测
-        if recurrent_flag:
-            self.predict_recurrent(recurrent_sx, py_list, max_recursion_count)
+        if r_flag:
+            self.predict_recurrent(r_sx, py_list, max_recursion_count)
         # 如果不需要递归，则啥都不做
         else:
             pass
 
     ''''''
 
-    def _handle_lhr(self, lhr_y, py_list):
+    def _handle_lhr(self, lhr_y):
         """
         处理最后一跳修正后的输出
         :param lhr_y: 最后一跳修正后的输出
-        :param py_list: 预测结果
         :return: recurrent_flag，是否继续递归；recurrent_sx，如果递归，其 sx =  recurrent_sx
         """
 
