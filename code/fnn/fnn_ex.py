@@ -21,7 +21,7 @@ from activation.last_hop_activation import DichotomyLHA
 from loss.loss import MSELoss
 
 
-class FNNEx:
+class FnnEx:
     """
     分组训练的 FNN
     """

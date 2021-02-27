@@ -6,11 +6,11 @@ Date：2021.02.23
 
 import numpy as np
 
-from fnn.fnn_ex import FNNEx
+from fnn.fnn_ex import FnnEx
 from gl.matrix_list import matrix_2_list, list_2_matrix
 
 
-class BPFNNEx(FNNEx):
+class BPFnnEx(FnnEx):
     """
     分组训练的 BP 神经网络
     """

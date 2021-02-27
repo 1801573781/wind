@@ -4,12 +4,12 @@ Author：lzb
 Date：2021.02.27
 """
 
-from bp.bp_nn_ex import BPFNNEx
+from bp.bp_nn_ex import BPFnnEx
 from gl.hanzi_encoder import HanziEncoder
 from gl.matrix_list import matrix_2_list, list_2_matrix
 
 
-class Recitation(BPFNNEx):
+class Recitation(BPFnnEx):
     """
     通过 BP 神经网络，背诵诗歌(或者其他文字)
     """

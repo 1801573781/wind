@@ -72,7 +72,7 @@ def _test_straight_line(fnn_flag):
     if fnn_flag == FNN_0:
         nn = bp_nn.BPFNN(activation)
     else:
-        nn = bp_nn_ex.BPFNNEx(activation)
+        nn = bp_nn_ex.BPFnnEx(activation)
 
     # 每一层网络的神经元个数
     neuron_count_list = [2, 1]
@@ -140,7 +140,7 @@ def _test_two_line(fnn_flag):
     if fnn_flag == FNN_0:
         nn = bp_nn.BPFNN(activation)
     else:
-        nn = bp_nn_ex.BPFNNEx(activation)
+        nn = bp_nn_ex.BPFnnEx(activation)
 
     # 每一层网络的神经元个数
     neuron_count_list = [2, 1]
@@ -207,7 +207,7 @@ def _test_sin(fnn_flag):
     if fnn_flag == FNN_0:
         nn = bp_nn.BPFNN(activation)
     else:
-        nn = bp_nn_ex.BPFNNEx(activation)
+        nn = bp_nn_ex.BPFnnEx(activation)
 
     # 每一层网络的神经元个数
     neuron_count_list = [5, 1]
@@ -284,7 +284,7 @@ def _test_straight_line_without_train(fnn_flag):
     if fnn_flag == FNN_0:
         nn = bp_nn.BPFNN(activation)
     else:
-        nn = bp_nn_ex.BPFNNEx(activation)
+        nn = bp_nn_ex.BPFnnEx(activation)
 
     # 预测样本个数
     predict_sample_count = 500
@@ -359,7 +359,7 @@ def _test_two_line_without_train(fnn_flag):
     if fnn_flag == FNN_0:
         nn = bp_nn.BPFNN(activation)
     else:
-        nn = bp_nn_ex.BPFNNEx(activation)
+        nn = bp_nn_ex.BPFnnEx(activation)
 
     # 预测样本个数
     predict_sample_count = 1000
@@ -434,7 +434,7 @@ def _test_sin_without_train(fnn_flag):
     if fnn_flag == FNN_0:
         nn = bp_nn.BPFNN(activation)
     else:
-        nn = bp_nn_ex.BPFNNEx(activation)
+        nn = bp_nn_ex.BPFnnEx(activation)
 
     # 预测样本个数
     predict_sample_count = 1000

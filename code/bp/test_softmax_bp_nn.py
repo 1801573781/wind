@@ -33,7 +33,7 @@ def test_softmax():
 
     # 神经网络
     # nn = bp_nn.BPFNN(activation, last_hop_activation, loss)
-    nn = bp_nn_ex.BPFNNEx(activation, last_hop_activation, loss)
+    nn = bp_nn_ex.BPFnnEx(activation, last_hop_activation, loss)
 
     # 2. 构建训练样本
 

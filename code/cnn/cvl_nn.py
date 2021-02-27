@@ -8,7 +8,7 @@ import numpy as np
 import operator
 
 from fnn.feedforward_nn import FNN
-from fnn.fnn_ex import FNNEx
+from fnn.fnn_ex import FnnEx
 from gl import errorcode
 from gl.common_enum import ArrayDim
 from gl.common_function import rand_array_3
