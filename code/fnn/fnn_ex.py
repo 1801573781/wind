@@ -345,41 +345,41 @@ class FnnEx:
 
             loop = loop + 1
 
-            # 1. 每一轮训练之前，预准备工作
-            self._pre_train()
-
-            # 2. 训练每一个样本，分组训练
-
+            # 分组训练
             group_count = len(self._sx_group_list)
 
+            # 分组训练，训练每一个样本
             for g in range(0, group_count):
-                # 2.1 获取分组训练样本
+                # 1. 每一组训练之前，预备工作
+                self._pre_train()
+
+                # 2. 获取分组训练样本
                 sx_list = self._sx_group_list[g]
                 sy_list = self._sy_group_list[g]
 
                 sample_count = len(sx_list)
 
-                # 2.2 初始化训练参数的 delta
+                # 3. 初始化训练参数的 delta
                 self._init_train_para_delta()
 
-                # 2.3 针对该组的每一个样本开始训练
+                # 4. 针对该组的每一个样本开始训练
                 for i in range(0, sample_count):
                     # 第 i 个训练样本
                     sx = sx_list[i]
                     sy = sy_list[i]
 
-                    # 2.3.1 第 i 个训练样本，经过（多层）神经网络的计算
+                    # 4.1 第 i 个训练样本，经过（多层）神经网络的计算
                     nn_y_list = self._calc_nn(sx)
 
-                    # 2.3.2 最后一跳激活
+                    # 4.2 最后一跳激活
                     nn_y = nn_y_list[len(nn_y_list) - 1]
                     last_hop_y = self._last_hop_activation.active_array(nn_y)
                     nn_y_list.append(last_hop_y)
 
-                    # 2.3.3 根据神经网络计算结果，计算训练参数的 delta（比如：delta w, delta b）
+                    # 4.3 根据神经网络计算结果，计算训练参数的 delta（比如：delta w, delta b）
                     self._calc_train_para_delta(nn_y_list, sx, sy)
 
-                # 2.3.4 一组样本计算完毕，修正训练参数(比如：w, b)
+                # 4.4 一组样本计算完毕，修正训练参数(比如：w, b)
                 self._modify_train_para()
 
         return errorcode.SUCCESS

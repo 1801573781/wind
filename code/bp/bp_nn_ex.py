@@ -32,6 +32,9 @@ class BPFnnEx(FnnEx):
         # 2. 通过 ksi，计算 delta w, delta b
         self._calc_delta_wb(ksi_list, sx, nn_y_list)
 
+        # 子类需要 ksi_list
+        return ksi_list
+
     ''''''
 
     def _modify_train_para(self):
