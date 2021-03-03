@@ -71,6 +71,20 @@ class RnnEx(BPFnnEx):
 
     ''''''
 
+    def _pre_predict(self):
+        """
+        预测前的准备工作
+        :return: NULL
+        """
+
+        # 重新初始化 隐藏层 h(t) 输出，时间序列
+        self._hidden_out_sequence = list()
+
+        # 重新初始化 训练样本(输入)，时间序列
+        self._sx_list = list()
+
+    ''''''
+
     def _calc_nn(self, sx):
         """
         计算整个网络的输出
@@ -240,16 +254,24 @@ class RnnEx(BPFnnEx):
         # 当前时刻
         cur_t = len(self._hidden_out_sequence)
 
+        '''
         # 偏导初始化
         dw = np.zeros(self._w_layer[layer].shape)
         db = np.zeros(self._b_layer[layer].shape)
         du = np.zeros(self._u_layer[layer].shape)
 
         # 偏导按照时间序列相加
-        for t in range(0, cur_t - 2):
+        for t in range(0, cur_t - 1):
             dw += np.matmul(eta_list[t], self._sx_list[t].T)
             db += eta_list[t]
             du += np.matmul(eta_list[t], self._hidden_out_sequence[t][layer].T)
+        '''
+
+        t = cur_t - 2
+
+        dw = np.matmul(eta_list[t], self._sx_list[t].T)
+        db = eta_list[t]
+        du = np.matmul(eta_list[t], self._hidden_out_sequence[t][layer].T)
 
         # 计算 delta w, delta b, delta u
         self._delta_w_layer[layer] += dw

@@ -53,7 +53,7 @@ def test_poem():
     neuron_count_list = [10, 21]
 
     # 最大循环训练次数
-    loop_max = 20000
+    loop_max = 200
 
     # 学习效率
     rate = 0.01

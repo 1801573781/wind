@@ -497,6 +497,16 @@ class FnnEx:
 
     ''''''
 
+    def _pre_predict(self):
+        """
+        预测前的准备工作
+        :return: NULL
+        """
+
+        pass
+
+    ''''''
+
     def predict(self, sx_list, revise_strong=False):
         """
         神经网络预测
@@ -504,6 +514,11 @@ class FnnEx:
         :param revise_strong: 预测时，修正标记
         :return: 预测结果
         """
+
+        # 预测前，先做个准备工作
+        self._pre_predict()
+
+        # 开始预测
 
         count = len(sx_list)
         py_list = list()
@@ -542,6 +557,10 @@ class FnnEx:
 
         if count >= 30:
             return
+
+        # 因为是递归调用，所以预测前的准备工作，只放在第一次预测时
+        if 0 == count:
+            self._pre_predict()
 
         nn_y_list = self._calc_nn(sx)
 
