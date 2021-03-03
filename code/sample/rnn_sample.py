@@ -73,6 +73,32 @@ class RNNSanmple(FullConnectedSample):
         sx = list_2_matrix(sx)
         return sx
 
+    ''''''
+
+    def get_sx_group(self):
+        """
+        将训练样本（输入），分组。暂时只有1组
+        :return: 训练样本（输入）分组
+        """
+
+        sample_group = list()
+        sample_group.append(self._sx_list)
+
+        return sample_group
+
+    ''''''
+
+    def get_sy_group(self):
+        """
+        将训练样本（输出），分组。暂时只有1组
+        :return: 训练样本（输出）分组
+        """
+
+        sample_group = list()
+        sample_group.append(self._sy_list)
+
+        return sample_group
+
 
 def test():
     sample = RNNSanmple()

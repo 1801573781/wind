@@ -9,7 +9,7 @@ Date：2021.02.27
 import numpy as np
 
 from bp.bp_nn_ex import BPFnnEx
-from gl.matrix_list import list_2_matrix, matrix_2_list
+from gl.matrix_list import matrix_2_list
 
 
 class RnnEx(BPFnnEx):
@@ -29,6 +29,9 @@ class RnnEx(BPFnnEx):
 
     # 隐藏层 h(t) 输出，时间序列
     _hidden_out_sequence = None
+
+    # 训练样本(输入)，时间序列
+    _sx_list = None
 
     # RNN 只作用于第1层的标记
     _rnn_layer_0 = True
@@ -60,8 +63,11 @@ class RnnEx(BPFnnEx):
         :return: NULL
         """
 
-        # 重新初始化 _hidden_out_sequence（隐藏层 h(t) 输出，时间序列）
+        # 重新初始化 隐藏层 h(t) 输出，时间序列
         self._hidden_out_sequence = list()
+
+        # 重新初始化 训练样本(输入)，时间序列
+        self._sx_list = list()
 
     ''''''
 
@@ -77,6 +83,9 @@ class RnnEx(BPFnnEx):
 
         # 将神经网络的输出记录下来（时间序列）
         self._hidden_out_sequence.append(nn_y_list)
+
+        # 将神经网络的训练样本(输入)记录下来（时间序列）
+        self._sx_list.append(sx)
 
         return nn_y_list
 
@@ -196,10 +205,10 @@ class RnnEx(BPFnnEx):
         # 3.3 反向计算该层（layer）的 eta
         eta_pre = eta_last
         for t in range((cur_t - 2), -1, -1):
-            # 本时刻的输出
-            hidden_out_pre = self._hidden_out_sequence[t][layer]
-            # 本时刻输出的导数
-            dh = self._activation.derivative_array(hidden_out_pre)
+            # 本时刻隐藏层的输出
+            hidden_out = self._hidden_out_sequence[t][layer]
+            # 本时刻隐藏层输出的导数
+            dh = self._activation.derivative_array(hidden_out)
             # 将导数变为对角线矩阵
             diag_dh = np.diag(matrix_2_list(dh))
             # 计算 eta

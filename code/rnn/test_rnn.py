@@ -12,7 +12,7 @@ from activation.normal_activation import Sigmoid, ReLU
 from loss.loss import MSELoss, CrossEntropyLoss
 
 from bp import bp_nn
-from rnn import recurrent_nn
+from rnn import recurrent_nn, rnn_poet
 from sample.image_softmax_sample import ImageSoftMaxSample
 from sample.rnn_sample import RNNSanmple
 
@@ -31,7 +31,8 @@ def test_poem():
     loss = CrossEntropyLoss()
 
     # 神经网络
-    nn = recurrent_nn.RecurrentNN(activation, last_hop_activation, loss)
+    # nn = recurrent_nn.RecurrentNN(activation, last_hop_activation, loss)
+    nn = rnn_poet.Poet(activation, last_hop_activation, loss)
 
     # 2. 构建训练样本
 
@@ -40,8 +41,11 @@ def test_poem():
 
     sample.create_sample()
 
-    train_sx_list = sample.get_sx_list()
-    train_sy_list = sample.get_sy_list()
+    # train_sx_list = sample.get_sx_list()
+    # train_sy_list = sample.get_sy_list()
+
+    train_sx_group = sample.get_sx_group()
+    train_sy_group = sample.get_sy_group()
 
     # 3. 训练
 
@@ -49,13 +53,14 @@ def test_poem():
     neuron_count_list = [10, 21]
 
     # 最大循环训练次数
-    loop_max = 50
+    loop_max = 20000
 
     # 学习效率
-    rate = 0.1
+    rate = 0.01
 
     # 训练
-    nn.train(train_sx_list, train_sy_list, loop_max, neuron_count_list, rate)
+    # nn.train(train_sx_list, train_sy_list, loop_max, neuron_count_list, rate)
+    nn.train(train_sx_group, train_sy_group, loop_max, neuron_count_list, rate)
 
     # 4. 测试
 
@@ -65,7 +70,8 @@ def test_poem():
 
     # 测试
     py_list = list()
-    nn.predict_r(test_sx, py_list)
+    # nn.predict_r(test_sx, py_list)
+    nn.predict_recurrent(test_sx, py_list)
 
     # 将测试样本放在首位，这样就组成了一首完整的诗
     py_list.insert(0, ch)

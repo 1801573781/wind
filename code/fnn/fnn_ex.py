@@ -576,10 +576,11 @@ class FnnEx:
         :return: recurrent_flag，是否继续递归；recurrent_sx，如果递归，其 sx =  recurrent_sx
         """
 
-        recurrent_flag = False
-        recurrent_sx = None
+        r_flag = False
+        ch = "None"
+        r_sx = None
 
-        return recurrent_flag, recurrent_sx
+        return r_flag, ch, r_sx
 
     ''''''
 

@@ -102,13 +102,6 @@ class BPFnnEx(FnnEx):
 
         ksi_last = list_2_matrix(ksi_last)
 
-        '''
-        nn_y_last = nn_y_list[self._layer_count - 1]
-        
-        ksi_last = np.dot(loss_dy, self._last_hop_activation.derivative_array(last_hop_y))
-        ksi_last = np.dot(ksi_last, self._activation.derivative_array(nn_y_last))
-        '''
-
         return ksi_last
 
     ''''''

@@ -1,17 +1,17 @@
 """
-Function：通过 BP 神经网络，背诵诗歌(或者其他文字)
+Function：通过循环神经网络，写诗(或者其他文字)
 Author：lzb
-Date：2021.02.27
+Date：2021.03.03
 """
 
-from bp.bp_nn_ex import BPFnnEx
 from gl.hanzi_encoder import HanziEncoder
 from gl.matrix_list import matrix_2_list, list_2_matrix
+from rnn.rnn_ex import RnnEx
 
 
-class Recitation(BPFnnEx):
+class Poet(RnnEx):
     """
-    通过 BP 神经网络，背诵诗歌(或者其他文字)
+    通过循环神经网络，写诗(或者其他文字)
     """
 
     # 汉字编码解码器
