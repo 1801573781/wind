@@ -11,7 +11,7 @@ from activation.normal_activation import Sigmoid, ReLU, LeakyReLU
 
 from loss.loss import CrossEntropyLoss
 from rnn import rnn_poet
-from sample.rnn_sample import RNNSanmple
+from sample.one_poem_sample import OnePoemSanmple
 
 
 def test_poem():
@@ -43,7 +43,7 @@ def test_poem():
     # 2. 构建训练样本
 
     # 训练样本对象
-    sample = RNNSanmple(ch)
+    sample = OnePoemSanmple(ch)
 
     sample.create_sample()
 
@@ -264,7 +264,7 @@ def test_poem_without_train():
     nn.stub_set_para(neuron_count_list, w_layer, b_layer, u_layer)
 
     # 创建测试样本
-    sample = RNNSanmple(ch)
+    sample = OnePoemSanmple(ch)
     test_sx = sample.create_test_sample(ch)
 
     # 测试

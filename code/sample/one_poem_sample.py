@@ -16,7 +16,7 @@ from sample.fully_connected_sample import FullConnectedSample
 from gl.matrix_list import list_2_matrix
 
 
-class RNNSanmple(FullConnectedSample):
+class OnePoemSanmple(FullConnectedSample):
     """
     简单测试，只用李白这首诗做 one-hot 编码，构建 rnn 训练样本
     """
@@ -27,18 +27,18 @@ class RNNSanmple(FullConnectedSample):
     # 诗
     _poem = None
 
-    # 诗，one-hot 编码
-    _poem_encoder = None
+    # 汉字，one-hot 编码
+    _hanzi_encoder = None
 
     ''''''
 
-    def __init__(self, ch="床"):
+    def __init__(self, selector="床"):
         """
         构造函数
-        :param ch: 根据 ch，选择古诗
+        :param selector: 根据 selector，选择古诗
         """
 
-        if ch == self._bed:
+        if selector == self._bed:
             self._poem = ["床", "前", "明", "月", "光",
                           "疑", "是", "地", "上", "霜",
                           "举", "头", "望", "明", "月",
@@ -53,7 +53,7 @@ class RNNSanmple(FullConnectedSample):
                           "END"
                           ]
 
-        self._poem_encoder = HanziEncoderSimple(ch)
+        self._hanzi_encoder = HanziEncoderSimple(selector)
 
     ''''''
 
@@ -69,11 +69,11 @@ class RNNSanmple(FullConnectedSample):
         count = len(self._poem)
 
         for i in range(0, count - 1):
-            sx = self._poem_encoder.encode(self._poem[i])
+            sx = self._hanzi_encoder.encode(self._poem[i])
             sx = list_2_matrix(sx)
             self._sx_list.append(sx)
 
-            sy = self._poem_encoder.encode(self._poem[i + 1])
+            sy = self._hanzi_encoder.encode(self._poem[i + 1])
             sy = list_2_matrix(sy)
             self._sy_list.append(sy)
 
@@ -85,7 +85,7 @@ class RNNSanmple(FullConnectedSample):
         :param ch: 测试样本字符
         :return: ch 的 one-hot 编码
         """
-        sx = self._poem_encoder.encode(ch)
+        sx = self._hanzi_encoder.encode(ch)
         sx = list_2_matrix(sx)
         return sx
 
@@ -117,7 +117,7 @@ class RNNSanmple(FullConnectedSample):
 
 
 def test():
-    sample = RNNSanmple()
+    sample = OnePoemSanmple()
     sample.create_sample()
 
     sx_list = sample.get_sx_list()

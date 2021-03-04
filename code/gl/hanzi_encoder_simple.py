@@ -2,26 +2,54 @@
 Function：汉字 one-hot 编码
 Author：lzb
 Date：2021.02.20
+
+说明：选取了一首古诗作为汉字集（或者是李白的《静夜思》，或者是王之涣的《登鹳雀楼》）
 """
+from gl.hanzi_encoder import HanziEncoder
 
 
-class HanziEncoderSimple:
+class HanziEncoderSimple(HanziEncoder):
     """
     简单测试，两首诗的做 one-hot 编码
     """
 
-    # end 字符
-    _end = "END"
-
     # 床 字符
     _bed = "床"
 
-    _dict = None
+    # selector 字符，根据 selector 字符，选择其中一首古诗作为汉字集
+    _selector = None
 
     ''''''
 
-    def __init__(self, ch="床"):
-        if ch == self._bed:
+    def __init__(self, selector="床"):
+        """
+        构造函数
+        :param selector: selector 字符
+        """
+
+        self._selector = selector
+
+        super().__init__()
+
+    ''''''
+
+    def _init_dict(self):
+        """
+        初始化汉字编码字典。虚函数，待子类继承
+        :return: NULL
+        """
+
+        self._init_dict_by_selector()
+
+    ''''''
+
+    def _init_dict_by_selector(self):
+        """
+        根据 selector 字符，选择其中一首古诗作为汉字集
+        :return:
+        """
+
+        if self._selector == self._bed:
             # 这首诗中有几个重复的字符：明、月、头，将这几个重复字符换成：唐、李、白
             self._dict = {
                 "床": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -70,54 +98,3 @@ class HanziEncoderSimple:
                 "楼": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
                 self._end: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
             }
-
-    ''''''
-
-    def encode(self, ch):
-        """
-        将一个汉字 or "END" 编码为 one-hot
-        :param ch: 汉字 or "END"
-        :return: ch 对应的 one-hot 编码
-        """
-
-        if ch in self._dict.keys():
-            return self._dict[ch]
-        else:
-            # 需要记录日志
-            print("\nthere has no ch in dict, ch = %s\n" % ch)
-
-            return self._dict[self._end]
-
-    ''''''
-
-    def decode(self, ec):
-        """
-        将 one-hot 编码，解码为一个汉字 or ”END“
-        :param ec: one hot 编码(一个 list)
-        :return: ec 对应的汉字（或者 ”END“）
-        """
-
-        idx = list(self._dict.values()).index(ec)
-
-        if idx >= 0:
-            return list(self._dict.keys())[idx]
-        else:
-            # 需要记录日志
-            print("\nthere has no ec in dict, ec =\n")
-            print(ec)
-
-            return self._end
-
-    ''''''
-
-    def is_end(self, ch):
-        """
-        判断一个字符，是否是 "END"
-        :param ch: 字符
-        :return: true or false
-        """
-
-        if ch == self._end:
-            return True
-        else:
-            return False
