@@ -6,7 +6,7 @@ Date：2020.12.25
 
 
 from fnn.feedforward_nn import FNN
-from gl.hanzi_encoder import HanziEncoder
+from gl.hanzi_encoder_simple import HanziEncoderSimple
 from gl.matrix_list import list_2_matrix, matrix_2_list
 
 """
@@ -24,7 +24,7 @@ class：BPNeuralNetwork，BP 神经网络
 class BPFNN(FNN):
 
     # 汉字编码解码器（使用 BP，测试诗歌生成器）
-    _hanzi_encoder = HanziEncoder()
+    _hanzi_encoder = HanziEncoderSimple()
 
     """
     功能：修正 w, b

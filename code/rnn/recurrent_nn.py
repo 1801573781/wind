@@ -12,7 +12,7 @@ import numpy as np
 
 from bp.bp_nn import BPFNN
 from gl.matrix_list import matrix_2_list, list_2_matrix
-from gl.hanzi_encoder import HanziEncoder
+from gl.hanzi_encoder_simple import HanziEncoderSimple
 from gl import errorcode
 
 
@@ -35,7 +35,7 @@ class RecurrentNN(BPFNN):
     _rnn_layer_0 = True
 
     # 汉字编码解码器
-    _hanzi_encoder = HanziEncoder()
+    _hanzi_encoder = HanziEncoderSimple()
 
     ''''''
 

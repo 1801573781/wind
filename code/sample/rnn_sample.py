@@ -11,7 +11,7 @@ Date：2021.02.19
 低头思故乡
 2、测试样本，也用这首诗
 """
-from gl.hanzi_encoder import HanziEncoder
+from gl.hanzi_encoder_simple import HanziEncoderSimple
 from sample.fully_connected_sample import FullConnectedSample
 from gl.matrix_list import list_2_matrix
 
@@ -53,7 +53,7 @@ class RNNSanmple(FullConnectedSample):
                           "END"
                           ]
 
-        self._poem_encoder = HanziEncoder(ch)
+        self._poem_encoder = HanziEncoderSimple(ch)
 
     ''''''
 

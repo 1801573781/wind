@@ -2,16 +2,10 @@
 Function：汉字 one-hot 编码
 Author：lzb
 Date：2021.02.20
-
-说明：先简单构建1首诗的汉字编码：
-床前明月光
-疑是地上霜
-举头望明月
-低头思故乡
 """
 
 
-class HanziEncoder:
+class HanziEncoderSimple:
     """
     简单测试，两首诗的做 one-hot 编码
     """

@@ -4,7 +4,7 @@ Author：lzb
 Date：2021.03.03
 """
 
-from gl.hanzi_encoder import HanziEncoder
+from gl.hanzi_encoder_simple import HanziEncoderSimple
 from gl.matrix_list import matrix_2_list, list_2_matrix
 from rnn.rnn_ex import RnnEx
 
@@ -32,7 +32,7 @@ class Poet(RnnEx):
         # super(activation, last_hop_activation, loss)
 
         # 汉字编码解码器
-        self._hanzi_encoder = HanziEncoder(ch)
+        self._hanzi_encoder = HanziEncoderSimple(ch)
 
     ''''''
 
