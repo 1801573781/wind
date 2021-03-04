@@ -150,6 +150,35 @@ class ReLU(NormalActivation):
             return 0
 
 
+class LeakReLU(ReLU):
+    """
+    ReLU 激活函数
+    """
+
+    # x < 0 时，激活函数的系数
+    _alpha = 0.1
+
+    # 激活函数
+    def active(self, x):
+        if x >= 0:
+            y = x
+            if self._max_value > 0:
+                y = min(y, self._max_value)
+        else:
+            y = self._alpha * x
+
+        return y
+
+    # 求导
+    def derivative(self, x):
+        if x > 0:
+            return 1
+        elif x < 0:
+            return self._alpha
+        else:
+            return 0
+
+
 # noinspection SpellCheckingInspection
 class Tanh(NormalActivation):
     """

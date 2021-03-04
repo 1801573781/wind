@@ -6,7 +6,7 @@ Date：2021.02.15
 
 
 from activation.last_hop_activation import SoftMaxLHA
-from activation.normal_activation import Sigmoid, ReLU
+from activation.normal_activation import Sigmoid, ReLU, LeakReLU
 
 from loss.loss import CrossEntropyLoss
 from rnn import rnn_poet
@@ -14,11 +14,17 @@ from sample.rnn_sample import RNNSanmple
 
 
 def test_poem():
+    """
+    测试 rnn_poet（写诗机的第一步）
+    :return: NULL
+    """
+
     # 1. 构建神经网络对象
 
     # 激活函数
     # activation = Sigmoid()
-    activation = ReLU(20)
+    # activation = ReLU(20)
+    activation = LeakReLU(20)
 
     # 最后一跳激活函数
     last_hop_activation = SoftMaxLHA()
@@ -27,7 +33,6 @@ def test_poem():
     loss = CrossEntropyLoss()
 
     # 神经网络
-    # nn = recurrent_nn.RecurrentNN(activation, last_hop_activation, loss)
     nn = rnn_poet.Poet(activation, last_hop_activation, loss)
 
     # 2. 构建训练样本
@@ -46,25 +51,25 @@ def test_poem():
     neuron_count_list = [10, 21]
 
     # 最大循环训练次数
-    loop_max = 200
+    loop_max = 2000
 
     # 学习效率
-    rate = 0.01
+    rate = 0.1
 
     # 训练
     nn.train(train_sx_group, train_sy_group, loop_max, neuron_count_list, rate)
 
     # 4. 测试
 
-    # 4.1 创建测试样本
+    # 创建测试样本
     ch = "白"
     test_sx = sample.create_test_sample(ch)
 
-    # 4.2 测试
+    # 测试
     py_list = list()
     nn.predict_recurrent(test_sx, py_list)
 
-    # 4.3 将测试样本放在首位，这样就组成了一首完整的诗
+    # 将测试样本放在首位，这样就组成了一首完整的诗
     py_list.insert(0, ch)
 
     print("\n")
