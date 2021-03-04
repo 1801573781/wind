@@ -150,7 +150,7 @@ class ReLU(NormalActivation):
             return 0
 
 
-class LeakReLU(ReLU):
+class LeakyReLU(ReLU):
     """
     ReLU 激活函数
     """

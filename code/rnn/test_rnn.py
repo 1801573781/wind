@@ -7,7 +7,7 @@ Date：2021.02.15
 import numpy as np
 
 from activation.last_hop_activation import SoftMaxLHA
-from activation.normal_activation import Sigmoid, ReLU, LeakReLU
+from activation.normal_activation import Sigmoid, ReLU, LeakyReLU
 
 from loss.loss import CrossEntropyLoss
 from rnn import rnn_poet
@@ -29,7 +29,7 @@ def test_poem():
     # 激活函数
     # activation = Sigmoid()
     # activation = ReLU(20)
-    activation = LeakReLU(20)
+    activation = LeakyReLU(20)
 
     # 最后一跳激活函数
     last_hop_activation = SoftMaxLHA()
@@ -96,7 +96,7 @@ def test_poem_without_train():
     ch = "床"
 
     # 激活函数
-    activation = LeakReLU(20)
+    activation = LeakyReLU(20)
 
     # 最后一跳激活函数
     last_hop_activation = SoftMaxLHA()
