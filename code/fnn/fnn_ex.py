@@ -339,7 +339,7 @@ class FnnEx:
                 print("\nend time = " + localtime + "\n")
 
                 # 打印最后一轮参数
-                self._print_w_b_loop(loop)
+                self._print_train_para_loop(loop)
 
                 break
 
@@ -603,7 +603,7 @@ class FnnEx:
 
     ''''''
 
-    def _print_w_b_loop(self, loop):
+    def _print_train_para_loop(self, loop):
         """
         打印 w, b, loop
         :param loop: 神经网络的训练次数

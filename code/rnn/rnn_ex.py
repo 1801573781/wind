@@ -9,6 +9,7 @@ Date：2021.02.27
 import numpy as np
 
 from bp.bp_nn_ex import BPFnnEx
+from gl.array_string import array_2_string
 from gl.matrix_list import matrix_2_list
 
 
@@ -254,19 +255,6 @@ class RnnEx(BPFnnEx):
         # 当前时刻
         cur_t = len(self._hidden_out_sequence)
 
-        '''
-        # 偏导初始化
-        dw = np.zeros(self._w_layer[layer].shape)
-        db = np.zeros(self._b_layer[layer].shape)
-        du = np.zeros(self._u_layer[layer].shape)
-
-        # 偏导按照时间序列相加
-        for t in range(0, cur_t - 1):
-            dw += np.matmul(eta_list[t], self._sx_list[t].T)
-            db += eta_list[t]
-            du += np.matmul(eta_list[t], self._hidden_out_sequence[t][layer].T)
-        '''
-
         t = cur_t - 2
 
         dw = np.matmul(eta_list[t], self._sx_list[t].T)
@@ -277,3 +265,53 @@ class RnnEx(BPFnnEx):
         self._delta_w_layer[layer] += dw
         self._delta_b_layer[layer] += db
         self._delta_u_layer[layer] += du
+
+    ''''''
+
+    def _print_train_para_loop(self, loop):
+        """
+        打印 w, b, u，loop
+        :param loop: 神经网络的训练次数
+        :return: NULL
+        """
+
+        # 先调用父类函数，打印 w，b
+        super()._print_train_para_loop(loop)
+
+        # 打印 u
+        for layer in range(0, self._layer_count):
+            print("层数 ＝ %d" % layer)
+
+            print("U:")
+            print(array_2_string(self._u_layer[layer]))
+
+            if layer < self._layer_count - 1:
+                print("\n")
+
+    ''''''
+
+    def stub_set_para(self, neuron_count_list, w_layer, b_layer, u_layer):
+        """
+        设置神经网络参数：w, b, u
+        :param neuron_count_list: 神经网络层数
+        :param w_layer: 每一层 w 参数 列表
+        :param b_layer: 每一层 b 参数 列表
+        :param u_layer: 每一层 u 参数 列表
+        :return: NULL
+        """
+
+        # 每一层神经元的数量(Neuron Count)
+        self._neuron_count_list = neuron_count_list
+
+        # 神经网络层数
+        self._layer_count = len(w_layer)
+
+        # 每一层 w 参数
+        self._w_layer = w_layer
+
+        # 每一层 b 参数
+        self._b_layer = b_layer
+
+        # 每一层 u 参数
+        self._u_layer = u_layer
+
