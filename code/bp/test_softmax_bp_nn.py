@@ -128,6 +128,9 @@ def _get_max_index(y):
 def test_poem():
     # 1. 构建神经网络对象
 
+    # 古诗选择字符
+    ch = "白"
+
     # 激活函数
     # activation = Sigmoid()
     activation = ReLU(20)
@@ -140,12 +143,12 @@ def test_poem():
 
     # 神经网络
     # nn = bp_nn.BPFNN(activation, last_hop_activation, loss)
-    nn = Recitation(activation, last_hop_activation, loss)
+    nn = Recitation(activation, last_hop_activation, loss, ch)
 
     # 2. 构建训练样本
 
     # 训练样本对象
-    sample = RNNSanmple()
+    sample = RNNSanmple(ch)
 
     sample.create_sample()
 
@@ -169,7 +172,7 @@ def test_poem():
     # 4. 测试
 
     # 4.1 创建测试样本
-    ch = "白"
+
     test_sx = sample.create_test_sample(ch)
 
     # 测试

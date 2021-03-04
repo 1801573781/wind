@@ -33,6 +33,11 @@ class RNNSanmple(FullConnectedSample):
     ''''''
 
     def __init__(self, ch="床"):
+        """
+        构造函数
+        :param ch: 根据 ch，选择古诗
+        """
+
         if ch == self._bed:
             self._poem = ["床", "前", "明", "月", "光",
                           "疑", "是", "地", "上", "霜",
