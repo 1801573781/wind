@@ -15,7 +15,7 @@ from loss.loss import MSELoss, CrossEntropyLoss
 from bp.bp_nn_recitation import Recitation
 from bp import bp_nn, bp_nn_ex
 from sample.image_softmax_sample import ImageSoftMaxSample
-from sample.one_poem_sample import OnePoemSanmple
+from sample.one_poem_sample import OnePoemSample
 
 
 def test_softmax():
@@ -148,7 +148,7 @@ def test_poem():
     # 2. 构建训练样本
 
     # 训练样本对象
-    sample = OnePoemSanmple(ch)
+    sample = OnePoemSample(ch)
 
     sample.create_sample()
 

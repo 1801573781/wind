@@ -14,8 +14,34 @@ class PoemEncoder(HanziEncoder):
     选取了部分古诗作为汉字集
     """
 
+    # 相当于 C++ 的静态变量
+    _instance = None
+
+    # 静态函数，创建 PoemEncoder 的实例（单例模式，不考虑多线程。不过，Python 也没有多线程，^_^）
+    @staticmethod
+    def instance(poem_file=None):
+        if PoemEncoder._instance is None:
+            PoemEncoder._instance = PoemEncoder(poem_file)
+
+        return PoemEncoder._instance
+
+    ''''''
+
     # 古诗所在文件
     _poem_file = "./poem/poem.txt"
+
+    ''''''
+
+    def __init__(self, poem_file=None):
+        """
+        构造函数
+        :param poem_file: 诗歌文件
+        """
+
+        if poem_file is not None:
+            self._poem_file = poem_file
+
+        super().__init__()
 
     ''''''
 
@@ -92,7 +118,7 @@ class PoemEncoder(HanziEncoder):
 
 
 def test():
-    poem_encoder = PoemEncoder()
+    poem_encoder = PoemEncoder.instance()
 
     print(poem_encoder._dict)
 

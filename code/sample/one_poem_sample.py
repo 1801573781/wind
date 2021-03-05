@@ -11,13 +11,15 @@ Date：2021.02.19
 低头思故乡
 2、测试样本，也用这首诗
 """
+
+
 from gl.hanzi_encoder import HanziEncoder
 from gl.hanzi_encoder_simple import HanziEncoderSimple
 from sample.fully_connected_sample import FullConnectedSample
 from gl.matrix_list import list_2_matrix
 
 
-class OnePoemSanmple(FullConnectedSample):
+class OnePoemSample(FullConnectedSample):
     """
     简单测试，只用李白这首诗做 one-hot 编码，构建 rnn 训练样本
     """
@@ -118,7 +120,7 @@ class OnePoemSanmple(FullConnectedSample):
 
 
 def test():
-    sample = OnePoemSanmple()
+    sample = OnePoemSample()
     sample.create_sample()
 
     sx_list = sample.get_sx_list()
