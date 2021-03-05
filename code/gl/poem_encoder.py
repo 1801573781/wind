@@ -5,6 +5,7 @@ Date：2021.03.05
 
 说明：选取了部分古诗作为汉字集
 """
+import os
 
 from gl.hanzi_encoder import HanziEncoder
 
@@ -19,9 +20,9 @@ class PoemEncoder(HanziEncoder):
 
     # 静态函数，创建 PoemEncoder 的实例（单例模式，不考虑多线程。不过，Python 也没有多线程，^_^）
     @staticmethod
-    def instance(poem_file=None):
+    def instance():
         if PoemEncoder._instance is None:
-            PoemEncoder._instance = PoemEncoder(poem_file)
+            PoemEncoder._instance = PoemEncoder()
 
         return PoemEncoder._instance
 
@@ -38,9 +39,10 @@ class PoemEncoder(HanziEncoder):
         :param poem_file: 诗歌文件
         """
 
-        if poem_file is not None:
-            self._poem_file = poem_file
+        # 先赋值 _poem_file
+        self._poem_file = os.path.dirname(__file__) + '/' + self._poem_file
 
+        # 再调用父类的构造函数
         super().__init__()
 
     ''''''

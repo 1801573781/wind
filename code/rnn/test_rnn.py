@@ -10,7 +10,7 @@ from activation.last_hop_activation import SoftMaxLHA
 from activation.normal_activation import Sigmoid, ReLU, LeakyReLU
 
 from loss.loss import CrossEntropyLoss
-from rnn import rnn_poet
+from rnn import rnn_poet_recitation
 from sample.one_poem_sample import OnePoemSample
 
 
@@ -38,7 +38,7 @@ def test_poem():
     loss = CrossEntropyLoss()
 
     # 神经网络
-    nn = rnn_poet.Poet(activation, last_hop_activation, loss, ch)
+    nn = rnn_poet_recitation.PoemRecitation(activation, last_hop_activation, loss, ch)
 
     # 2. 构建训练样本
 
@@ -105,7 +105,7 @@ def test_poem_without_train():
     loss = CrossEntropyLoss()
 
     # 神经网络
-    nn = rnn_poet.Poet(activation, last_hop_activation, loss, ch)
+    nn = rnn_poet_recitation.PoemRecitation(activation, last_hop_activation, loss, ch)
 
     # 每一层网络的神经元个数
     neuron_count_list = [10, 21]

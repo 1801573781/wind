@@ -98,11 +98,11 @@ class PoemSample(FullConnectedSample):
         count = len(poem)
 
         for i in range(0, count - 1):
-            sx = PoemEncoder.instance(self._poem_file).encode(poem[i])
+            sx = PoemEncoder.instance().encode(poem[i])
             sx = list_2_matrix(sx)
             sx_list.append(sx)
 
-            sy = PoemEncoder.instance(self._poem_file).encode(poem[i + 1])
+            sy = PoemEncoder.instance().encode(poem[i + 1])
             sy = list_2_matrix(sy)
             sy_list.append(sy)
 

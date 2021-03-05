@@ -9,7 +9,7 @@ from gl.matrix_list import matrix_2_list, list_2_matrix
 from rnn.rnn_ex import RnnEx
 
 
-class Poet(RnnEx):
+class PoemRecitation(RnnEx):
     """
     通过循环神经网络，写诗(或者其他文字)
     """
