@@ -11,6 +11,7 @@ Date：2021.02.19
 低头思故乡
 2、测试样本，也用这首诗
 """
+from gl.hanzi_encoder import HanziEncoder
 from gl.hanzi_encoder_simple import HanziEncoderSimple
 from sample.fully_connected_sample import FullConnectedSample
 from gl.matrix_list import list_2_matrix
@@ -43,14 +44,14 @@ class OnePoemSanmple(FullConnectedSample):
                           "疑", "是", "地", "上", "霜",
                           "举", "头", "望", "明", "月",
                           "低", "头", "思", "故", "乡",
-                          "END"
+                          HanziEncoder.END
                           ]
         else:
             self._poem = ["白", "日", "依", "山", "尽",
                           "黄", "河", "入", "海", "流",
                           "欲", "穷", "千", "里", "目",
                           "更", "上", "一", "层", "楼",
-                          "END"
+                          HanziEncoder.END
                           ]
 
         self._hanzi_encoder = HanziEncoderSimple(selector)

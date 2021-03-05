@@ -10,8 +10,8 @@ class HanziEncoder:
     汉字 one-hot 编码, base class
     """
 
-    # end 字符
-    _end = "END"
+    # end 字符，相当于 C++ 的静态成员变量
+    END = "E"
 
     _dict = None
 
@@ -48,7 +48,7 @@ class HanziEncoder:
             # 需要记录日志
             print("\nthere has no ch in dict, ch = %s\n" % ch)
 
-            return self._dict[self._end]
+            return self._dict[HanziEncoder.END]
 
     ''''''
 
@@ -68,7 +68,7 @@ class HanziEncoder:
             print("\nthere has no ec in dict, ec =\n")
             print(ec)
 
-            return self._end
+            return HanziEncoder.END
 
     ''''''
 
@@ -79,7 +79,7 @@ class HanziEncoder:
         :return: true or false
         """
 
-        if ch == self._end:
+        if ch == HanziEncoder.END:
             return True
         else:
             return False
