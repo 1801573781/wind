@@ -16,6 +16,9 @@ class PoemSample(FullConnectedSample):
     选取了部分古诗作为训练样本
     """
 
+    # 汉字编码解码器
+    _hanzi_encoder = PoemEncoder.instance()
+
     # 古诗所在文件
     _poem_file = "./../gl/poem/poem.txt"
 
@@ -98,11 +101,11 @@ class PoemSample(FullConnectedSample):
         count = len(poem)
 
         for i in range(0, count - 1):
-            sx = PoemEncoder.instance().encode(poem[i])
+            sx = self._hanzi_encoder.encode(poem[i])
             sx = list_2_matrix(sx)
             sx_list.append(sx)
 
-            sy = PoemEncoder.instance().encode(poem[i + 1])
+            sy = self._hanzi_encoder.encode(poem[i + 1])
             sy = list_2_matrix(sy)
             sy_list.append(sy)
 
@@ -129,6 +132,18 @@ class PoemSample(FullConnectedSample):
         """
 
         return self._sy_group
+
+    ''''''
+
+    def create_test_sample(self, ch):
+        """
+        创建测试样本（输入）
+        :param ch: 测试样本字符
+        :return: ch 的 one-hot 编码
+        """
+        sx = self._hanzi_encoder.encode(ch)
+        sx = list_2_matrix(sx)
+        return sx
 
 
 ''''''

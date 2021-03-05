@@ -1,7 +1,7 @@
 """
-Function：rnn 测试
+Function：测试写诗机
 Author：lzb
-Date：2021.02.15
+Date：2021.03.05
 """
 
 import numpy as np
@@ -11,20 +11,18 @@ from activation.normal_activation import Sigmoid, ReLU, LeakyReLU
 
 from loss.loss import CrossEntropyLoss
 from rnn import rnn_poem_recitation
+from rnn.rnn_poet import Poet
 from sample.one_poem_sample import OnePoemSample
+from sample.poem_sample import PoemSample
 
 
-def test_poem():
+def test_poet():
     """
     测试 rnn_poet（写诗机的第一步）
     :return: NULL
     """
 
     # 1. 构建神经网络对象
-
-    # 字符，决定选哪一首诗
-    # ch = "白"
-    ch = "床"
 
     # 激活函数
     # activation = Sigmoid()
@@ -38,14 +36,14 @@ def test_poem():
     loss = CrossEntropyLoss()
 
     # 神经网络
-    nn = rnn_poem_recitation.PoemRecitation(activation, last_hop_activation, loss, ch)
+    nn = Poet(activation, last_hop_activation, loss)
 
     # 2. 构建训练样本
 
     # 训练样本对象
-    sample = OnePoemSample(ch)
+    sample = PoemSample()
 
-    sample.create_sample()
+    sample.create_sample_group()
 
     train_sx_group = sample.get_sx_group()
     train_sy_group = sample.get_sy_group()
@@ -67,6 +65,9 @@ def test_poem():
     # 4. 测试
 
     # 创建测试样本
+    # 诗的起始字符
+    ch = "白"
+    # ch = "床"
     test_sx = sample.create_test_sample(ch)
 
     # 测试
@@ -85,7 +86,7 @@ def test_poem():
 ''''''
 
 
-def test_poem_rectitation_without_train():
+def test_poet_without_train():
     """
     测试 rnn，不经过训练，直接赋值参数
     :return: NULL

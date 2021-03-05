@@ -4,35 +4,19 @@ Author：lzb
 Date：2021.03.03
 """
 
-from gl.hanzi_encoder_simple import HanziEncoderSimple
+
 from gl.matrix_list import matrix_2_list, list_2_matrix
+from gl.poem_encoder import PoemEncoder
 from rnn.rnn_ex import RnnEx
 
 
-class PoemRecitation(RnnEx):
+class Poet(RnnEx):
     """
     通过循环神经网络，写诗(或者其他文字)
     """
 
     # 汉字编码解码器
-    _hanzi_encoder = None
-
-    ''''''
-    def __init__(self, activation, last_hop_activation, loss, ch):
-        """
-        构造函数
-        :param activation: 激活函数
-        :param last_hop_activation: 最后一跳激活函数
-        :param loss: 损失函数
-        :param ch: 根据 ch，汉字编码器选择字典
-        """
-
-        # 调用父类构造函数
-        super().__init__(activation, last_hop_activation, loss)
-        # super(activation, last_hop_activation, loss)
-
-        # 汉字编码解码器
-        self._hanzi_encoder = HanziEncoderSimple(ch)
+    _hanzi_encoder = PoemEncoder.instance()
 
     ''''''
 
