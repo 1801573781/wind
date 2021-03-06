@@ -6,10 +6,14 @@ Date：2021.02.27
 2021.02.11，开始写循环神经网络，一直到今天，还没有搞定
 """
 
+import os
+import pickle
+
 import numpy as np
 
 from bp.bp_nn_ex import BPFnnEx
 from gl.array_string import array_2_string
+from gl.common_function import unserialize_train_para
 from gl.matrix_list import matrix_2_list
 
 
@@ -39,22 +43,29 @@ class RnnEx(BPFnnEx):
 
     ''''''
 
-    def _init_para(self):
+    def _init_train_para(self):
         """
-        初始化参数
-        :return: error code
+        初始化训练参数
+        :return: NULL
         """
 
-        # 先调用父类的 _init_para
-        super()._init_para()
+        # 通过反序列化，初始化 w，b, u
+        if self._init_from_unserialization:
+            file_path = os.path.dirname(__file__) + "/../gl/train_para/"
+            self._w_layer, self._b_layer, self._u_layer = \
+                unserialize_train_para(file_path, self._layer_count, u_flag=True)
+        # 通过随机数，初始化 w, b, u
+        else:
+            # 先调用父类的 _init_train_para
+            super()._init_train_para()
 
-        # 初始化 _u_layer（每一层 u 参数）
-        self._u_layer = list()
+            # 初始化 _u_layer（每一层 u 参数）
+            self._u_layer = list()
 
-        # 虽然本 class 暂时只实现第一层的 rnn，但是 u 参数还是每一层都做个初始化
-        for i in range(0, self._layer_count):
-            u = np.random.random((self._neuron_count_list[i], self._neuron_count_list[i]))
-            self._u_layer.append(u)
+            # 虽然本 class 暂时只实现第一层的 rnn，但是 u 参数还是每一层都做个初始化
+            for i in range(0, self._layer_count):
+                u = self._alpha_para * np.random.random((self._neuron_count_list[i], self._neuron_count_list[i]))
+                self._u_layer.append(u)
 
     ''''''
 
@@ -268,25 +279,60 @@ class RnnEx(BPFnnEx):
 
     ''''''
 
-    def _print_train_para(self, loop):
+    def _create_train_para_string(self):
         """
-        打印 w, b, u，loop
-        :param loop: 神经网络的训练次数
+        将训练参数转化为 string
+        :return: 练参数转化后的 string
+        """
+
+        # 这段代码写的不好，与父类有大量重复，后续再优化吧
+
+        # 训练参数字符串
+        train_para_str = ""
+
+        # 再补上 u 的字符串
+        for layer in range(0, self._layer_count):
+            # loop
+            train_para_str += "loop ＝ %d\n\n" % layer
+
+            # w
+            train_para_str += "w%d:\n\n" % layer
+            train_para_str += array_2_string(self._w_layer[layer])
+
+            # b
+            train_para_str += "\n\n"
+            train_para_str += "b%d:\n\n" % layer
+            train_para_str += array_2_string(self._b_layer[layer])
+
+            # u
+            train_para_str += "\n\n"
+            train_para_str += "u%d:\n\n" % layer
+            train_para_str += array_2_string(self._u_layer[layer])
+
+            # 换行
+            train_para_str += "\n\n"
+
+        return train_para_str
+
+    ''''''
+
+    def _serialize_train_para(self):
+        """
+        将训练参数序列化到文件
         :return: NULL
         """
 
-        # 先调用父类函数，打印 w，b
-        super()._print_train_para(loop)
+        # 先调用父类，序列化 w, b
+        super()._serialize_train_para()
 
-        # 打印 u
+        # 再序列化 u
+        file_path = os.path.dirname(__file__) + "/../" + self._para_file_path
+
         for layer in range(0, self._layer_count):
-            print("层数 ＝ %d" % layer)
-
-            print("U:")
-            print(array_2_string(self._u_layer[layer]))
-
-            if layer < self._layer_count - 1:
-                print("\n")
+            # u 参数文件名
+            u_file_name = file_path + "u%d" % layer
+            # 序列化 u
+            pickle.dump(self._u_layer[layer], open(u_file_name, 'wb'))
 
     ''''''
 
@@ -314,4 +360,3 @@ class RnnEx(BPFnnEx):
 
         # 每一层 u 参数
         self._u_layer = u_layer
-

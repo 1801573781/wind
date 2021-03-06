@@ -8,16 +8,15 @@ Date：2021.02.22
 2、现在考虑分组训练，暂时先重写代码
 3、以前的代码（FNN） 暂时先保留，待 class FNNEx 完善以后，再删除原先的代码
 """
+
 import os
 import pickle
 
 import numpy as np
 
-import time
-
 from gl import errorcode
 from gl.array_string import array_2_string
-from gl.common_function import get_local_time
+from gl.common_function import get_local_time, unserialize_train_para
 
 from activation.normal_activation import Sigmoid
 from activation.last_hop_activation import DichotomyLHA
@@ -80,6 +79,15 @@ class FnnEx:
     # 损失函数
     _loss = MSELoss()
 
+    # 记录训练参数文件路径
+    _para_file_path = 'gl/train_para/'
+
+    # 是否通过反序列化初始化训练参数
+    _init_from_unserialization = False
+
+    # 训练参数初始化时所乘以的系数
+    _alpha_para = 1
+
     def __init__(self, activation=None, last_hop_activation=None, loss=None):
         """
         构造函数
@@ -99,7 +107,8 @@ class FnnEx:
 
     ''''''
 
-    def train(self, sx_group_list, sy_group_list, loop_max, neuron_count_list, rate, w_shape_list=None):
+    def train(self, sx_group_list, sy_group_list, loop_max, neuron_count_list, rate,
+              init_from_unserialization=False, alpha_para=1, w_shape_list=None):
         """
         功能：神经网络训练\n
         参数：\n
@@ -120,6 +129,8 @@ class FnnEx:
         self._sy_group_list = sy_group_list
         self._loop_max = loop_max
         self._rate = rate
+        self._init_from_unserialization = init_from_unserialization
+        self._alpha_para = alpha_para
 
         # 如果是卷积网络，这个参数没有意义（如果是卷积网络，直接传入 None 即可）
         self._neuron_count_list = neuron_count_list
@@ -289,8 +300,19 @@ class FnnEx:
         # 神经网络输出，向量维度
         self._sy_dim = self._neuron_count_list[self._layer_count - 1]
 
-        # 初始化 w, b 参数
-        return self._init_w_b()
+        # 初始化训练参数
+        return self._init_train_para()
+
+    ''''''
+
+    def _init_train_para(self):
+        """
+        初始化训练参数
+        :return: NULL
+        """
+
+        # 初始化 w，b
+        self._init_w_b()
 
     ''''''
 
@@ -300,23 +322,29 @@ class FnnEx:
         :return: error code
         """
 
-        # 每一层 w、B 参数，w 是个2维数组，b 是个2维数组
-        self._w_layer = list()
-        self._b_layer = list()
+        # 通过反序列化，初始化 w，b
+        if self._init_from_unserialization:
+            file_path = os.path.dirname(__file__) + "/../gl/train_para/"
+            self._w_layer, self._b_layer = unserialize_train_para(file_path, self._layer_count, u_flag=False)
+        # 通过随机值，初始化 w, b
+        else:
+            # 每一层 w、b 参数列表
+            self._w_layer = list()
+            self._b_layer = list()
 
-        # 第1层 w 参数，w 是一个2维数组
-        w = np.random.random((self._neuron_count_list[0], self._sx_dim))
-        self._w_layer.append(w)
-
-        # 第2层~第layer-1层 w 参数，w 是一个2维数组
-        for i in range(1, self._layer_count):
-            w = np.random.random((self._neuron_count_list[i], self._neuron_count_list[i - 1]))
+            # 第1层 w 参数，w 是一个2维数组
+            w = self._alpha_para * np.random.random((self._neuron_count_list[0], self._sx_dim))
             self._w_layer.append(w)
 
-        # 第1层 ~ 第layer-1层 b 参数，b 是一个向量
-        for i in range(0, self._layer_count):
-            b = np.zeros([self._neuron_count_list[i], 1])
-            self._b_layer.append(b)
+            # 第2层~第layer-1层 w 参数，w 是一个2维数组
+            for i in range(1, self._layer_count):
+                w = self._alpha_para * np.random.random((self._neuron_count_list[i], self._neuron_count_list[i - 1]))
+                self._w_layer.append(w)
+
+            # 第1层 ~ 第layer-1层 b 参数，b 是一个向量
+            for i in range(0, self._layer_count):
+                b = np.zeros([self._neuron_count_list[i], 1])
+                self._b_layer.append(b)
 
         return errorcode.SUCCESS
 
@@ -342,7 +370,7 @@ class FnnEx:
                 print("end time = " + localtime + "\n")
 
                 # 打印最后一轮参数
-                self._print_train_para(loop)
+                # self._print_train_para(loop)
 
                 self._write_train_para(loop)
 
@@ -664,7 +692,7 @@ class FnnEx:
         train_para_str += self._create_train_para_string()
 
         # 写入文件
-        file_name = os.path.dirname(__file__) + '/../gl/train_para/' + "train_para" + ".txt"
+        file_name = os.path.dirname(__file__) + "/../" + self._para_file_path + "train_para.txt"
         with open(file_name, 'w', newline="\n", encoding='utf-8') as f:
             f.write(train_para_str)
 
@@ -676,7 +704,7 @@ class FnnEx:
         :return: NULL
         """
 
-        file_path = os.path.dirname(__file__) + '/../gl/train_para/'
+        file_path = os.path.dirname(__file__) + "/../" + self._para_file_path
 
         for layer in range(0, self._layer_count):
             # w 参数文件名
@@ -702,20 +730,20 @@ class FnnEx:
 
         # 构建每一层训练参数的字符串
         for layer in range(0, self._layer_count):
+            # loop
             train_para_str += "loop ＝ %d\n\n" % layer
 
+            # w
             train_para_str += "w%d:\n\n" % layer
-
             train_para_str += array_2_string(self._w_layer[layer])
 
+            # b
             train_para_str += "\n\n"
-
             train_para_str += "b%d:\n\n" % layer
-
             train_para_str += array_2_string(self._b_layer[layer])
 
-            if layer < self._layer_count - 1:
-                train_para_str += "\n\n"
+            # 换行
+            train_para_str += "\n\n"
 
         return train_para_str
 

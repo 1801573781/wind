@@ -4,11 +4,11 @@ Author：lzb
 Date：2021.01.01
 """
 
+import pickle
 import time
 
 import numpy as np
 import random
-
 
 """
 功能：计算正确率
@@ -67,6 +67,8 @@ def rand_array_3(width, height, depth):
     return array
 
 
+''''''
+
 
 def get_local_time():
     """
@@ -78,3 +80,45 @@ def get_local_time():
     localtime = time.strftime("%Y-%m-%d %H:%M:%S", localtime)
 
     return localtime
+
+
+''''''
+
+
+def unserialize_train_para(file_path, layer_count, u_flag=False):
+    """
+    从文件中反序列化 w，b, u 参数
+    :param file_path: 序列化文件所在路径
+    :param layer_count: 神经网络层数
+    :param u_flag: 是否反序列化 u 参数
+    :return: w_layer，b_layer，u_layer
+    """
+
+    # 初始化
+    w_layer = list()
+    b_layer = list()
+    u_layer = list()
+
+    # 逐层反序列化
+    for i in range(0, layer_count):
+        # w
+        file_name = file_path + "w%d" % i
+        w = pickle.load(open(file_name, 'rb'))
+        w_layer.append(w)
+
+        # b
+        file_name = file_path + "b%d" % i
+        b = pickle.load(open(file_name, 'rb'))
+        b_layer.append(b)
+
+        # u
+        if u_flag:
+            file_name = file_path + "u%d" % i
+            u = pickle.load(open(file_name, 'rb'))
+            u_layer.append(u)
+
+    # return 反序列化结果
+    if u_flag:
+        return w_layer, b_layer, u_layer
+    else:
+        return w_layer, b_layer

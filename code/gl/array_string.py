@@ -72,6 +72,9 @@ class ArrayString:
         # 字符串初始化：整体起始符
         arr_str = self.start_char
 
+        # 加个换行
+        arr_str += self._get_row_br_char()
+
         for row in range(0, width):
             # 每一行的起始符
             arr_str += self._get_row_start_char()
@@ -86,6 +89,9 @@ class ArrayString:
             if row < (width - 1):
                 arr_str += self.split_char  # 分隔符
                 arr_str += self._get_row_br_char()   # 换行符
+
+        # 加个换行
+        arr_str += self._get_row_br_char()
 
         # 整体终止符
         arr_str += self.end_char
@@ -203,7 +209,7 @@ class D1ArrayString(ArrayString):
     """
 
     def _get_row_string(self, row):
-        return "%f" % self.arr[row]
+        return "%9f" % self.arr[row]
 
 
 """
@@ -243,7 +249,7 @@ class D2ArrayString(ArrayString):
     """
 
     def _get_col_string(self, row, col):
-        return "%f" % self.arr[row, col]
+        return "%9f" % self.arr[row, col]
 
 
 """
@@ -287,4 +293,4 @@ class D3ArrayString(D2ArrayString):
     """
 
     def _get_kin_string(self, row, col, kin):
-        return "%f" % self.arr[row, col, kin]
+        return "%9f" % self.arr[row, col, kin]

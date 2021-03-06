@@ -47,24 +47,3 @@ class Poet(RnnEx):
             r_flag = True
 
         return r_flag, ch, r_sx
-
-    ''''''
-
-    def _init_para(self):
-        """
-        初始化参数
-        :return: error code
-        """
-
-        # 先调用父类的 _init_para
-        super()._init_para()
-
-        # 将 w, b, u 都乘以 0.01
-        alpha = 1
-
-        count = len(self._w_layer)
-
-        for i in range(0, count):
-            self._w_layer[i] = alpha * self._w_layer[i]
-            self._b_layer[i] = alpha * self._b_layer[i]
-            self._u_layer[i] = alpha * self._u_layer[i]
