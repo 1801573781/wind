@@ -72,7 +72,18 @@ class HanziEncoder:
 
     ''''''
 
-    def is_end(self, ch):
+    def get_one_hot_dim(self):
+        """
+        获取 one-hot 编码的（向量）维度
+        :return: one-hot 编码的（向量）维度
+        """
+
+        return len(self._dict)
+
+    ''''''
+
+    @staticmethod
+    def is_end(ch):
         """
         判断一个字符，是否是 "END"
         :param ch: 字符

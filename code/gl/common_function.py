@@ -4,6 +4,8 @@ Author：lzb
 Date：2021.01.01
 """
 
+import time
+
 import numpy as np
 import random
 
@@ -63,3 +65,16 @@ def rand_array_3(width, height, depth):
                 array[i, j, k] = random.random() - 0.5
 
     return array
+
+
+
+def get_local_time():
+    """
+    获取当时的本地时间
+    :return: 当时的本地时间
+    """
+
+    localtime = time.localtime()
+    localtime = time.strftime("%Y-%m-%d %H:%M:%S", localtime)
+
+    return localtime

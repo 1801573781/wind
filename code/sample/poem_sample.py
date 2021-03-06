@@ -145,6 +145,16 @@ class PoemSample(FullConnectedSample):
         sx = list_2_matrix(sx)
         return sx
 
+    ''''''
+
+    def get_one_hot_dim(self):
+        """
+        获取样本的 one-hot 编码的（向量）维度
+        :return: 样本的 one-hot 编码的（向量）维度
+        """
+
+        return self._hanzi_encoder.get_one_hot_dim()
+
 
 ''''''
 

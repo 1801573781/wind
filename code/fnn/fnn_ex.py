@@ -8,6 +8,8 @@ Date：2021.02.22
 2、现在考虑分组训练，暂时先重写代码
 3、以前的代码（FNN） 暂时先保留，待 class FNNEx 完善以后，再删除原先的代码
 """
+import os
+import pickle
 
 import numpy as np
 
@@ -15,6 +17,7 @@ import time
 
 from gl import errorcode
 from gl.array_string import array_2_string
+from gl.common_function import get_local_time
 
 from activation.normal_activation import Sigmoid
 from activation.last_hop_activation import DichotomyLHA
@@ -329,17 +332,19 @@ class FnnEx:
         loop = 0
 
         # 打印开始时间
-        localtime = time.asctime(time.localtime(time.time()))
-        print("\nbegin time = " + localtime + "\n")
+        localtime = get_local_time()
+        print("\n\nbegin time = " + localtime + "\n")
 
         while 1:
             if loop >= self._loop_max:
                 # 打印结束时间
-                localtime = time.asctime(time.localtime(time.time()))
-                print("\nend time = " + localtime + "\n")
+                localtime = get_local_time()
+                print("end time = " + localtime + "\n")
 
                 # 打印最后一轮参数
-                self._print_train_para_loop(loop)
+                self._print_train_para(loop)
+
+                self._write_train_para(loop)
 
                 break
 
@@ -603,29 +608,116 @@ class FnnEx:
 
     ''''''
 
-    def _print_train_para_loop(self, loop):
+    def _print_train_para(self, loop):
         """
         打印 w, b, loop
-        :param loop: 神经网络的训练次数
+        :param loop: 神经网络的训练轮次
         :return: NULL
         """
 
+        # 新启一行
         print("\n")
-        print("训练次数 = %d\n" % loop)
+
+        # 训练轮次
+        print("训练轮次 = %d\n" % loop)
+
+        # 训练参数
+        train_para_str = self._create_train_para_string()
+
+        print(train_para_str)
+
+    ''''''
+
+    def _write_train_para(self, loop):
+        """
+        将 w, b，loop 写入文件
+        :param loop: 神经网络的训练轮次
+        :return: NULL
+        """
+
+        # 1. 将训练参数以字符串形式保存在文件中
+        self._write_train_para_string(loop)
+
+        # 2. 将训练参数序列化到文件
+        self._serialize_train_para()
+
+    ''''''
+
+    def _write_train_para_string(self, loop):
+        """
+        将训练参数以字符串形式保存在文件中
+        :param loop: 神经网络的训练轮次
+        :return: NULL
+        """
+
+        # 训练参数字符串
+        train_para_str = ""
+
+        # 记录时间
+        localtime = get_local_time()
+        train_para_str += "time = " + localtime + "\n\n"
+
+        # 训练轮次
+        train_para_str += "训练轮次 = %d\n\n" % loop
+
+        # 训练参数
+        train_para_str += self._create_train_para_string()
+
+        # 写入文件
+        file_name = os.path.dirname(__file__) + '/../gl/train_para/' + "train_para" + ".txt"
+        with open(file_name, 'w', newline="\n", encoding='utf-8') as f:
+            f.write(train_para_str)
+
+    ''''''
+
+    def _serialize_train_para(self):
+        """
+        将训练参数序列化到文件
+        :return: NULL
+        """
+
+        file_path = os.path.dirname(__file__) + '/../gl/train_para/'
 
         for layer in range(0, self._layer_count):
-            print("层数 ＝ %d" % layer)
+            # w 参数文件名
+            w_file_name = file_path + "w%d" % layer
+            # 序列化 w
+            pickle.dump(self._w_layer[layer], open(w_file_name, 'wb'))
 
-            print("W:")
-            # print(self.W[layer])
-            print(array_2_string(self._w_layer[layer]))
+            # b 参数文件名
+            b_file_name = file_path + "b%d" % layer
+            # 序列化 b
+            pickle.dump(self._b_layer[layer], open(b_file_name, 'wb'))
 
-            print("\nB:")
-            # print(self.B[layer])
-            print(array_2_string(self._b_layer[layer]))
+    ''''''
+
+    def _create_train_para_string(self):
+        """
+        将训练参数转化为 string
+        :return: 练参数转化后的 string
+        """
+
+        # 训练参数字符串
+        train_para_str = ""
+
+        # 构建每一层训练参数的字符串
+        for layer in range(0, self._layer_count):
+            train_para_str += "loop ＝ %d\n\n" % layer
+
+            train_para_str += "w%d:\n\n" % layer
+
+            train_para_str += array_2_string(self._w_layer[layer])
+
+            train_para_str += "\n\n"
+
+            train_para_str += "b%d:\n\n" % layer
+
+            train_para_str += array_2_string(self._b_layer[layer])
 
             if layer < self._layer_count - 1:
-                print("\n")
+                train_para_str += "\n\n"
+
+        return train_para_str
 
     ''''''
 

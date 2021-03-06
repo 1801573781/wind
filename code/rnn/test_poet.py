@@ -51,7 +51,8 @@ def test_poet():
     # 3. 训练
 
     # 每一层网络的神经元个数
-    neuron_count_list = [10, 21]
+    one_hot_dim = sample.get_one_hot_dim()
+    neuron_count_list = [10, one_hot_dim]
 
     # 最大循环训练次数
     loop_max = 20000
@@ -66,8 +67,8 @@ def test_poet():
 
     # 创建测试样本
     # 诗的起始字符
-    ch = "白"
-    # ch = "床"
+    ch = "锄"
+    # ch = "小"
     test_sx = sample.create_test_sample(ch)
 
     # 测试
@@ -92,10 +93,6 @@ def test_poet_without_train():
     :return: NULL
     """
 
-    # 字符，决定选哪一首诗
-    # ch = "白"
-    ch = "床"
-
     # 激活函数
     activation = LeakyReLU(20)
 
@@ -106,7 +103,7 @@ def test_poet_without_train():
     loss = CrossEntropyLoss()
 
     # 神经网络
-    nn = rnn_poem_recitation.PoemRecitation(activation, last_hop_activation, loss, ch)
+    nn = Poet(activation, last_hop_activation, loss)
 
     # 每一层网络的神经元个数
     neuron_count_list = [10, 21]
@@ -265,7 +262,9 @@ def test_poet_without_train():
     nn.stub_set_para(neuron_count_list, w_layer, b_layer, u_layer)
 
     # 创建测试样本
-    sample = OnePoemSample(ch)
+    sample = PoemSample()
+    # ch = "白"
+    ch = "床"
     test_sx = sample.create_test_sample(ch)
 
     # 测试

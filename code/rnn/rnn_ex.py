@@ -268,7 +268,7 @@ class RnnEx(BPFnnEx):
 
     ''''''
 
-    def _print_train_para_loop(self, loop):
+    def _print_train_para(self, loop):
         """
         打印 w, b, u，loop
         :param loop: 神经网络的训练次数
@@ -276,7 +276,7 @@ class RnnEx(BPFnnEx):
         """
 
         # 先调用父类函数，打印 w，b
-        super()._print_train_para_loop(loop)
+        super()._print_train_para(loop)
 
         # 打印 u
         for layer in range(0, self._layer_count):
