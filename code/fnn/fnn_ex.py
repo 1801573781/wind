@@ -731,7 +731,7 @@ class FnnEx:
         # 构建每一层训练参数的字符串
         for layer in range(0, self._layer_count):
             # loop
-            train_para_str += "loop ＝ %d\n\n" % layer
+            train_para_str += "layer ＝ %d\n\n" % layer
 
             # w
             train_para_str += "w%d:\n\n" % layer

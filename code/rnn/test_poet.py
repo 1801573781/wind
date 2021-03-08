@@ -52,7 +52,7 @@ def test_poet():
 
     # 每一层网络的神经元个数
     one_hot_dim = sample.get_one_hot_dim()
-    neuron_count_list = [10, one_hot_dim]
+    neuron_count_list = [10, 10, 10, one_hot_dim]
 
     # 最大循环训练次数
     loop_max = 5000
@@ -62,7 +62,7 @@ def test_poet():
 
     # 训练
     init_from_unserialization = False
-    alpha_para = 0.000001
+    alpha_para = 0.001
     nn.train(train_sx_group, train_sy_group, loop_max, neuron_count_list, rate, init_from_unserialization, alpha_para)
 
     # 4. 测试
@@ -114,7 +114,7 @@ def test_poet_without_train():
 
     # 每一层网络的神经元个数
     one_hot_dim = sample.get_one_hot_dim()
-    neuron_count_list = [10, one_hot_dim]
+    neuron_count_list = [10, 10, 10, one_hot_dim]
 
     # 反序列化每一层 w, b, u 参数
     file_path = os.path.dirname(__file__) + "/../gl/train_para/"
