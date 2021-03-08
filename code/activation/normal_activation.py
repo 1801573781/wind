@@ -165,7 +165,7 @@ class LeakyReLU(ReLU):
             if self._max_value > 0:
                 y = min(y, self._max_value)
         else:
-            y = self._alpha * x
+            y = max(self._alpha * x, -1 * self._max_value)
 
         return y
 

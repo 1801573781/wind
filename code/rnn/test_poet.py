@@ -55,14 +55,14 @@ def test_poet():
     neuron_count_list = [10, one_hot_dim]
 
     # 最大循环训练次数
-    loop_max = 20000
+    loop_max = 5000
 
     # 学习效率
     rate = 0.1
 
     # 训练
     init_from_unserialization = False
-    alpha_para = 0.001
+    alpha_para = 0.000001
     nn.train(train_sx_group, train_sy_group, loop_max, neuron_count_list, rate, init_from_unserialization, alpha_para)
 
     # 4. 测试
@@ -126,7 +126,7 @@ def test_poet_without_train():
 
     # 创建测试样本
     # ch = "小"
-    ch = "小"
+    ch = "白"
     test_sx = sample.create_test_sample(ch)
 
     # 测试
